@@ -1,42 +1,40 @@
-# UberMetroid APT Repository
+# UberMetroid Packages Repository
 
-This repository hosts compiled Debian distributions for the **UberMetroid** ecosystem (specifically **trance**). It functions as a flat package repository served directly via GitHub Pages raw file endpoints.
+This repository serves as the central distribution hub for the **UberMetroid** ecosystem applications (such as `trance`, `beam`, `todo`, etc.). It supports distribution across multiple package managers and environments.
 
 Supported formats:
-*   **APT** (Debian, Ubuntu, Pop!_OS)
+*   **APT** (Debian, Ubuntu, Pop!_OS) — hosted under `/apt` and served via GitHub Pages
+*   **Nix Flakes** (NixOS, Unraid Nix Plugin) — defined at the root (`flake.nix`)
 
 ---
 
-## Client Installation & Setup
+## 1. Debian / Ubuntu Setup (APT)
 
-### 1. Automated Installation (Recommended)
-You can configure the GPG key, register the repository, and update your packages list in a single command:
+To install compiled Debian packages (such as `trance`):
+
+### Automated Installation (Recommended)
 ```bash
-curl -fsSL https://ubermetroid.github.io/apt/install.sh | sudo bash
-```
-Once complete, you can install your desired software:
-```bash
+curl -fsSL https://ubermetroid.github.io/packages/apt/install.sh | sudo bash
 sudo apt install trance
 ```
 
+For manual installation instructions and GPG keyring details, see the [APT Readme](apt/README.md).
+
 ---
 
-### 2. Manual Installation
-If you prefer to perform the setup steps manually:
+## 2. NixOS / Unraid Nix Setup (Flakes)
 
-1.  **Import the repository GPG key:**
-    ```bash
-    sudo mkdir -p /etc/apt/keyrings
-    curl -fsSL https://ubermetroid.github.io/apt/ubermetroid-key.gpg | sudo gpg --dearmor --yes -o /etc/apt/keyrings/ubermetroid-keyring.gpg
-    ```
+To run or build applications directly using Nix Flakes:
 
-2.  **Add the repository entry:**
-    ```bash
-    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/ubermetroid-keyring.gpg] https://ubermetroid.github.io/apt stable main" | sudo tee /etc/apt/sources.list.d/ubermetroid.list
-    ```
+### Run directly
+```bash
+nix run github:UberMetroid/packages#trance
+```
 
-3.  **Update and install packages:**
-    ```bash
-    sudo apt update
-    sudo apt install trance
-    ```
+### Import into configurations
+Add the repository to your flake inputs:
+```nix
+inputs = {
+  ubermetroid-packages.url = "github:UberMetroid/packages";
+};
+```

@@ -84,13 +84,13 @@ echo -e "${BOLD}Setting up UberMetroid package repository (stable/main)${NC}"
 # 1. Download and import key
 import_key() {
     mkdir -p /etc/apt/keyrings
-    curl -fsSL https://ubermetroid.github.io/apt/ubermetroid-key.gpg | gpg --dearmor --yes -o /etc/apt/keyrings/ubermetroid-keyring.gpg
+    curl -fsSL https://ubermetroid.github.io/packages/apt/ubermetroid-key.gpg | gpg --dearmor --yes -o /etc/apt/keyrings/ubermetroid-keyring.gpg
 }
 run_with_spinner "Downloading and importing GPG repository key" import_key
 
 # 2. Write sources file
 write_sources() {
-    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/ubermetroid-keyring.gpg] https://ubermetroid.github.io/apt stable main" > /etc/apt/sources.list.d/ubermetroid.list
+    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/ubermetroid-keyring.gpg] https://ubermetroid.github.io/packages/apt stable main" > /etc/apt/sources.list.d/ubermetroid.list
 }
 run_with_spinner "Registering repository in apt sources list" write_sources
 
