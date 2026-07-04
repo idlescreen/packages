@@ -1,7 +1,5 @@
 # UberMetroid Packages
 
-Package repository for **UberMetroid** applications (such as `trance`).
-
 ## Debian / Ubuntu / Pop!_OS Setup (APT)
 
 ```bash
