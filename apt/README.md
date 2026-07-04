@@ -20,8 +20,7 @@ Supported formats:
     echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/ubermetroid-keyring.gpg] https://ubermetroid.github.io/packages/apt stable main" | sudo tee /etc/apt/sources.list.d/ubermetroid.list
     ```
 
-3.  **Update and install packages:**
+3.  **Update the package index:**
     ```bash
     sudo apt update
-    sudo apt install trance
     ```
