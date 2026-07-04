@@ -23,14 +23,15 @@ Package repository for **UberMetroid** applications (such as `trance`).
 ## Fedora / RHEL / CentOS Setup (DNF)
 
 1. **Add the DNF repository configuration:**
-   Create `/etc/yum.repos.d/ubermetroid.repo` with the following contents:
-   ```ini
-   [ubermetroid]
-   name=UberMetroid RPM Repository
-   baseurl=https://ubermetroid.github.io/packages/rpm
-   enabled=1
-   gpgcheck=1
-   gpgkey=https://ubermetroid.github.io/packages/rpm/ubermetroid-key.gpg
+   ```bash
+   sudo tee /etc/yum.repos.d/ubermetroid.repo << 'EOF'
+[ubermetroid]
+name=UberMetroid RPM Repository
+baseurl=https://ubermetroid.github.io/packages/rpm
+enabled=1
+gpgcheck=1
+gpgkey=https://ubermetroid.github.io/packages/rpm/ubermetroid-key.gpg
+EOF
    ```
 
 2. **Update the package database:**

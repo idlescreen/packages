@@ -326,18 +326,17 @@
             <div class="section-title">DNF Repository Setup</div>
             <div class="steps">
                 <div class="step-item">
-                    <div class="step-label">Step 1: Create Repository Configuration</div>
-                    <p style="text-align: left; font-size: 0.9rem; color: var(--text-secondary); margin-bottom: 0.5rem; line-height: 1.5;">
-                        Create <code>/etc/yum.repos.d/ubermetroid.repo</code> with the following content:
-                    </p>
+                    <div class="step-label">Step 1: Add Repository Configuration</div>
                     <div class="installer-box" style="padding: 1.25rem 1.5rem; align-items: flex-start; flex-direction: column;">
-                        <pre class="command" id="dnf1Cmd" style="white-space: pre-wrap; font-size: 0.85rem; line-height: 1.5; width: 100%;">[ubermetroid]
+                        <pre class="command" id="dnf1Cmd" style="white-space: pre-wrap; font-size: 0.85rem; line-height: 1.5; width: 100%;">sudo tee /etc/yum.repos.d/ubermetroid.repo << 'EOF'
+[ubermetroid]
 name=UberMetroid RPM Repository
 baseurl=https://ubermetroid.github.io/packages/rpm
 enabled=1
 gpgcheck=1
-gpgkey=https://ubermetroid.github.io/packages/rpm/ubermetroid-key.gpg</pre>
-                        <button class="copy-btn" onclick="copyCommand('dnf1Cmd', this)" style="margin-top: 0.75rem; align-self: flex-end;">Copy Config</button>
+gpgkey=https://ubermetroid.github.io/packages/rpm/ubermetroid-key.gpg
+EOF</pre>
+                        <button class="copy-btn" onclick="copyCommand('dnf1Cmd', this)" style="margin-top: 0.75rem; align-self: flex-end;">Copy Command</button>
                     </div>
                 </div>
 
