@@ -48,12 +48,19 @@ struct PackageFile {
     version: String,
 }
 
-fn prune_directory(dir_path: &Path, keep: usize, is_deb: bool) -> Result<(), Box<dyn std::error::Error>> {
+fn prune_directory(
+    dir_path: &Path,
+    keep: usize,
+    is_deb: bool,
+) -> Result<(), Box<dyn std::error::Error>> {
     if !dir_path.exists() {
         return Ok(());
     }
 
-    println!("Pruning {:?} — keeping latest {} versions of each package...", dir_path, keep);
+    println!(
+        "Pruning {:?} — keeping latest {} versions of each package...",
+        dir_path, keep
+    );
 
     // Group files by package name
     let mut packages: HashMap<String, Vec<PackageFile>> = HashMap::new();
@@ -63,14 +70,17 @@ fn prune_directory(dir_path: &Path, keep: usize, is_deb: bool) -> Result<(), Box
         let path = entry.path();
         if path.is_file() {
             let filename = path.file_name().unwrap().to_string_lossy().to_string();
-            
+
             if is_deb && filename.ends_with(".deb") {
                 // Format: name_version_arch.deb
                 let parts: Vec<&str> = filename.split('_').collect();
                 if parts.len() >= 2 {
                     let name = parts[0].to_string();
                     let version = parts[1].to_string();
-                    packages.entry(name).or_default().push(PackageFile { path, version });
+                    packages
+                        .entry(name)
+                        .or_default()
+                        .push(PackageFile { path, version });
                 }
             } else if !is_deb && filename.ends_with(".rpm") {
                 // Format: name-version-release.arch.rpm
@@ -79,7 +89,10 @@ fn prune_directory(dir_path: &Path, keep: usize, is_deb: bool) -> Result<(), Box
                 if parts.len() >= 3 {
                     let version = parts[parts.len() - 2].to_string();
                     let name = parts[0..parts.len() - 2].join("-");
-                    packages.entry(name).or_default().push(PackageFile { path, version });
+                    packages
+                        .entry(name)
+                        .or_default()
+                        .push(PackageFile { path, version });
                 }
             }
         }
@@ -100,9 +113,9 @@ fn prune_directory(dir_path: &Path, keep: usize, is_deb: bool) -> Result<(), Box
 
         // Delete the oldest ones
         let delete_count = count - keep;
-        for i in 0..delete_count {
-            println!("  rm {:?}", files[i].path.file_name().unwrap());
-            fs::remove_file(&files[i].path)?;
+        for file in files.iter().take(delete_count) {
+            println!("  rm {:?}", file.path.file_name().unwrap());
+            fs::remove_file(&file.path)?;
             removed += 1;
         }
         kept += keep;

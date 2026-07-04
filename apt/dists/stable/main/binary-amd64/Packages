@@ -1,70 +1,3 @@
-Package: fly
-Version: 0.1.12-1
-Architecture: amd64
-Maintainer: Jeryd <jeryd@example.com>
-Installed-Size: 1987
-Depends: libc6 (>= 2.39)
-Filename: pool/main/fly_0.1.12-1_amd64.deb
-Size: 718028
-MD5sum: 97fff1173c404dd2fc064088013d3ede
-SHA1: ec2450d024ae10ecc1ee9565d84ba4e29cc14574
-SHA256: da9eb5255f2555b64fe8068767efc21c76caf07b5ee1b7574aaa893218e10dba
-Section: utils
-Priority: optional
-Description: fly - Standalone WiFi / Networking TUI - by local76
- A fast, minimal, standalone WiFi / Networking TUI for Linux.
- Focus on boot speed and clean 4-box interface using NetworkManager/netlink.
-
-Package: fly-applet
-Version: 0.1.12-1
-Architecture: amd64
-Maintainer: Jeryd <jeryd@example.com>
-Installed-Size: 11663
-Depends: libc6
-Filename: pool/main/fly-applet_0.1.12-1_amd64.deb
-Size: 3928116
-MD5sum: ed912cdf4aa65610b1de6e0057f66a53
-SHA1: e57107e0c7ca2d54493cb8d2b378de6b14c212dc
-SHA256: cddbcba456232d022057c602ef8c2896b13764ce7bfb9b9035c4c68b73e9a2bf
-Section: utils
-Priority: optional
-Description: Native System76 COSMIC Desktop panel applet for fly
- Native System76 COSMIC Desktop panel applet for Wi-Fi management.
-
-Package: fly-daemon
-Version: 0.1.12-1
-Architecture: amd64
-Maintainer: Jeryd <jeryd@example.com>
-Installed-Size: 1664
-Depends: libc6
-Filename: pool/main/fly-daemon_0.1.12-1_amd64.deb
-Size: 584732
-MD5sum: b215786a83e2f7581b6ae7381dc20458
-SHA1: 98a0e1d3acb2bf1e3025d5625c27451d67e5ea92
-SHA256: 393a77b7fe7bcaed611aad1aaaaa1e4c68d2b771d72e4af4232d7d0c8bcfa2a1
-Section: utils
-Priority: optional
-Description: Background tray indicator daemon for fly
- Background tray daemon for monitoring connection status and quick-launching
- fly-tui.
-
-Package: fly-tui
-Version: 0.1.12-1
-Architecture: amd64
-Maintainer: Jeryd <jeryd@example.com>
-Installed-Size: 1884
-Depends: fly-applet, fly-daemon, libc6
-Filename: pool/main/fly-tui_0.1.12-1_amd64.deb
-Size: 684112
-MD5sum: c1f8f9504d2b161da38ef12e6bccb264
-SHA1: 2fe300f05d46c9666a38b88d6acdff7da5b87337
-SHA256: e76b2aaeba8e97e2ff3db7b9c9ab674c1fd6a817f9018c18b24e9dbd588cc8a2
-Section: utils
-Priority: optional
-Description: fly-tui - Interactive TUI configuration client for fly
- Interactive WiFi/Networking TUI client.
- This TUI pulls in fly-daemon and fly-applet as dependencies.
-
 Package: trance
 Version: 0.1.10-1
 Architecture: amd64
@@ -520,10 +453,10 @@ Installed-Size: 2551
 Depends: dbus, fonts-dejavu-core, libc6, trance-plugin-beams
 Recommends: trance-plugins-all, trance-applet, trance-cli
 Filename: pool/main/trance_0.3.6-1_amd64.deb
-Size: 899812
-MD5sum: 881a6c7419b04db7233e88effe0d892a
-SHA1: c65e90d6d3e647f285ec18c2c7193eee55ee5abf
-SHA256: 99b61e72855aaf3e65ece1b4dc68d90ce1693803a1a20f19475e055f20e75c2d
+Size: 899756
+MD5sum: f6b4990726dd561c521fb9745f1c72eb
+SHA1: b16e0b935be042e2df3feb6349e7d57b6d28ebdf
+SHA256: ba8872732b1c5e5e2046c69421acfbf663c5b7362f17f28db4075f6510211c65
 Section: utils
 Priority: optional
 Description: Background idle daemon and core package for trance screensavers
@@ -995,10 +928,10 @@ Maintainer: UberMetroid <jerydleuck@gmail.com>
 Installed-Size: 11642
 Depends: libc6, trance
 Filename: pool/main/trance-applet_0.3.6-1_amd64.deb
-Size: 3919860
-MD5sum: 8794dc94014465887a2f19a2cdfb879a
-SHA1: 33b69b8feaf027e7a8e5412e50a142116d6fab40
-SHA256: 89d35c6c257733526c02b2d07fe3b5305991d9c876511f9316a110c735c4f158
+Size: 3919768
+MD5sum: 632fe758d0cee2212284980cce669ff9
+SHA1: 80ca9f0d644be859b2bd56d2e5df36823cbb5994
+SHA256: 88fc26c45b57864112a67b2d53a217c450e0479975aa66e5ddbfc493f4fb60c5
 Section: utils
 Priority: optional
 Homepage: https://github.com/UberMetroid/trance
@@ -1249,13 +1182,13 @@ Package: trance-cli
 Version: 0.3.6-1
 Architecture: amd64
 Maintainer: UberMetroid <jerydleuck@gmail.com>
-Installed-Size: 1367
+Installed-Size: 1371
 Depends: libc6, trance
 Filename: pool/main/trance-cli_0.3.6-1_amd64.deb
-Size: 502400
-MD5sum: d06377257a65edf11607f4bf1ab47109
-SHA1: 898f14a7d3a7c182ae430cc9e809dabdb387b8e4
-SHA256: 2695301736fe9f95f6e03bb0d6397ce3658db127a2448c0721628bec4f41ef64
+Size: 504096
+MD5sum: 6432ff75bc738d14bd4b01d913d056b2
+SHA1: ebc3d16e21e3dba4c503c3f2682be4d6f2801ce1
+SHA256: 330aa273f9ea42559e6e183666320a81bdeb1f5889c25f1a04ab87943095e38a
 Section: utils
 Priority: optional
 Description: Command-line interface for the trance screensaver daemon
@@ -2108,208 +2041,4 @@ Priority: optional
 Description: Meta package that recommends all official trance screensaver plugins
  Convenience meta package that recommends the optional trance screensaver
  plugins. The stock beams effect ships with the core trance package.
-
-Package: trance-tui
-Version: 0.1.10-1
-Architecture: amd64
-Maintainer: Screensavers Developer <dev@local76.org>
-Installed-Size: 1181
-Depends: libc6, trance, xterm
-Filename: pool/main/trance-tui_0.1.10-1_amd64.deb
-Size: 772516
-MD5sum: 9e94f8f298ebe8ae2039827ea3626a94
-SHA1: d23804082b355306bc25acd5e3657081b0be7a30
-SHA256: 9971f6bc3101a2561360f4ac09aeedf75dfcc1f6233bdc90458c5c922fb74084
-Section: utils
-Priority: optional
-Description: Interactive TUI configuration manager for trance screensavers
- Interactive TUI configuration manager and idle background daemon for trance
- screensavers.
-
-Package: trance-tui
-Version: 0.1.11-1
-Architecture: amd64
-Maintainer: Screensavers Developer <dev@local76.org>
-Installed-Size: 1181
-Depends: libc6, trance, xterm
-Filename: pool/main/trance-tui_0.1.11-1_amd64.deb
-Size: 772372
-MD5sum: f70ae27965e76381130f2cde83d3a700
-SHA1: 80b8333f60483a5f3a923c5b296877c2e56b474c
-SHA256: 6141d75845e2c36f9e2602cc687c95b5e3a67cdb8c563fe66d5fa4d11ffb9def
-Section: utils
-Priority: optional
-Description: Interactive TUI configuration manager for trance screensavers
- Interactive TUI configuration manager and idle background daemon for trance
- screensavers.
-
-Package: trance-tui
-Version: 0.1.12-1
-Architecture: amd64
-Maintainer: Screensavers Developer <dev@local76.org>
-Installed-Size: 1278
-Depends: libc6, trance, xterm
-Filename: pool/main/trance-tui_0.1.12-1_amd64.deb
-Size: 811080
-MD5sum: 274caed3dfc9adee60e47e0c2f80efda
-SHA1: b549e03f582b98dbfceb4f6ffd299df6dc96ef5f
-SHA256: 155e9745289d44b0aa97501372e30c7e25ce21c7de7e3dc3fb71d758989fbdb8
-Section: utils
-Priority: optional
-Description: Interactive TUI configuration manager for trance screensavers
- Interactive TUI configuration manager and idle background daemon for trance
- screensavers.
-
-Package: trance-tui
-Version: 0.1.13-1
-Architecture: amd64
-Maintainer: Screensavers Developer <dev@local76.org>
-Installed-Size: 1278
-Depends: libc6, trance, xterm
-Filename: pool/main/trance-tui_0.1.13-1_amd64.deb
-Size: 811088
-MD5sum: af1334ba846267dda4a6978fd08e3ede
-SHA1: f423051af1950819c52fbc970284220b79ecd841
-SHA256: f0900f59a803722c4fd2bce0b395710df13b642deb896748af53d435ef6fa9fa
-Section: utils
-Priority: optional
-Description: Interactive TUI configuration manager for trance screensavers
- Interactive TUI configuration manager and idle background daemon for trance
- screensavers.
-
-Package: trance-tui
-Version: 0.1.14-1
-Architecture: amd64
-Maintainer: Screensavers Developer <dev@local76.org>
-Installed-Size: 1278
-Depends: libc6, trance, xterm
-Filename: pool/main/trance-tui_0.1.14-1_amd64.deb
-Size: 811028
-MD5sum: 4f38e1864691eabf4ffea6b4715e1488
-SHA1: 277911d674feda8221c8c14052124e04e3730bfd
-SHA256: 7581f0b77668858dbf70e6f808131c6b55b1ab2823797417107addee931219ec
-Section: utils
-Priority: optional
-Description: Interactive TUI configuration manager for trance screensavers
- Interactive TUI configuration manager and idle background daemon for trance
- screensavers.
-
-Package: trance-tui
-Version: 0.1.15-1
-Architecture: amd64
-Maintainer: Screensavers Developer <dev@local76.org>
-Installed-Size: 1278
-Depends: libc6, trance, xterm
-Filename: pool/main/trance-tui_0.1.15-1_amd64.deb
-Size: 810904
-MD5sum: c74e0b6f016b060b9ad560f8714276c7
-SHA1: 55ac59823c7c65f1873d778e7a078275fc107d51
-SHA256: 457a934b3ba0f0244d8b6b24891c51fffbcf0196f6952e30f8ec93384b22d455
-Section: utils
-Priority: optional
-Description: Interactive TUI configuration manager for trance screensavers
- Interactive TUI configuration manager and idle background daemon for trance
- screensavers.
-
-Package: trance-tui
-Version: 0.1.4-1
-Architecture: amd64
-Maintainer: Screensavers Developer <dev@local76.org>
-Installed-Size: 1181
-Depends: libc6, trance, xterm
-Filename: pool/main/trance-tui_0.1.4-1_amd64.deb
-Size: 772324
-MD5sum: b294e4716e0326d870c299deb9b22d92
-SHA1: 8bda2256b1497e594f7c22454a6b361bb3b9179f
-SHA256: f4c1367367e6916f702973705daef3d4d9e58d081c668510b7dda28291f6e62f
-Section: utils
-Priority: optional
-Description: Interactive TUI configuration manager for trance screensavers
- Interactive TUI configuration manager and idle background daemon for trance
- screensavers.
-
-Package: trance-tui
-Version: 0.1.5-1
-Architecture: amd64
-Maintainer: Screensavers Developer <dev@local76.org>
-Installed-Size: 1181
-Depends: libc6, trance, xterm
-Filename: pool/main/trance-tui_0.1.5-1_amd64.deb
-Size: 772428
-MD5sum: beb4fdf4e677a4ce3d6a9d8bd1d6cf0b
-SHA1: 8dcc1301a36cbc0eddfe729a574329aa3aaaa01d
-SHA256: a882ed63c807d9607b8dd12637eb7dbd066760056cf594d96b869ff2d7fee304
-Section: utils
-Priority: optional
-Description: Interactive TUI configuration manager for trance screensavers
- Interactive TUI configuration manager and idle background daemon for trance
- screensavers.
-
-Package: trance-tui
-Version: 0.1.6-1
-Architecture: amd64
-Maintainer: Screensavers Developer <dev@local76.org>
-Installed-Size: 1181
-Depends: libc6, trance, xterm
-Filename: pool/main/trance-tui_0.1.6-1_amd64.deb
-Size: 772380
-MD5sum: adbb1bdad993f9c73bfbf367adef4964
-SHA1: 8ce74af22919ccccc54dd25076db9ec27e4629f0
-SHA256: 1e2ecf605cfba967e34d3a5e3960c06fd43abbf325b7f266e015f0602f9e85e3
-Section: utils
-Priority: optional
-Description: Interactive TUI configuration manager for trance screensavers
- Interactive TUI configuration manager and idle background daemon for trance
- screensavers.
-
-Package: trance-tui
-Version: 0.1.7-1
-Architecture: amd64
-Maintainer: Screensavers Developer <dev@local76.org>
-Installed-Size: 1181
-Depends: libc6, trance, xterm
-Filename: pool/main/trance-tui_0.1.7-1_amd64.deb
-Size: 772304
-MD5sum: 84b9bbe2a4bbd5d6c54bbec98241e2ab
-SHA1: 667229f334ada4ae816b74374c621093f8e19fd1
-SHA256: ce03294b6cfecf1dcd2812f94768a94d02a6aee400a8e87ceffb567b8fa8ebf5
-Section: utils
-Priority: optional
-Description: Interactive TUI configuration manager for trance screensavers
- Interactive TUI configuration manager and idle background daemon for trance
- screensavers.
-
-Package: trance-tui
-Version: 0.1.8-1
-Architecture: amd64
-Maintainer: Screensavers Developer <dev@local76.org>
-Installed-Size: 1181
-Depends: libc6, trance, xterm
-Filename: pool/main/trance-tui_0.1.8-1_amd64.deb
-Size: 772248
-MD5sum: cb072ceda006667eda4df8f75dc34bd5
-SHA1: 8fe722a7f5353c6e405ce7036fcd3546b72f3ae9
-SHA256: f33a2f39f20d3ac2585335e36ecc788d627538a4396fd44a6b0859807acb8459
-Section: utils
-Priority: optional
-Description: Interactive TUI configuration manager for trance screensavers
- Interactive TUI configuration manager and idle background daemon for trance
- screensavers.
-
-Package: trance-tui
-Version: 0.1.9-1
-Architecture: amd64
-Maintainer: Screensavers Developer <dev@local76.org>
-Installed-Size: 1181
-Depends: libc6, trance, xterm
-Filename: pool/main/trance-tui_0.1.9-1_amd64.deb
-Size: 772812
-MD5sum: 62c3818e1a87c815b294601a6e415525
-SHA1: 514397cf62962b308b90aaa077fed9589fce02f9
-SHA256: 39da16e7e9b785ec41f27f434b24cab89735eddd78410756af464939130ec60f
-Section: utils
-Priority: optional
-Description: Interactive TUI configuration manager for trance screensavers
- Interactive TUI configuration manager and idle background daemon for trance
- screensavers.
 
