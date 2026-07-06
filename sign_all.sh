@@ -28,7 +28,7 @@ fi
 
 # 4. Sign the RPMs
 echo "Signing all RPM packages in rpm/pool/..."
-rpmsign --addsign rpm/pool/*.rpm
+rpmsign --resign rpm/pool/*.rpm
 
 # 5. Run the repository update script to rebuild and sign metadata
 echo "Running repository metadata update..."
