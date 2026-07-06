@@ -1,14 +1,14 @@
 Package: morphball
-Version: 0.1.14-1
+Version: 0.1.15-1
 Architecture: amd64
 Maintainer: UberMetroid
-Installed-Size: 3285
+Installed-Size: 3286
 Depends: libc6 (>= 2.39)
-Filename: pool/main/morphball_0.1.14-1_amd64.deb
-Size: 877492
-MD5sum: 0939455c93a3810598fc6a3bf655fdc9
-SHA1: 6582d1651a40070324d7d5780c307e900a3f97b4
-SHA256: d90b49dd7fd2d7a3670363930bec55eb9161279ac044ce589813137b6c6e85dc
+Filename: pool/main/morphball_0.1.15-1_amd64.deb
+Size: 877248
+MD5sum: 36db42c5ff63d464c0f9fc816376f1ee
+SHA1: 9dbafc5aa7f10efb98ac98384e5e0d65199aa103
+SHA256: 3afb8983c9783e18928c33082fe2987e5d401b9e526ea2c041287773e927ae6c
 Section: utils
 Priority: optional
 Description: [generated from Rust crate morphball]
