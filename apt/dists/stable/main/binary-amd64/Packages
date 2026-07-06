@@ -2946,6 +2946,23 @@ Description: Meta package that recommends all official trance screensaver plugin
  Convenience meta package that recommends the optional trance screensaver
  plugins. The stock beams effect ships with the core trance package.
 
+Package: vice
+Version: 0.1.11-1
+Architecture: amd64
+Maintainer: UberMetroid
+Installed-Size: 3243
+Depends: libc6 (>= 2.34), libc6 (>= 2.39)
+Filename: pool/main/vice_0.1.11-1_amd64.deb
+Size: 873432
+MD5sum: d1300664850ab7adca1911ea15ef6e2d
+SHA1: 801e72e231166ea25abeb83f3f32e52d7627312c
+SHA256: e4a0aa9b36671b041b715ee33e035299c40e07100106e751f4895102f3ba77fb
+Section: utils
+Priority: optional
+Description: [generated from Rust crate vice]
+ Vice: Secure, multi-threaded archive manager in Rust (includes CLI and TUI
+ tools).
+
 Package: vice-cli
 Version: 0.1.10-1
 Architecture: amd64
