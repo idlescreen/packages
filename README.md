@@ -41,9 +41,6 @@ sudo curl -fsSL https://ubermetroid.github.io/packages/rpm/ubermetroid.repo -o /
 
 # 2. Refresh the package database
 sudo dnf check-update
-
-# 3. Install the package
-sudo dnf install trance
 ```
 
 ---
