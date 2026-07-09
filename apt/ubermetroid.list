@@ -1,1 +1,2 @@
-deb [arch=amd64 signed-by=/etc/apt/trusted.gpg.d/ubermetroid.gpg] https://ubermetroid.github.io/packages/apt stable main
+# Preferred: keyring under /etc/apt/keyrings (does not trust the key for all repos).
+deb [arch=amd64 signed-by=/etc/apt/keyrings/ubermetroid.gpg] https://ubermetroid.github.io/packages/apt stable main

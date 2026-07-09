@@ -2,5 +2,8 @@
 name=UberMetroid RPM Repository
 baseurl=https://ubermetroid.github.io/packages/rpm
 enabled=1
+# Package signatures (RPMs must be signed via sign_all.sh before publish).
 gpgcheck=1
+# Repository metadata signature (repomd.xml.asc produced by packages update).
+repo_gpgcheck=1
 gpgkey=https://ubermetroid.github.io/packages/rpm/ubermetroid-key.gpg

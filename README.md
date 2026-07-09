@@ -1,49 +1,66 @@
 # packages — Official APT & DNF Package Repositories
 
-Official Debian (APT) and Fedora (DNF) package repositories hosting native desktop package builds for UberMetroid applications.
+Official Debian (APT) and Fedora (DNF) package repositories hosting native desktop package builds for UberMetroid applications (primarily **trance** and **trance-plugins**).
 
 ---
 
-## 🏛️ Architecture & Stack
-*   **Format**: APT (.deb) / DNF (.rpm) package indexes
-*   **Hosting**: GitHub Pages
-*   **Target Platforms**: Debian, Ubuntu, Pop!_OS, Fedora, RHEL, CentOS.
+## Architecture & Stack
+*   **Format**: APT (`.deb`) / DNF (`.rpm`) package indexes
+*   **Hosting**: GitHub Pages (`ubermetroid.github.io/packages`)
+*   **Targets**: Debian, Ubuntu, Pop!_OS, Fedora, RHEL-compatible
 
 ---
 
-## 🟢 Key Features
-*   **Automated Hosting**: Packages served securely directly from GitHub Pages.
-*   **Standard Signatures**: Complete GPG signing verification configurations.
-*   **Native Updates**: Straightforward integration with default system package managers.
+## Client install
 
----
+### Debian / Ubuntu / Pop!_OS (APT)
 
-## 💾 Deployment & Installation
-
-### Debian / Ubuntu / Pop!_OS Setup (APT)
+Prefer a **dedicated keyring** + `signed-by` (do **not** drop the key into `/etc/apt/trusted.gpg.d/` unless you accept global trust):
 
 ```bash
-# 1. Download the repository GPG keyring
-sudo curl -fsSL https://ubermetroid.github.io/packages/apt/ubermetroid-keyring.gpg -o /etc/apt/trusted.gpg.d/ubermetroid.gpg
-
-# 2. Download the sources list configuration
-sudo curl -fsSL https://ubermetroid.github.io/packages/apt/ubermetroid.list -o /etc/apt/sources.list.d/ubermetroid.list
-
-# 3. Refresh the package index
+sudo mkdir -p /etc/apt/keyrings
+sudo curl -fsSL https://ubermetroid.github.io/packages/apt/ubermetroid-keyring.gpg \
+  -o /etc/apt/keyrings/ubermetroid.gpg
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/ubermetroid.gpg] https://ubermetroid.github.io/packages/apt stable main" \
+  | sudo tee /etc/apt/sources.list.d/ubermetroid.list
 sudo apt update
+sudo apt install trance
 ```
 
-### Fedora / RHEL / CentOS Setup (DNF)
+Or install the committed `apt/ubermetroid.list` after placing the keyring as above.
+
+### Fedora / RHEL (DNF)
 
 ```bash
-# 1. Download the repository configuration
-sudo curl -fsSL https://ubermetroid.github.io/packages/rpm/ubermetroid.repo -o /etc/yum.repos.d/ubermetroid.repo
-
-# 2. Refresh the package database
+sudo curl -fsSL https://ubermetroid.github.io/packages/rpm/ubermetroid.repo \
+  -o /etc/yum.repos.d/ubermetroid.repo
 sudo dnf check-update
+sudo dnf install trance
 ```
+
+The repo enables `gpgcheck=1` and `repo_gpgcheck=1` (package + `repomd.xml` signatures).
 
 ---
 
-## 📄 License
+## Maintainer notes (hygiene)
+
+See also `apt/MAINTAINER.md`.
+
+| Topic | Guidance |
+| :--- | :--- |
+| **Build packages** | From `trance/`: `./package.rs` (or `cargo deb` / `cargo generate-rpm` per crate); plugins from `trance-plugins/package.rs` |
+| **Index + sign** | From this repo: `./update.sh` — must have GPG secret key; do **not** publish unsigned indexes |
+| **RPM packages** | Run `./sign_all.sh` so individual RPMs verify under `gpgcheck=1` |
+| **Prune pool** | `./scripts/prune.sh` keeps latest N versions (default 3) |
+| **Version alignment** | Crate version in `trance-daemon` (and tags `vX.Y.Z`) should match published `trance_X.Y.Z-1_amd64.deb` |
+| **Plugins** | `trance-plugins-all` recommends all optional savers including **radar**; beams ships as hard depends of core `trance` |
+
+### Known operational risks
+* Skipping GPG when the key is missing previously only **warned** — treat that as a failed release.
+* APT `Packages` index can list many historical versions; prune regularly to limit download of stale metadata.
+* Hosted debs lag git `main` until you rebuild and re-run `update.sh`.
+
+---
+
+## License
 Licensed under the [Apache License, Version 2.0](LICENSE). Copyright 2026 UberMetroid.

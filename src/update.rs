@@ -86,10 +86,12 @@ fn sign_rpm_metadata() -> Result<(), String> {
                 )?;
                 println!("Signed RPM repomd.xml successfully.");
             } else {
-                println!("Warning: GPG signing key not found, skipping RPM repomd.xml signature.");
+                return Err(format!(
+                    "GPG signing key '{signing_key}' not found; refusing to publish unsigned RPM metadata"
+                ));
             }
         } else {
-            println!("Warning: Could not run gpg to check keys.");
+            return Err("Could not run gpg to check keys; refusing unsigned RPM metadata".into());
         }
     }
     Ok(())
@@ -172,52 +174,52 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .current_dir("apt"),
     )?;
 
-    // Sign Release file
+    // Sign Release file — fail closed; never publish unsigned APT indexes.
     let signing_key = "jerydleuck@gmail.com";
     let key_check = Command::new("gpg")
         .args(["--list-secret-keys", signing_key])
-        .output();
+        .output()
+        .map_err(|e| format!("Could not run gpg to check keys: {e}"))?;
 
-    if let Ok(output) = key_check {
-        if output.status.success() {
-            let _ = fs::remove_file("apt/dists/stable/Release.gpg");
-            let _ = fs::remove_file("apt/dists/stable/InRelease");
-
-            run_cmd(
-                Command::new("gpg")
-                    .args([
-                        "--batch",
-                        "--yes",
-                        "--default-key",
-                        signing_key,
-                        "-abs",
-                        "-o",
-                        "dists/stable/Release.gpg",
-                        "dists/stable/Release",
-                    ])
-                    .current_dir("apt"),
-            )?;
-            run_cmd(
-                Command::new("gpg")
-                    .args([
-                        "--batch",
-                        "--yes",
-                        "--default-key",
-                        signing_key,
-                        "--clearsign",
-                        "-o",
-                        "dists/stable/InRelease",
-                        "dists/stable/Release",
-                    ])
-                    .current_dir("apt"),
-            )?;
-            println!("Signed Release files successfully.");
-        } else {
-            println!("Warning: GPG signing key not found, skipping Release signatures.");
-        }
-    } else {
-        println!("Warning: Could not run gpg to check keys.");
+    if !key_check.status.success() {
+        return Err(format!(
+            "GPG signing key '{signing_key}' not found; refusing to publish unsigned APT Release"
+        )
+        .into());
     }
+
+    let _ = fs::remove_file("apt/dists/stable/Release.gpg");
+    let _ = fs::remove_file("apt/dists/stable/InRelease");
+
+    run_cmd(
+        Command::new("gpg")
+            .args([
+                "--batch",
+                "--yes",
+                "--default-key",
+                signing_key,
+                "-abs",
+                "-o",
+                "dists/stable/Release.gpg",
+                "dists/stable/Release",
+            ])
+            .current_dir("apt"),
+    )?;
+    run_cmd(
+        Command::new("gpg")
+            .args([
+                "--batch",
+                "--yes",
+                "--default-key",
+                signing_key,
+                "--clearsign",
+                "-o",
+                "dists/stable/InRelease",
+                "dists/stable/Release",
+            ])
+            .current_dir("apt"),
+    )?;
+    println!("Signed Release files successfully.");
 
     // 3. Generate RPM metadata
     run_createrepo()?;
