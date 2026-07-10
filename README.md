@@ -38,7 +38,7 @@ sudo dnf check-update
 sudo dnf install trance
 ```
 
-The repo enables `gpgcheck=1` and `repo_gpgcheck=1` (package + `repomd.xml` signatures).
+The repo enables `gpgcheck=1` (each RPM is signed). Metadata is served over HTTPS; `repo_gpgcheck` is off so plain `dnf update` works without a stuck key prompt.
 
 ---
 
