@@ -16,24 +16,6 @@ Description: [generated from Rust crate morphball]
  tools).
 
 Package: trance
-Version: 0.3.33-1
-Architecture: amd64
-Maintainer: UberMetroid <jerydleuck@gmail.com>
-Installed-Size: 2730
-Depends: dbus, fonts-dejavu-core, libc6, trance-plugin-beams
-Recommends: trance-plugins-all, trance-cli, trance-tui
-Suggests: trance-applet
-Filename: pool/main/trance_0.3.33-1_amd64.deb
-Size: 947720
-MD5sum: da52ee41d5c53f06df26a868a72bbbf9
-SHA1: 98a6e95a6ad71d70a81a62b2e32ce0ff4e9e807a
-SHA256: c19e701e8c1070d4e80a70e0e72a93d54981119cbada8d8bd0bd6d01e30ded36
-Section: utils
-Priority: optional
-Description: Background idle daemon and core package for trance screensavers
- Background idle monitoring service for trance screensavers.
-
-Package: trance
 Version: 0.3.34-1
 Architecture: amd64
 Maintainer: UberMetroid <jerydleuck@gmail.com>
@@ -64,6 +46,24 @@ Size: 947752
 MD5sum: 3645cd4032ed3dd432a89227e85991bc
 SHA1: f71ab47e3d54c7ec888b5e15ad620b782527d2ca
 SHA256: 98f70cb7d8a7622d505a30861f7537e680fe720576c6d512aa0590ca8795132d
+Section: utils
+Priority: optional
+Description: Background idle daemon and core package for trance screensavers
+ Background idle monitoring service for trance screensavers.
+
+Package: trance
+Version: 0.3.36-1
+Architecture: amd64
+Maintainer: UberMetroid <jerydleuck@gmail.com>
+Installed-Size: 2643
+Depends: dbus, fonts-dejavu-core, libc6, trance-plugin-beams
+Recommends: trance-plugins-all, trance-cli, trance-tui
+Suggests: trance-applet
+Filename: pool/main/trance_0.3.36-1_amd64.deb
+Size: 925744
+MD5sum: 636dc01b884069e702468579fadd95e8
+SHA1: 7ae42e129e3218eac0a0cdb8885af7507b76637b
+SHA256: aef35f053ddc40170a036c734d0d41ac890769f1de5d8c964a6de33dea62ba12
 Section: utils
 Priority: optional
 Description: Background idle daemon and core package for trance screensavers
