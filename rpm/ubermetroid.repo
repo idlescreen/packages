@@ -4,8 +4,8 @@ baseurl=https://ubermetroid.github.io/packages/rpm
 enabled=1
 # Verify each package signature (RPMs are signed).
 gpgcheck=1
-# Metadata rides over HTTPS from GitHub Pages. repo_gpgcheck needs a one-time
-# interactive key import that breaks plain "dnf update" for many users, so it
-# stays off. Package gpgcheck still applies.
 repo_gpgcheck=0
 gpgkey=https://ubermetroid.github.io/packages/rpm/ubermetroid-key.gpg
+# Refresh metadata often so "dnf update" sees new trance builds without
+# waiting for the system default (often 48h) cache lifetime.
+metadata_expire=1h
