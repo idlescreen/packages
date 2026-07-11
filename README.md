@@ -4,10 +4,6 @@
   </a>
 </p>
 
-<p align="center">
-  <img src="assets/icon.png" width="72" height="72" alt="Crateria packages">
-</p>
-
 # Crateria packages
 
 APT and DNF repositories for Crateria desktop applications.
@@ -47,7 +43,7 @@ RPM packages are signed (`gpgcheck=1`). Metadata is served over HTTPS.
 |------|---------|
 | `apt/` | Debian package pool and indexes |
 | `rpm/` | RPM pool and repodata |
-| `assets/` | Site icon |
+| `assets/` | Header banner and site favicon |
 | `docs/SIGNING.md` | Maintainer signing procedure |
 | `src/` | Index update and prune tools |
 
