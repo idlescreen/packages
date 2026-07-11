@@ -1,15 +1,18 @@
-# Crateria packages
+<p align="center">
+  <a href="https://github.com/crateria">
+    <img src="assets/crateria-header.jpg" alt="Crateria" width="800">
+  </a>
+</p>
 
 <p align="center">
-  <img src="assets/icon.png" width="96" height="96" alt="Crateria">
+  <img src="assets/icon.png" width="72" height="72" alt="Crateria packages">
 </p>
+
+# Crateria packages
 
 APT and DNF repositories for Crateria desktop applications.
 
 **Site:** [crateria.github.io/packages](https://crateria.github.io/packages/)
-
-Published packages include **trance**, **trance-plugins**, **morphball**, and
-related components. Artifacts are GPG-signed.
 
 ## Install (users)
 
