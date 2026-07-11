@@ -244,6 +244,23 @@ Description: Spotlight cones sweeping a rising dust starfield
  Spotlight cones sweeping a rising dust starfield. Official trance screensaver
  plugin.
 
+Package: trance-plugin-beams
+Version: 0.3.7-1
+Architecture: amd64
+Maintainer: crateria <jerydleuck@gmail.com>
+Installed-Size: 329
+Depends: libc6
+Filename: pool/main/trance-plugin-beams_0.3.7-1_amd64.deb
+Size: 153528
+MD5sum: 63ca6cb288a1906f3b576be335b4d735
+SHA1: e9ececcb25634fe0eb451d09d555fd3e40161a16
+SHA256: 57d7800b6d2815b8a08993fad380e503e1450750a937b98e264cf706bd59051d
+Section: utils
+Priority: optional
+Description: Spotlight cones sweeping a rising dust starfield
+ Spotlight cones sweeping a rising dust starfield. Official trance screensaver
+ plugin.
+
 Package: trance-plugin-bursts
 Version: 0.2.8-1
 Architecture: amd64
@@ -287,6 +304,22 @@ Size: 169844
 MD5sum: 4732beae17c55b998513cb685c5d0659
 SHA1: 5ac431cfd7a12dff1419c079cb32655dd31cc08a
 SHA256: 1491aa16431b9c021938ec003578fa194709c2279912d90cf7e98eec7fa6f998
+Section: utils
+Priority: optional
+Description: City skyline fireworks particle show
+ City skyline fireworks particle show. Official trance screensaver plugin.
+
+Package: trance-plugin-bursts
+Version: 0.3.6-1
+Architecture: amd64
+Maintainer: crateria <jerydleuck@gmail.com>
+Installed-Size: 347
+Depends: libc6
+Filename: pool/main/trance-plugin-bursts_0.3.6-1_amd64.deb
+Size: 169908
+MD5sum: f0d4567738f1fb0d53e6b8ecb29ef25a
+SHA1: cdbea4f65e9ce78a66861400f1bb74d6c4f204da
+SHA256: b461c097b7e6b308187a1b0383ddce204955248c7eb701ae0aa929ddcc0bb27e
 Section: utils
 Priority: optional
 Description: City skyline fireworks particle show
@@ -340,6 +373,22 @@ Priority: optional
 Description: Chromatic-aberration system logo glitch
  Chromatic-aberration system logo glitch. Official trance screensaver plugin.
 
+Package: trance-plugin-chaos
+Version: 0.3.6-1
+Architecture: amd64
+Maintainer: crateria <jerydleuck@gmail.com>
+Installed-Size: 333
+Depends: libc6
+Filename: pool/main/trance-plugin-chaos_0.3.6-1_amd64.deb
+Size: 156316
+MD5sum: 2b41bd175f8f634e670e895c9b894cd5
+SHA1: 92150ecf48ddcf2f0d425e4cac8155297ab66a4d
+SHA256: 1b1fcb5e2940e37b1b553b9344a4b31ca9c8a2ca03adcf4b15053c1883c1ceb6
+Section: utils
+Priority: optional
+Description: Chromatic-aberration system logo glitch
+ Chromatic-aberration system logo glitch. Official trance screensaver plugin.
+
 Package: trance-plugin-cosmos
 Version: 0.2.8-1
 Architecture: amd64
@@ -384,6 +433,23 @@ Size: 161036
 MD5sum: 9b1f607f2b7026d6c8c5d295390b4822
 SHA1: 022b3c9a65ce685e8de95351e888de82b9f4fbf2
 SHA256: 04f15583ee46c1cbeacb6190b1b6805287cb941605a2adfd70daf040746bba76
+Section: utils
+Priority: optional
+Description: Accretion disk to collapsed singularity lifecycle
+ Accretion disk to collapsed singularity lifecycle. Official trance screensaver
+ plugin.
+
+Package: trance-plugin-cosmos
+Version: 0.3.6-1
+Architecture: amd64
+Maintainer: crateria <jerydleuck@gmail.com>
+Installed-Size: 350
+Depends: libc6
+Filename: pool/main/trance-plugin-cosmos_0.3.6-1_amd64.deb
+Size: 161088
+MD5sum: e432ea1b82fa457709c741b9c5b526b7
+SHA1: 6bb00a1fdf99b5b1634c0f8c1a4cd5b1b28a155d
+SHA256: 911b7474b9ab72abc19f96e73cd68b40290a974370ae21553a8776829470c616
 Section: utils
 Priority: optional
 Description: Accretion disk to collapsed singularity lifecycle
@@ -440,6 +506,23 @@ Description: Matrix-style rain with live system information
  Matrix-style rain with live system information. Official trance screensaver
  plugin.
 
+Package: trance-plugin-glyphs
+Version: 0.3.6-1
+Architecture: amd64
+Maintainer: crateria <jerydleuck@gmail.com>
+Installed-Size: 314
+Depends: libc6
+Filename: pool/main/trance-plugin-glyphs_0.3.6-1_amd64.deb
+Size: 146840
+MD5sum: 6d0fc7799d1bbd06779d4837202d2a2e
+SHA1: f52d290f7953190d619e06bcb1b48f2ce24bf62f
+SHA256: 93f7f4be1b3baa20f435b2b2758d49240cb738e36d1e39c489a2a5799a5c2123
+Section: utils
+Priority: optional
+Description: Matrix-style rain with live system information
+ Matrix-style rain with live system information. Official trance screensaver
+ plugin.
+
 Package: trance-plugin-gnats
 Version: 0.2.8-1
 Architecture: amd64
@@ -487,6 +570,39 @@ Section: utils
 Priority: optional
 Description: Predator-prey firefly swarm
  Predator-prey firefly swarm. Official trance screensaver plugin.
+
+Package: trance-plugin-gnats
+Version: 0.3.6-1
+Architecture: amd64
+Maintainer: crateria <jerydleuck@gmail.com>
+Installed-Size: 343
+Depends: libc6
+Filename: pool/main/trance-plugin-gnats_0.3.6-1_amd64.deb
+Size: 167780
+MD5sum: 9b845d999b36d6edb68d3241b425c5ea
+SHA1: 1f8b4a3602eeab82d85220788149a6b2fa3bf984
+SHA256: 3c9bbd361c8fa8bb46367c0a5982662609192626cfa41ac59771bd6efc588946
+Section: utils
+Priority: optional
+Description: Predator-prey firefly swarm
+ Predator-prey firefly swarm. Official trance screensaver plugin.
+
+Package: trance-plugin-hearth
+Version: 0.1.5-1
+Architecture: amd64
+Maintainer: crateria <jerydleuck@gmail.com>
+Installed-Size: 322
+Depends: libc6
+Filename: pool/main/trance-plugin-hearth_0.1.5-1_amd64.deb
+Size: 142668
+MD5sum: 57fae6abf5130cbd4246e5a47cb8db3c
+SHA1: 694b889cb59b5a177a934dec0603f34298839042
+SHA256: 730c5039c9a0e603aad690886a94558f3e93348b7a72af279cf5b8344e0716c6
+Section: utils
+Priority: optional
+Description: Cozy fireplace: rising embers, log glow, heat shimmer
+ Cozy fireplace with rising embers and heat shimmer. Official trance screensaver
+ plugin.
 
 Package: trance-plugin-radar
 Version: 0.2.8-1
@@ -536,6 +652,22 @@ Priority: optional
 Description: Retro CRT tactical radar sweep
  Retro CRT tactical radar sweep. Official trance screensaver plugin.
 
+Package: trance-plugin-radar
+Version: 0.3.6-1
+Architecture: amd64
+Maintainer: crateria <jerydleuck@gmail.com>
+Installed-Size: 318
+Depends: libc6
+Filename: pool/main/trance-plugin-radar_0.3.6-1_amd64.deb
+Size: 148184
+MD5sum: 1488ed935df8e37983eb44e90abd5c9b
+SHA1: 6b20107179eb6aef94617da0b0e9345bd8df2a0a
+SHA256: f8b5e8f85706b08d9fa509b1003a9ccb89a0067d3994252cd19173f435d85969
+Section: utils
+Priority: optional
+Description: Retro CRT tactical radar sweep
+ Retro CRT tactical radar sweep. Official trance screensaver plugin.
+
 Package: trance-plugin-relay
 Version: 0.1.0-1
 Architecture: amd64
@@ -551,6 +683,22 @@ Section: utils
 Priority: optional
 Description: Message relay: packets hop a soft system graph
  Message packets hop a soft system graph. Official trance screensaver plugin.
+
+Package: trance-plugin-ripple
+Version: 0.1.5-1
+Architecture: amd64
+Maintainer: crateria <jerydleuck@gmail.com>
+Installed-Size: 326
+Depends: libc6
+Filename: pool/main/trance-plugin-ripple_0.1.5-1_amd64.deb
+Size: 144348
+MD5sum: a9413cbb63ccc54cd4182175cf85afad
+SHA1: f96ab96b7cf0eb587b95bee5721fdb3e0166d4a8
+SHA256: 336f14d1d749057c41ff1e5867a55f8a6b9aac414d43c93f8511a39421d6db47
+Section: utils
+Priority: optional
+Description: Rain on a still pond: expanding rings and soft drizzle
+ Rain on a still pond with expanding rings. Official trance screensaver plugin.
 
 Package: trance-plugin-storm
 Version: 0.2.8-1
@@ -596,6 +744,23 @@ Size: 170900
 MD5sum: d14cac6eae0c1127166c3783ff25f012
 SHA1: d8d8418f24f6be3740277676776d97968382ea1e
 SHA256: 7657e3d60c000750d3daebbee01cb097dcf6b160a27244bd30640103edd4fced
+Section: utils
+Priority: optional
+Description: Forest rain, lightning, and wildlife silhouettes
+ Forest rain, lightning, and wildlife silhouettes. Official trance screensaver
+ plugin.
+
+Package: trance-plugin-storm
+Version: 0.3.6-1
+Architecture: amd64
+Maintainer: crateria <jerydleuck@gmail.com>
+Installed-Size: 366
+Depends: libc6
+Filename: pool/main/trance-plugin-storm_0.3.6-1_amd64.deb
+Size: 170904
+MD5sum: 063634e49a0e8849431a08f4edc562f7
+SHA1: 752f8ee89004441df9ed860e74da83b18273559c
+SHA256: 629b5f0858e69562872640c8372a10b4f3ece850fe8df69dc6d333f5b82ca232
 Section: utils
 Priority: optional
 Description: Forest rain, lightning, and wildlife silhouettes
