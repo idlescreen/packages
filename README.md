@@ -1,13 +1,17 @@
-# packages — Official APT & DNF Package Repositories
+# Crateria packages
 
-Official Debian (APT) and Fedora (DNF) package repositories hosting native desktop package builds for crateria applications (primarily **trance** and **trance-plugins**).
+<p align="center">
+  <img src="assets/icon.png" width="128" height="128" alt="Crateria">
+</p>
 
----
+<p align="center">
+  <strong>APT + DNF</strong> package repositories for
+  <a href="https://github.com/crateria">Crateria</a> desktop apps
+</p>
 
-## Architecture & Stack
-*   **Format**: APT (`.deb`) / DNF (`.rpm`) package indexes
-*   **Hosting**: GitHub Pages (`crateria.github.io/packages`)
-*   **Targets**: Debian, Ubuntu, Pop!_OS, Fedora, RHEL-compatible
+Hosted on GitHub Pages: **[crateria.github.io/packages](https://crateria.github.io/packages/)**
+
+Ships native builds for **trance**, **trance-plugins**, **morphball**, and related packages.
 
 ---
 
@@ -24,7 +28,7 @@ sudo curl -fsSL https://crateria.github.io/packages/apt/crateria-keyring.gpg \
 echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/crateria.gpg] https://crateria.github.io/packages/apt stable main" \
   | sudo tee /etc/apt/sources.list.d/crateria.list
 sudo apt update
-sudo apt install trance
+sudo apt install trance   # or: morphball
 ```
 
 Or install the committed `apt/crateria.list` after placing the keyring as above.
@@ -35,16 +39,27 @@ Or install the committed `apt/crateria.list` after placing the keyring as above.
 sudo curl -fsSL https://crateria.github.io/packages/rpm/crateria.repo \
   -o /etc/yum.repos.d/crateria.repo
 sudo dnf check-update
-sudo dnf install trance
+sudo dnf install trance   # or: morphball
 ```
 
 The repo enables `gpgcheck=1` (each RPM is signed). Metadata is served over HTTPS; `repo_gpgcheck` is off so plain `dnf update` works without a stuck key prompt.
 
 ---
 
-## Maintainer notes (hygiene)
+## Architecture
 
-See also `apt/MAINTAINER.md`.
+| | |
+|--|--|
+| Formats | APT (`.deb`) / DNF (`.rpm`) |
+| Hosting | GitHub Pages |
+| Targets | Debian, Ubuntu, Pop!_OS, Fedora, RHEL-compatible |
+| Brand | Icons from [crateria/brand](https://github.com/crateria/brand) |
+
+---
+
+## Maintainer notes
+
+See also `apt/MAINTAINER.md` and [docs/SIGNING.md](docs/SIGNING.md).
 
 | Topic | Guidance |
 | :--- | :--- |
@@ -55,12 +70,23 @@ See also `apt/MAINTAINER.md`.
 | **Version alignment** | Crate version in `trance-daemon` (and tags `vX.Y.Z`) should match published `trance_X.Y.Z-1_amd64.deb` |
 | **Plugins** | `trance-plugins-all` recommends all optional savers including **radar**; beams ships as hard depends of core `trance` |
 
-### Known operational risks
+### Operational risks
+
 * Skipping GPG when the key is missing previously only **warned** — treat that as a failed release.
 * APT `Packages` index can list many historical versions; prune regularly to limit download of stale metadata.
 * Hosted debs lag git `main` until you rebuild and re-run `update.sh`.
 
 ---
 
+## Links
+
+| | |
+|--|--|
+| Org | [crateria](https://github.com/crateria) |
+| Brand kit | [brand](https://github.com/crateria/brand) |
+| Products | [trance](https://github.com/crateria/trance) · [morphball](https://github.com/crateria/morphball) |
+| Security | [SECURITY.md](SECURITY.md) |
+
 ## License
-Licensed under the [Apache License, Version 2.0](LICENSE). Copyright 2026 crateria.
+
+[Apache-2.0](LICENSE) · Copyright 2026 [Crateria](https://github.com/crateria)
