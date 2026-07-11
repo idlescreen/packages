@@ -1,12 +1,12 @@
 # packages — Official APT & DNF Package Repositories
 
-Official Debian (APT) and Fedora (DNF) package repositories hosting native desktop package builds for UberMetroid applications (primarily **trance** and **trance-plugins**).
+Official Debian (APT) and Fedora (DNF) package repositories hosting native desktop package builds for crateria applications (primarily **trance** and **trance-plugins**).
 
 ---
 
 ## Architecture & Stack
 *   **Format**: APT (`.deb`) / DNF (`.rpm`) package indexes
-*   **Hosting**: GitHub Pages (`ubermetroid.github.io/packages`)
+*   **Hosting**: GitHub Pages (`crateria.github.io/packages`)
 *   **Targets**: Debian, Ubuntu, Pop!_OS, Fedora, RHEL-compatible
 
 ---
@@ -19,21 +19,21 @@ Prefer a **dedicated keyring** + `signed-by` (do **not** drop the key into `/etc
 
 ```bash
 sudo mkdir -p /etc/apt/keyrings
-sudo curl -fsSL https://ubermetroid.github.io/packages/apt/ubermetroid-keyring.gpg \
-  -o /etc/apt/keyrings/ubermetroid.gpg
-echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/ubermetroid.gpg] https://ubermetroid.github.io/packages/apt stable main" \
-  | sudo tee /etc/apt/sources.list.d/ubermetroid.list
+sudo curl -fsSL https://crateria.github.io/packages/apt/crateria-keyring.gpg \
+  -o /etc/apt/keyrings/crateria.gpg
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/crateria.gpg] https://crateria.github.io/packages/apt stable main" \
+  | sudo tee /etc/apt/sources.list.d/crateria.list
 sudo apt update
 sudo apt install trance
 ```
 
-Or install the committed `apt/ubermetroid.list` after placing the keyring as above.
+Or install the committed `apt/crateria.list` after placing the keyring as above.
 
 ### Fedora / RHEL (DNF)
 
 ```bash
-sudo curl -fsSL https://ubermetroid.github.io/packages/rpm/ubermetroid.repo \
-  -o /etc/yum.repos.d/ubermetroid.repo
+sudo curl -fsSL https://crateria.github.io/packages/rpm/crateria.repo \
+  -o /etc/yum.repos.d/crateria.repo
 sudo dnf check-update
 sudo dnf install trance
 ```
@@ -63,4 +63,4 @@ See also `apt/MAINTAINER.md`.
 ---
 
 ## License
-Licensed under the [Apache License, Version 2.0](LICENSE). Copyright 2026 UberMetroid.
+Licensed under the [Apache License, Version 2.0](LICENSE). Copyright 2026 crateria.

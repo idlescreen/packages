@@ -1,8 +1,8 @@
 [package]
-name = "ubermetroid-packages"
-version = "3.1.0"
+name = "crateria-packages"
+version = "3.2.0"
 edition = "2024"
-description = "Repository maintenance tools for UberMetroid package distribution"
+description = "Repository maintenance tools for crateria package distribution"
 
 [[bin]]
 name = "update"

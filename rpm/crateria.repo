@@ -1,11 +1,11 @@
-[ubermetroid]
-name=UberMetroid RPM Repository
-baseurl=https://ubermetroid.github.io/packages/rpm
+[crateria]
+name=Crateria RPM Repository
+baseurl=https://crateria.github.io/packages/rpm
 enabled=1
 # Verify each package signature (RPMs are signed).
 gpgcheck=1
 repo_gpgcheck=0
-gpgkey=https://ubermetroid.github.io/packages/rpm/ubermetroid-key.gpg
+gpgkey=https://crateria.github.io/packages/rpm/crateria-key.gpg
 # Refresh metadata often so "dnf update" sees new trance builds without
 # waiting for the system default (often 48h) cache lifetime.
 metadata_expire=1h

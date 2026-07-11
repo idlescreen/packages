@@ -4,38 +4,38 @@ Hash: SHA512
 Architectures: amd64
 Codename: stable
 Components: main
-Date: Fri, 10 Jul 2026 23:15:36 +0000
-Description: UberMetroid APT Repository (stable/main)
-Label: ubermetroid
-Origin: ubermetroid
+Date: Sat, 11 Jul 2026 05:15:49 +0000
+Description: crateria APT Repository (stable/main)
+Label: crateria
+Origin: crateria
 Suite: stable
 MD5Sum:
- eac63dfac11f5f15e3886ab5f09100b2              200 Release
+ fcbd4165a7e4b32aac1abc8026753145              191 Release
  6fc0c9fa1faa5d2fe4fcea8abeb028d0            25729 main/binary-amd64/Packages
- 11923a9c72a97d4196652355c32d4301             6351 main/binary-amd64/Packages.gz
+ 16f241e75106ea5aa72f5a4ac41b2b7a             6351 main/binary-amd64/Packages.gz
 SHA1:
- e7f50ca22f15b3ce9e17efd88a5236c9c3073fc4              200 Release
+ 8a27eceb11db93f8174dd21915b60c7809588e1e              191 Release
  37819022927c4d9f0636b4a7575f721c519c96cf            25729 main/binary-amd64/Packages
- 248e8c8452fffb6535109ef2a6bfb656f607f489             6351 main/binary-amd64/Packages.gz
+ 2c579aedcd4bd1dc22fd3abb9bb854f31712a60d             6351 main/binary-amd64/Packages.gz
 SHA256:
- 889e5408e816842ad2dc58a96e6bfa83e1ef59d279a2bcc5162338ba53ab1732              200 Release
+ 501c36bfad14f1156f0c469da5bceaa2f186efe3b3db389bc12208d13d67e17e              191 Release
  b0787657ebd114639c45ce7bbecf22759f38608b1af1ace61dd32679fbc9cdd3            25729 main/binary-amd64/Packages
- 9d4891059ab0137d8a14a4ebfddfabdcafdb9f8a161b51e18684e5a25e7ca2ac             6351 main/binary-amd64/Packages.gz
+ abb47e4c1ba91c81d514b68eb2bc3d46832c308134b6fc9df09264b96449a3e9             6351 main/binary-amd64/Packages.gz
 SHA512:
- e0dfb1d8c393698eb3116a32b5ba298dd481eb05f0702fade1bf709e50b8aaf25be9357e87fae8300eee81cec71cfc637a65c93fcad062c7c04ecd3bbe1db460              200 Release
+ 09d90ea1737f54f6580d8448d1ac23ecb17bad89949f9f21a7822b8c8047489cc6e521a77c97154dc22afa7cf12c7175e0bdbead877a8e31b6cc7e30369639ad              191 Release
  4610c58d0b8d1b1a7b9461c8b34ebaae5dc0c0c2e9d3e5d1e66da0f6b337f881ed6900865ecf2d3b221c6c8b004b8d0615a21ca68a2de1c7b990a450a82aa1a1            25729 main/binary-amd64/Packages
- 28140e5aae7b30d96bba5be41d5b13ede58a62bd6b439210e13ce83193e831641b11295ceea05d5ded8f038dcfda065c658fb5d5dcb41a9e4b9bc42e9c3f869f             6351 main/binary-amd64/Packages.gz
+ 2ab391e294a38910be6c4e50ef29f56842530de24feb7b173a83c75a6d353da21cbb2561683a739683e94bf65a0a965df89ebf74909790cb11124c17708e9d88             6351 main/binary-amd64/Packages.gz
 -----BEGIN PGP SIGNATURE-----
 
-iQGzBAEBCgAdFiEEVJ5zybySKceG5Tji+9j8UseBfdIFAmpRfRgACgkQ+9j8UseB
-fdIfpwwAo3/iDcfRLb0VwrNtDa+1nxCblm+8L1oOdIRnwspspRZAONhl+qCfD+GN
-mLMKknyrGkOz+iTCorQ3JdpfNYZHXqf4lrBsedvnOhNTO1MUhcpZtWLLndGAgWNj
-PyZrzyGgBRJSCJnzkNDUEkWz02pBer2x2mck2LJvMuCsmI9JemqxpVspu26wUYOX
-jdLq9IuAEcPkqxEgv69h0xm2zcEpzomsJr3EfD4OmuHPttuTHtIsYBpi7mv8AaKX
-JK76wuUmx0HK4EnF+vDq4A3lXEPrQMyxp4ldnuh/hwAp2wa0AR9vfxUTe8FBXcM6
-WVh9mFB2JUZuf00D2+L+ipmDnycwlACKiGJy+2hYY9oivZGbf4iA8c5rFd98ic2M
-kl4nCAHJ+Lal1DaKHYEknxO91Iqa8fKYwtXEWodmKl+l/Dimh4sEK9An5jtQfTzL
-bV0Hk3LK4TQpDHkRyjIT8MgkwhAkVVoEAPFOx2FFUIsAhvrn7LMWvndOA2/MHjx1
-ZNPIWbfI
-=3D6j
+iQGzBAEBCgAdFiEEVJ5zybySKceG5Tji+9j8UseBfdIFAmpR0YUACgkQ+9j8UseB
+fdJn1Qv9EVpQkvxJnaunsh/HXFJ+F2hugxOYIrI0+QXOs9RHEvTvXp0afulIRIfl
+ERvlCEtFRU9qnKauIHgXZJlkq3M/xk8seCkRYhg8gNDggAHCs8p6n0TWy1Z+krnu
++wU/9nAebXkoS2GQrMs6C/eL8HOXsXpiLZyXf7a7sIRmW+sHEUru1h8Vwpq2zJEp
+8i8HkcmiYj5yer8Vo60FL5SuV6Wv1z4/9CL+5y+WXi/BBQ2Uw+syv5gI5hcVK46w
+mm49T82W5MwMZILGVMM+ES8sTQSrQ8eGUgS+FN0vmvsofl3lpJE+/ubS26it4GqS
+BXtOawZMccMNeu7o9p2Sr0O6Nmi7TcYaDCr4p5WUywzIxEb2cKISpuVfFCw4BLqR
+bbh2ErBD8vg22f1mPN+naYvxjbZkq5SV3sYpLxPdrq2IFQSRlnER4A9AY92tV2zw
+tw93u2d1W9OtLOcH18Lnkz21HzN0mBbc+S5yFumzkvE1VMu3mAPnNxc4YC8SmHyy
+QylJPMoE
+=sSD7
 -----END PGP SIGNATURE-----

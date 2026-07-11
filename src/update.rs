@@ -12,8 +12,8 @@ fn run_cmd(cmd: &mut Command) -> Result<(), String> {
 
 fn dearmor_key() -> Result<(), String> {
     println!("Regenerating binary GPG keyring...");
-    let gpg_file = fs::File::create("apt/ubermetroid-keyring.gpg").map_err(|e| e.to_string())?;
-    let key_file = fs::File::open("apt/ubermetroid-key.gpg").map_err(|e| e.to_string())?;
+    let gpg_file = fs::File::create("apt/crateria-keyring.gpg").map_err(|e| e.to_string())?;
+    let key_file = fs::File::open("apt/crateria-key.gpg").map_err(|e| e.to_string())?;
 
     let status = Command::new("gpg")
         .arg("--dearmor")
@@ -99,7 +99,7 @@ fn sign_rpm_metadata() -> Result<(), String> {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("==========================================");
-    println!("Updating UberMetroid Packages Repository (stable/main) via Rust...");
+    println!("Updating crateria Packages Repository (stable/main) via Rust...");
     println!("==========================================");
 
     fs::create_dir_all("apt/pool/main")?;
@@ -154,9 +154,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Command::new("apt-ftparchive")
             .args([
                 "-o",
-                "APT::FTPArchive::Release::Origin=ubermetroid",
+                "APT::FTPArchive::Release::Origin=crateria",
                 "-o",
-                "APT::FTPArchive::Release::Label=ubermetroid",
+                "APT::FTPArchive::Release::Label=crateria",
                 "-o",
                 "APT::FTPArchive::Release::Suite=stable",
                 "-o",
@@ -166,7 +166,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "-o",
                 "APT::FTPArchive::Release::Components=main",
                 "-o",
-                "APT::FTPArchive::Release::Description=UberMetroid APT Repository (stable/main)",
+                "APT::FTPArchive::Release::Description=crateria APT Repository (stable/main)",
                 "release",
                 "dists/stable",
             ])

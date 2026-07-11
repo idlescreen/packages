@@ -33,7 +33,7 @@ Run this before regenerating the index in step 2 above.
 
 ## GPG Key Rotation Policy
 
-The repository signing key is committed at `apt/ubermetroid-key.gpg`
+The repository signing key is committed at `apt/crateria-key.gpg`
 as the **public key only** (the private key is held offline by the
 maintainer). Rotation policy:
 

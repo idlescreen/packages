@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>UberMetroid - Package Repository</title>
+    <title>Crateria - Package Repository</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -298,7 +298,7 @@
                 <div class="step-item">
                     <div class="step-label">Step 1: Download GPG Keyring</div>
                     <div class="installer-box">
-                        <div class="command" id="apt1Cmd">sudo curl -fsSL https://ubermetroid.github.io/packages/apt/ubermetroid-keyring.gpg -o /etc/apt/trusted.gpg.d/ubermetroid.gpg</div>
+                        <div class="command" id="apt1Cmd">sudo curl -fsSL https://crateria.github.io/packages/apt/crateria-keyring.gpg -o /etc/apt/trusted.gpg.d/crateria.gpg</div>
                         <button class="copy-btn" onclick="copyCommand('apt1Cmd', this)">Copy</button>
                     </div>
                 </div>
@@ -306,7 +306,7 @@
                 <div class="step-item">
                     <div class="step-label">Step 2: Download Repository Source List</div>
                     <div class="installer-box">
-                        <div class="command" id="apt2Cmd">sudo curl -fsSL https://ubermetroid.github.io/packages/apt/ubermetroid.list -o /etc/apt/sources.list.d/ubermetroid.list</div>
+                        <div class="command" id="apt2Cmd">sudo curl -fsSL https://crateria.github.io/packages/apt/crateria.list -o /etc/apt/sources.list.d/crateria.list</div>
                         <button class="copy-btn" onclick="copyCommand('apt2Cmd', this)">Copy</button>
                     </div>
                 </div>
@@ -328,7 +328,7 @@
                 <div class="step-item">
                     <div class="step-label">Step 1: Download Repository Configuration</div>
                     <div class="installer-box">
-                        <div class="command" id="dnf1Cmd">sudo curl -fsSL https://ubermetroid.github.io/packages/rpm/ubermetroid.repo -o /etc/yum.repos.d/ubermetroid.repo</div>
+                        <div class="command" id="dnf1Cmd">sudo curl -fsSL https://crateria.github.io/packages/rpm/crateria.repo -o /etc/yum.repos.d/crateria.repo</div>
                         <button class="copy-btn" onclick="copyCommand('dnf1Cmd', this)">Copy</button>
                     </div>
                 </div>
@@ -344,7 +344,7 @@
         </div>
         
         <div class="footer" style="line-height: 1.6;">
-            Return to <a href="https://github.com/UberMetroid">UberMetroid on GitHub</a><br>
+            Return to <a href="https://github.com/crateria">Crateria on GitHub</a><br>
             For Unraid server installations, see the <a href="https://github.com/UberMetroid/unraid-templates">Unraid Templates</a>.
         </div>
     </div>
