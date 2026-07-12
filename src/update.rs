@@ -62,22 +62,24 @@ fn run_createrepo() -> Result<(), String> {
 }
 
 fn sign_rpm_metadata() -> Result<(), String> {
-    let signing_key = "jerydleuck@gmail.com";
+    let signing_key =
+        std::env::var("CRATERIA_GPG_NAME").unwrap_or_else(|_| "jerydleuck@gmail.com".to_string());
+    let gpg_bin = std::env::var("CRATERIA_GPG_BIN").unwrap_or_else(|_| "gpg".to_string());
     if Path::new("rpm/repodata/repomd.xml").exists() {
         println!("Signing RPM repomd.xml...");
-        let key_check = Command::new("gpg")
-            .args(["--list-secret-keys", signing_key])
+        let key_check = Command::new(&gpg_bin)
+            .args(["--list-secret-keys", &signing_key])
             .output();
         if let Ok(output) = key_check {
             if output.status.success() {
                 let _ = fs::remove_file("rpm/repodata/repomd.xml.asc");
                 run_cmd(
-                    Command::new("gpg")
+                    Command::new(&gpg_bin)
                         .args([
                             "--batch",
                             "--yes",
                             "--default-key",
-                            signing_key,
+                            &signing_key,
                             "--detach-sign",
                             "--armor",
                             "repodata/repomd.xml",
@@ -91,7 +93,9 @@ fn sign_rpm_metadata() -> Result<(), String> {
                 ));
             }
         } else {
-            return Err("Could not run gpg to check keys; refusing unsigned RPM metadata".into());
+            return Err(format!(
+                "Could not run {gpg_bin} to check keys; refusing unsigned RPM metadata"
+            ));
         }
     }
     Ok(())
@@ -175,11 +179,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     )?;
 
     // Sign Release file — fail closed; never publish unsigned APT indexes.
-    let signing_key = "jerydleuck@gmail.com";
-    let key_check = Command::new("gpg")
-        .args(["--list-secret-keys", signing_key])
+    let signing_key =
+        std::env::var("CRATERIA_GPG_NAME").unwrap_or_else(|_| "jerydleuck@gmail.com".to_string());
+    let gpg_bin = std::env::var("CRATERIA_GPG_BIN").unwrap_or_else(|_| "gpg".to_string());
+    let key_check = Command::new(&gpg_bin)
+        .args(["--list-secret-keys", &signing_key])
         .output()
-        .map_err(|e| format!("Could not run gpg to check keys: {e}"))?;
+        .map_err(|e| format!("Could not run {gpg_bin} to check keys: {e}"))?;
 
     if !key_check.status.success() {
         return Err(format!(
@@ -192,12 +198,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let _ = fs::remove_file("apt/dists/stable/InRelease");
 
     run_cmd(
-        Command::new("gpg")
+        Command::new(&gpg_bin)
             .args([
                 "--batch",
                 "--yes",
                 "--default-key",
-                signing_key,
+                &signing_key,
                 "-abs",
                 "-o",
                 "dists/stable/Release.gpg",
@@ -206,12 +212,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .current_dir("apt"),
     )?;
     run_cmd(
-        Command::new("gpg")
+        Command::new(&gpg_bin)
             .args([
                 "--batch",
                 "--yes",
                 "--default-key",
-                signing_key,
+                &signing_key,
                 "--clearsign",
                 "-o",
                 "dists/stable/InRelease",

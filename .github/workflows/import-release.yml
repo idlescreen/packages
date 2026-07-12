@@ -47,21 +47,46 @@ jobs:
       - name: Import GPG private key
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         if: env.GPG_PRIVATE_KEY != ''
         run: |
-          # Import the private key into GPG keyring
-          echo "$GPG_PRIVATE_KEY" | gpg --batch --import
+          # Set up GPG agent to allow loopback pinentry
+          mkdir -p ~/.gnupg
+          echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+          chmod 700 ~/.gnupg
+          gpgconf --kill gpg-agent
+
+          # Create passphrase file and wrapper script if passphrase is set
+          if [ -n "$GPG_PASSPHRASE" ]; then
+            echo "$GPG_PASSPHRASE" > /tmp/gpg-passphrase.txt
+            chmod 600 /tmp/gpg-passphrase.txt
+            cat << 'EOF' > /tmp/gpg-wrapper
+#!/bin/bash
+exec gpg --pinentry-mode loopback --passphrase-file /tmp/gpg-passphrase.txt "$@"
+EOF
+            chmod +x /tmp/gpg-wrapper
+            echo "$GPG_PRIVATE_KEY" | /tmp/gpg-wrapper --batch --yes --import
+          else
+            echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import
+          fi
 
       - name: Sign packages and rebuild metadata indexes
         env:
-          CRATERIA_GPG_NAME: "jerydleuck@gmail.com"
+          CRATERIA_GPG_NAME: ${{ secrets.CRATERIA_GPG_NAME || 'jerydleuck@gmail.com' }}
           CRATERIA_SKIP_RPM_SIGN_INSTALL: "true"
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           # Re-sign the RPM package files and rebuild all repository metadata indices
           if [ -n "$GPG_PRIVATE_KEY" ]; then
+            if [ -n "$GPG_PASSPHRASE" ]; then
+              export CRATERIA_GPG_BIN="/tmp/gpg-wrapper"
+            fi
             # Run GPG signing and metadata rebuilding tool
             cargo run --release --bin sign
+            # Clean up passphrase file
+            rm -f /tmp/gpg-passphrase.txt /tmp/gpg-wrapper
           else
             # Rebuild metadata without GPG signing if key is not configured
             cargo run --release --bin update

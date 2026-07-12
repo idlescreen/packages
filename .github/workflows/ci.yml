@@ -10,7 +10,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 jobs:
   test:
@@ -19,14 +19,24 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.head_ref || github.ref }}
 
       - name: Install Rust components
         run: rustup component add clippy rustfmt
 
-      - name: Run cargo fmt check
-        run: cargo fmt --all -- --check
+      - name: Run cargo fmt
+        run: cargo fmt --all
 
-      - name: Run cargo clippy
+      - name: Run cargo clippy --fix
+        run: cargo clippy --workspace --all-targets --all-features --fix --allow-dirty --allow-staged
+
+      - name: Auto-commit fmt and clippy fixes
+        uses: stefanzweifel/git-auto-commit-action@v5
+        with:
+          commit_message: "chore: auto-format and fix clippy lints"
+
+      - name: Run cargo clippy check
         run: cargo clippy --workspace --all-targets --all-features -- -D warnings
 
       - name: Run cargo test

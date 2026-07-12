@@ -6,6 +6,8 @@
 
 # Crateria Packages Repository
 
+[![CI](https://github.com/crateria/packages/actions/workflows/ci.yml/badge.svg)](https://github.com/crateria/packages/actions/workflows/ci.yml)
+
 APT and DNF package distribution repositories for Crateria applications.
 
 ## Documentation & Installation
