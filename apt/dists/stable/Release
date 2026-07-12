@@ -1,24 +1,24 @@
 Architectures: amd64
 Codename: stable
 Components: main
-Date: Sun, 12 Jul 2026 18:41:34 +0000
+Date: Sun, 12 Jul 2026 18:47:44 +0000
 Description: crateria APT Repository (stable/main)
 Label: crateria
 Origin: crateria
 Suite: stable
 MD5Sum:
- aa0c3bb4ef54fc885d4751faf5c234d1              191 Release
+ 1230d2a934ff2e3a99d5034b7737d552              191 Release
  b4880fbbf309e968ff6bf2519fdce41d            26826 main/binary-amd64/Packages
- b3432f74254113f886707d7bf89e2d11             6384 main/binary-amd64/Packages.gz
+ 111c24c40c79f9820ab30ad6ff4840c0             6384 main/binary-amd64/Packages.gz
 SHA1:
- 2858dfa56995ed27a9e6ced40d72070de1ba5825              191 Release
+ db9f761f6962ba7ca57154a320fe58ba852fd5c4              191 Release
  c1a68f30146ecddf85ea7a7486e4264454fe7895            26826 main/binary-amd64/Packages
- 8589042b73c1f9ee55e325b80b908f6045297fd6             6384 main/binary-amd64/Packages.gz
+ dfc82b91a694c14b4857b39e564789dcfa3d4861             6384 main/binary-amd64/Packages.gz
 SHA256:
- 9e87ce2d0add02381a9fa610cf7b75a3a47ec370b5cb234f79db79a6c0d99c94              191 Release
+ 312cd62c71fc75e6c8a0fd5285a072d86cf14c6ed59de15a112d27e94a8650d9              191 Release
  bffcbad652e6f9e50cc479388bcf6be564380a281979fdcc3b672787e568f838            26826 main/binary-amd64/Packages
- ef46ca7d3287ebd491cc0b558825b0656be86253e01799a297a259888d7c149f             6384 main/binary-amd64/Packages.gz
+ 07ac022456f9358b4af2bff630dc4b84a66e69ab3ba79f5cf0e85ab3a2724671             6384 main/binary-amd64/Packages.gz
 SHA512:
- eb1e97ee25d8c92b953c4653703ad3ec316be07c6933552df15877eed5ea35762f8e9371cd18696117626dcb7b53ed599adec545edb3aafb3c7ea39b0d222228              191 Release
+ 01b587009ee5b758ac044c496d4d944cc89433c964c72813fa78b3c3929c84b7875ed18f843d18168a4a32d5a9e92e2ac707f1cd8c230c6b7fb5f65512a1fa8b              191 Release
  1db4c8d567e766750fc26bb8a2f0377b9b76a806aa9b68d8c31b76f3dbbee0cb1f2c30db73b21f3ba8c1bfe11472792184ac9a4e633fcf36fcba3a4bceee9944            26826 main/binary-amd64/Packages
- e99cc91a7cf5078b56b627a4ab8853a4ea1a446f75acad86ad21209588b5d077b9e30bd797e40ffb64244e868ccc99e75d9abcdc8e64807e65a8f4a806a6f491             6384 main/binary-amd64/Packages.gz
+ ba148d9c6a1e1433d2f05da27a6639fc5602fe7615e9848cbdceaa774ecdb94535a0aacd72bb0ce283620deca6aa956811a36f2a0edeab9a1348c7751f5fbaca             6384 main/binary-amd64/Packages.gz
