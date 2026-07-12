@@ -62,9 +62,9 @@ jobs:
             echo "$GPG_PASSPHRASE" > /tmp/gpg-passphrase.txt
             chmod 600 /tmp/gpg-passphrase.txt
             cat << 'EOF' > /tmp/gpg-wrapper
-#!/bin/bash
-exec gpg --pinentry-mode loopback --passphrase-file /tmp/gpg-passphrase.txt "$@"
-EOF
+            #!/bin/bash
+            exec gpg --pinentry-mode loopback --passphrase-file /tmp/gpg-passphrase.txt "$@"
+            EOF
             chmod +x /tmp/gpg-wrapper
             echo "$GPG_PRIVATE_KEY" | /tmp/gpg-wrapper --batch --yes --import
           else
