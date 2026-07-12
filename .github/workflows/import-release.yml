@@ -48,7 +48,7 @@ jobs:
         env:
           GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
           GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
-        if: env.GPG_PRIVATE_KEY != ''
+        if: ${{ secrets.GPG_PRIVATE_KEY != '' }}
         run: |
           # Set up GPG agent to allow loopback pinentry
           mkdir -p ~/.gnupg

@@ -1,6 +1,6 @@
 [package]
 name = "crateria-packages"
-version = "3.2.16"
+version = "3.2.17"
 edition = "2024"
 description = "Repository maintenance tools for crateria package distribution"
 
