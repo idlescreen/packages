@@ -16,7 +16,8 @@ ignore = [
     "RUSTSEC-2026-0192",
     "RUSTSEC-2026-0173",
     "RUSTSEC-2026-0194",
-    "RUSTSEC-2026-0195"
+    "RUSTSEC-2026-0195",
+    "RUSTSEC-2026-0206"
 ]
 
 [licenses]
@@ -62,3 +63,4 @@ allow-git = [
     "https://github.com/UberMetroid/shared-assets",
     "https://github.com/UberMetroid/shared-assets.git"
 ]
+allow-wildcard-paths = true
