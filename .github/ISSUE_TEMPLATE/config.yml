@@ -1,8 +1,0 @@
-blank_issues_enabled: true
-contact_links:
-  - name: Security vulnerability
-    url: https://github.com/crateria/packages/security/advisories/new
-    about: Report signing, pool integrity, or supply-chain issues privately.
-  - name: Product bugs (trance / morphball)
-    url: https://github.com/crateria
-    about: File product issues on the product repository, not packages.
