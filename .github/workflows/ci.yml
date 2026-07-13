@@ -48,9 +48,7 @@ jobs:
         run: cargo test --all-targets --all-features
 
       - name: Install cargo-deny
-        run: |
-          curl -sSL https://github.com/EmbarkStudios/cargo-deny/releases/download/0.19.9/cargo-deny-0.19.9-x86_64-unknown-linux-musl.tar.gz | tar -xz
-          echo "$PWD/cargo-deny-0.19.9-x86_64-unknown-linux-musl" >> $GITHUB_PATH
+        uses: taiki-e/install-action@cargo-deny
 
       - name: Run cargo deny check
         run: cargo deny check advisories
