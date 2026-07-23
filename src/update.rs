@@ -1,3 +1,8 @@
+//! Rebuild APT and RPM repository indexes and sign metadata.
+// SPDX-License-Identifier: Apache-2.0
+
+use crateria_packages::sign_macros::{resolve_gpg_bin, resolve_signing_key};
+use crateria_packages::sweep::sweep_loose_packages;
 use std::fs;
 use std::path::Path;
 use std::process::Command;
@@ -5,7 +10,7 @@ use std::process::Command;
 fn run_cmd(cmd: &mut Command) -> Result<(), String> {
     let status = cmd.status().map_err(|e| e.to_string())?;
     if !status.success() {
-        return Err(format!("Command failed with exit status: {}", status));
+        return Err(format!("Command failed with exit status: {status}"));
     }
     Ok(())
 }
@@ -23,13 +28,12 @@ fn dearmor_key() -> Result<(), String> {
         .map_err(|e| e.to_string())?;
 
     if !status.success() {
-        return Err(format!("gpg --dearmor failed with status: {}", status));
+        return Err(format!("gpg --dearmor failed with status: {status}"));
     }
     Ok(())
 }
 
 fn run_createrepo() -> Result<(), String> {
-    // Check if createrepo_c is available locally
     let local_check = Command::new("which").arg("createrepo_c").output();
     let has_local = local_check.map(|o| o.status.success()).unwrap_or(false);
 
@@ -42,7 +46,6 @@ fn run_createrepo() -> Result<(), String> {
                 .current_dir("rpm"),
         )?;
     } else {
-        // Fall back to nix-shell
         let nix_check = Command::new("which").arg("nix-shell").output();
         let has_nix = nix_check.map(|o| o.status.success()).unwrap_or(false);
         if has_nix {
@@ -62,43 +65,93 @@ fn run_createrepo() -> Result<(), String> {
 }
 
 fn sign_rpm_metadata() -> Result<(), String> {
-    let signing_key =
-        std::env::var("CRATERIA_GPG_NAME").unwrap_or_else(|_| "jerydleuck@gmail.com".to_string());
-    let gpg_bin = std::env::var("CRATERIA_GPG_BIN").unwrap_or_else(|_| "gpg".to_string());
-    if Path::new("rpm/repodata/repomd.xml").exists() {
-        println!("Signing RPM repomd.xml...");
-        let key_check = Command::new(&gpg_bin)
-            .args(["--list-secret-keys", &signing_key])
-            .output();
-        if let Ok(output) = key_check {
-            if output.status.success() {
-                let _ = fs::remove_file("rpm/repodata/repomd.xml.asc");
-                run_cmd(
-                    Command::new(&gpg_bin)
-                        .args([
-                            "--batch",
-                            "--yes",
-                            "--default-key",
-                            &signing_key,
-                            "--detach-sign",
-                            "--armor",
-                            "repodata/repomd.xml",
-                        ])
-                        .current_dir("rpm"),
-                )?;
-                println!("Signed RPM repomd.xml successfully.");
-            } else {
-                return Err(format!(
-                    "GPG signing key '{signing_key}' not found; refusing to publish unsigned RPM metadata"
-                ));
-            }
-        } else {
-            return Err(format!(
-                "Could not run {gpg_bin} to check keys; refusing unsigned RPM metadata"
-            ));
-        }
+    let signing_key = resolve_signing_key(
+        std::env::var("CRATERIA_GPG_NAME").ok().as_deref(),
+        "jerydleuck@gmail.com",
+    );
+    let gpg_bin = resolve_gpg_bin(std::env::var("CRATERIA_GPG_BIN").ok().as_deref());
+    if !Path::new("rpm/repodata/repomd.xml").exists() {
+        return Ok(());
     }
+    println!("Signing RPM repomd.xml...");
+    let key_check = Command::new(&gpg_bin)
+        .args(["--list-secret-keys", &signing_key])
+        .output();
+    let Ok(output) = key_check else {
+        return Err(format!(
+            "Could not run {gpg_bin} to check keys; refusing unsigned RPM metadata"
+        ));
+    };
+    if !output.status.success() {
+        return Err(format!(
+            "GPG signing key '{signing_key}' not found; refusing to publish unsigned RPM metadata"
+        ));
+    }
+    let _ = fs::remove_file("rpm/repodata/repomd.xml.asc");
+    run_cmd(
+        Command::new(&gpg_bin)
+            .args([
+                "--batch",
+                "--yes",
+                "--default-key",
+                &signing_key,
+                "--detach-sign",
+                "--armor",
+                "repodata/repomd.xml",
+            ])
+            .current_dir("rpm"),
+    )?;
+    println!("Signed RPM repomd.xml successfully.");
     Ok(())
+}
+
+/// Returns Ok(true) if Release was signed; Ok(false) if key missing (caller may stop).
+fn sign_apt_release(signing_key: &str, gpg_bin: &str) -> Result<bool, String> {
+    let key_check = Command::new(gpg_bin)
+        .args(["--list-secret-keys", signing_key])
+        .output()
+        .map_err(|e| format!("Could not run {gpg_bin} to check keys: {e}"))?;
+
+    if !key_check.status.success() {
+        println!(
+            "GPG signing key '{signing_key}' not found; skipping GPG signing of APT Release"
+        );
+        return Ok(false);
+    }
+
+    let _ = fs::remove_file("apt/dists/stable/Release.gpg");
+    let _ = fs::remove_file("apt/dists/stable/InRelease");
+
+    run_cmd(
+        Command::new(gpg_bin)
+            .args([
+                "--batch",
+                "--yes",
+                "--default-key",
+                signing_key,
+                "-abs",
+                "-o",
+                "dists/stable/Release.gpg",
+                "dists/stable/Release",
+            ])
+            .current_dir("apt"),
+    )?;
+    run_cmd(
+        Command::new(gpg_bin)
+            .args([
+                "--batch",
+                "--yes",
+                "--default-key",
+                signing_key,
+                "--clearsign",
+                "-o",
+                "dists/stable/InRelease",
+                "dists/stable/Release",
+            ])
+            .current_dir("apt"),
+    )?;
+    println!("Signed Release files successfully.");
+    Ok(true)
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
@@ -110,30 +163,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     fs::create_dir_all("apt/dists/stable/main/binary-amd64")?;
     fs::create_dir_all("rpm/pool")?;
 
-    // Sweep loose files from root to respective pools
-    if let Ok(entries) = fs::read_dir(".") {
-        for entry in entries {
-            let entry = entry?;
-            let path = entry.path();
-            if path.is_file() {
-                let ext = path.extension().and_then(|s| s.to_str());
-                if ext == Some("deb") {
-                    let dest = Path::new("apt/pool/main").join(path.file_name().unwrap());
-                    println!("-> Sweeping loose package: {:?}", path.file_name().unwrap());
-                    fs::rename(&path, &dest)?;
-                } else if ext == Some("rpm") {
-                    let dest = Path::new("rpm/pool").join(path.file_name().unwrap());
-                    println!("-> Sweeping loose package: {:?}", path.file_name().unwrap());
-                    fs::rename(&path, &dest)?;
-                }
-            }
-        }
-    }
-
-    // 1. Regenerate GPG keyring
+    sweep_loose_packages(Path::new("."))?;
     dearmor_key()?;
 
-    // 2. Generate APT metadata
     println!("Generating APT metadata...");
     let packages_path = "apt/dists/stable/main/binary-amd64/Packages";
     let packages_file = fs::File::create(packages_path)?;
@@ -144,14 +176,12 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .current_dir("apt"),
     )?;
 
-    // Compress Packages file
     run_cmd(
         Command::new("gzip")
             .args(["-k", "-f", "dists/stable/main/binary-amd64/Packages"])
             .current_dir("apt"),
     )?;
 
-    // Generate Release file
     let release_path = "apt/dists/stable/Release";
     let release_file = fs::File::create(release_path)?;
     run_cmd(
@@ -178,57 +208,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             .current_dir("apt"),
     )?;
 
-    // Sign Release file — fail closed; never publish unsigned APT indexes.
-    let signing_key =
-        std::env::var("CRATERIA_GPG_NAME").unwrap_or_else(|_| "jerydleuck@gmail.com".to_string());
-    let gpg_bin = std::env::var("CRATERIA_GPG_BIN").unwrap_or_else(|_| "gpg".to_string());
-    let key_check = Command::new(&gpg_bin)
-        .args(["--list-secret-keys", &signing_key])
-        .output()
-        .map_err(|e| format!("Could not run {gpg_bin} to check keys: {e}"))?;
-
-    if !key_check.status.success() {
-        println!(
-            "GPG signing key '{}' not found; skipping GPG signing of APT Release",
-            signing_key
-        );
+    let signing_key = resolve_signing_key(
+        std::env::var("CRATERIA_GPG_NAME").ok().as_deref(),
+        "jerydleuck@gmail.com",
+    );
+    let gpg_bin = resolve_gpg_bin(std::env::var("CRATERIA_GPG_BIN").ok().as_deref());
+    if !sign_apt_release(&signing_key, &gpg_bin)? {
+        // Preserve historical fail-open: stop after APT index without RPM steps
+        // when the signing key is unavailable.
         return Ok(());
     }
 
-    let _ = fs::remove_file("apt/dists/stable/Release.gpg");
-    let _ = fs::remove_file("apt/dists/stable/InRelease");
-
-    run_cmd(
-        Command::new(&gpg_bin)
-            .args([
-                "--batch",
-                "--yes",
-                "--default-key",
-                &signing_key,
-                "-abs",
-                "-o",
-                "dists/stable/Release.gpg",
-                "dists/stable/Release",
-            ])
-            .current_dir("apt"),
-    )?;
-    run_cmd(
-        Command::new(&gpg_bin)
-            .args([
-                "--batch",
-                "--yes",
-                "--default-key",
-                &signing_key,
-                "--clearsign",
-                "-o",
-                "dists/stable/InRelease",
-                "dists/stable/Release",
-            ])
-            .current_dir("apt"),
-    )?;
-    println!("Signed Release files successfully.");
-
-    // 3. Generate RPM metadata
     run_createrepo()?;
     sign_rpm_metadata()?;
 

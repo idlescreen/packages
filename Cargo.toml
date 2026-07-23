@@ -3,6 +3,11 @@ name = "crateria-packages"
 version = "3.2.28"
 edition = "2024"
 description = "Repository maintenance tools for crateria package distribution"
+license = "Apache-2.0"
+
+[lib]
+name = "crateria_packages"
+path = "src/lib.rs"
 
 [[bin]]
 name = "update"
@@ -18,3 +23,6 @@ path = "src/sign.rs"
 
 [dependencies]
 semver = "1.0"
+
+[dev-dependencies]
+proptest = "1.6"

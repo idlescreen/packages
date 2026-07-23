@@ -1,5 +1,8 @@
-// SPDX-License-Identifier: MIT
+//! Sign all RPMs in the pool and refresh repository metadata.
+// SPDX-License-Identifier: Apache-2.0
 
+use crateria_packages::paths::{is_rpm_path, safe_join_under};
+use crateria_packages::sign_macros::{build_rpmmacros, gpg_name_is_valid};
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -26,9 +29,34 @@ fn command_exists(name: &str) -> bool {
         .unwrap_or(false)
 }
 
+/// Collect `.rpm` paths under `pool`, joining only safe bare filenames.
+fn collect_rpms(pool: &Path) -> Result<Vec<PathBuf>, String> {
+    let mut rpms = Vec::new();
+    if !pool.exists() {
+        return Ok(rpms);
+    }
+    for entry in fs::read_dir(pool).map_err(|e| e.to_string())? {
+        let entry = entry.map_err(|e| e.to_string())?;
+        let path = entry.path();
+        if !path.is_file() || !is_rpm_path(&path) {
+            continue;
+        }
+        let Some(name) = path.file_name() else {
+            continue;
+        };
+        // Re-join via safe_join_under so path traversal names are skipped.
+        if let Some(safe) = safe_join_under(pool, name) {
+            if safe == path || path.file_name() == safe.file_name() {
+                rpms.push(path);
+            }
+        }
+    }
+    Ok(rpms)
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let gpg_name = match env::var("CRATERIA_GPG_NAME") {
-        Ok(val) if !val.trim().is_empty() => val,
+        Ok(val) if gpg_name_is_valid(&val) => val,
         _ => {
             eprintln!(
                 "ERROR: CRATERIA_GPG_NAME is not set.\n\n\
@@ -47,7 +75,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let gpg_path = env::var("CRATERIA_GPG_PATH").ok();
     let skip_install = env::var_os("CRATERIA_SKIP_RPM_SIGN_INSTALL").is_some();
 
-    // Check if rpmsign exists
     if !command_exists("rpmsign") {
         if skip_install {
             eprintln!("ERROR: rpmsign not found and CRATERIA_SKIP_RPM_SIGN_INSTALL is set.");
@@ -65,7 +92,6 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
 
-    // Verify secret GPG key
     let mut gpg_check = Command::new(&gpg_bin);
     if let Some(ref path) = gpg_path {
         gpg_check.args(["--homedir", path]);
@@ -84,26 +110,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             gpg_name,
             gpg_bin,
             if let Some(ref path) = gpg_path {
-                format!("--homedir {}", path)
+                format!("--homedir {path}")
             } else {
-                "".to_string()
+                String::new()
             }
         );
         std::process::exit(1);
     }
 
-    // Write .rpmmacros
     let home = env::var("HOME")?;
-    let rpmmacros_path = PathBuf::from(home).join(".rpmmacros");
-    let mut macros_content = format!(
-        "%_signature gpg\n\
-         %_gpg_name {}\n\
-         %_gpgbin {}\n",
-        gpg_name, gpg_bin
-    );
-    if let Some(ref path) = gpg_path {
-        macros_content.push_str(&format!("%_gpg_path {}\n", path));
-    }
+    let rpmmacros_path = PathBuf::from(&home).join(".rpmmacros");
+    let macros_content = build_rpmmacros(&gpg_name, &gpg_bin, gpg_path.as_deref());
     fs::write(&rpmmacros_path, macros_content)?;
     println!(
         "Wrote {} for identity: {}",
@@ -111,19 +128,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         gpg_name
     );
 
-    // Find all RPMs in rpm/pool/
-    let mut rpms = Vec::new();
     let rpm_pool = Path::new("rpm/pool");
-    if rpm_pool.exists() {
-        for entry in fs::read_dir(rpm_pool)? {
-            let entry = entry?;
-            let path = entry.path();
-            if path.is_file() && path.extension().and_then(|s| s.to_str()) == Some("rpm") {
-                rpms.push(path);
-            }
-        }
-    }
-
+    let rpms = collect_rpms(rpm_pool)?;
     if rpms.is_empty() {
         eprintln!("ERROR: no RPMs under rpm/pool/");
         std::process::exit(1);
@@ -147,4 +153,34 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("==========================================================");
 
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    #[test]
+    fn collect_rpms_filters_extension() {
+        let n = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map(|d| d.as_nanos())
+            .unwrap_or(0);
+        let dir = env::temp_dir().join(format!("crateria-sign-rpms-{n}"));
+        fs::create_dir_all(&dir).expect("mkdir");
+        fs::write(dir.join("a.rpm"), b"r").expect("rpm");
+        fs::write(dir.join("b.deb"), b"d").expect("deb");
+        fs::write(dir.join("notes.txt"), b"t").expect("txt");
+        let found = collect_rpms(&dir).expect("collect");
+        assert_eq!(found.len(), 1);
+        assert!(found[0].ends_with("a.rpm"));
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn collect_rpms_missing_dir() {
+        let dir = env::temp_dir().join("crateria-sign-missing-noexist");
+        let _ = fs::remove_dir_all(&dir);
+        assert!(collect_rpms(&dir).expect("ok").is_empty());
+    }
 }

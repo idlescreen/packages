@@ -1,62 +1,49 @@
-use std::collections::HashMap;
+//! Prune old package versions from apt and rpm pools.
+// SPDX-License-Identifier: Apache-2.0
+
+use crateria_packages::package_parse::{parse_deb_filename, parse_rpm_filename};
+use crateria_packages::prune_core::{group_by_name, select_to_remove, PackageFile};
 use std::env;
 use std::fs;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+#[cfg(test)]
+use std::path::PathBuf;
 
-fn split_parts(s: &str) -> Vec<String> {
-    let mut parts = Vec::new();
-    let mut current = String::new();
-    for c in s.chars() {
-        if c.is_alphanumeric() {
-            current.push(c);
+fn collect_packages(dir_path: &Path, is_deb: bool) -> Result<Vec<(String, PackageFile)>, String> {
+    let mut out = Vec::new();
+    if !dir_path.exists() {
+        return Ok(out);
+    }
+    let entries = fs::read_dir(dir_path).map_err(|e| e.to_string())?;
+    for entry in entries {
+        let entry = entry.map_err(|e| e.to_string())?;
+        let path = entry.path();
+        if !path.is_file() {
+            continue;
+        }
+        let filename = match path.file_name().and_then(|s| s.to_str()) {
+            Some(f) => f.to_string(),
+            None => continue,
+        };
+        let id = if is_deb {
+            parse_deb_filename(&filename)
         } else {
-            if !current.is_empty() {
-                parts.push(current.clone());
-                current.clear();
-            }
+            parse_rpm_filename(&filename)
+        };
+        if let Some(id) = id {
+            out.push((
+                id.name,
+                PackageFile {
+                    path,
+                    version: id.version,
+                },
+            ));
         }
     }
-    if !current.is_empty() {
-        parts.push(current);
-    }
-    parts
+    Ok(out)
 }
 
-fn compare_versions(a: &str, b: &str) -> std::cmp::Ordering {
-    if let (Ok(av), Ok(bv)) = (semver::Version::parse(a), semver::Version::parse(b)) {
-        return av.cmp(&bv);
-    }
-
-    let a_parts = split_parts(a);
-    let b_parts = split_parts(b);
-    for (ap, bp) in a_parts.iter().zip(b_parts.iter()) {
-        match (ap.parse::<u64>(), bp.parse::<u64>()) {
-            (Ok(an), Ok(bn)) => {
-                if an != bn {
-                    return an.cmp(&bn);
-                }
-            }
-            _ => {
-                if ap != bp {
-                    return ap.cmp(bp);
-                }
-            }
-        }
-    }
-    a_parts.len().cmp(&b_parts.len())
-}
-
-// Wrapper structure to sort files by version
-struct PackageFile {
-    path: PathBuf,
-    version: String,
-}
-
-fn prune_directory(
-    dir_path: &Path,
-    keep: usize,
-    is_deb: bool,
-) -> Result<(), Box<dyn std::error::Error>> {
+fn prune_directory(dir_path: &Path, keep: usize, is_deb: bool) -> Result<(), String> {
     if !dir_path.exists() {
         return Ok(());
     }
@@ -66,85 +53,106 @@ fn prune_directory(
         dir_path, keep
     );
 
-    // Group files by package name
-    let mut packages: HashMap<String, Vec<PackageFile>> = HashMap::new();
+    let entries = collect_packages(dir_path, is_deb)?;
+    let packages = group_by_name(entries);
+    let to_remove = select_to_remove(packages, keep);
 
-    for entry in fs::read_dir(dir_path)? {
-        let entry = entry?;
-        let path = entry.path();
-        if path.is_file() {
-            let filename = path.file_name().unwrap().to_string_lossy().to_string();
-
-            if is_deb && filename.ends_with(".deb") {
-                // Format: name_version_arch.deb
-                let parts: Vec<&str> = filename.split('_').collect();
-                if parts.len() >= 2 {
-                    let name = parts[0].to_string();
-                    let version = parts[1].to_string();
-                    packages
-                        .entry(name)
-                        .or_default()
-                        .push(PackageFile { path, version });
-                }
-            } else if !is_deb && filename.ends_with(".rpm") {
-                // Format: name-version-release.arch.rpm
-                let name_without_ext = filename.strip_suffix(".rpm").unwrap();
-                let parts: Vec<&str> = name_without_ext.split('-').collect();
-                if parts.len() >= 3 {
-                    let version = parts[parts.len() - 2].to_string();
-                    let name = parts[0..parts.len() - 2].join("-");
-                    packages
-                        .entry(name)
-                        .or_default()
-                        .push(PackageFile { path, version });
-                }
-            }
-        }
+    let mut removed = 0usize;
+    for path in &to_remove {
+        let name = path
+            .file_name()
+            .map(|s| s.to_string_lossy().into_owned())
+            .unwrap_or_else(|| path.display().to_string());
+        println!("  rm {name:?}");
+        fs::remove_file(path).map_err(|e| e.to_string())?;
+        removed += 1;
     }
 
-    let mut removed = 0;
-    let mut kept = 0;
-
-    for (_pkg, mut files) in packages {
-        // Sort files by parsed version
-        files.sort_by(|a, b| compare_versions(&a.version, &b.version));
-
-        let count = files.len();
-        if count <= keep {
-            kept += count;
-            continue;
-        }
-
-        // Delete the oldest ones
-        let delete_count = count - keep;
-        for file in files.iter().take(delete_count) {
-            println!("  rm {:?}", file.path.file_name().unwrap());
-            fs::remove_file(&file.path)?;
-            removed += 1;
-        }
-        kept += keep;
-    }
-
-    println!("Pruned {} files; kept {} in {:?}", removed, kept, dir_path);
+    // Recount kept files (approximate: total parseable remaining).
+    let remaining = collect_packages(dir_path, is_deb)?.len();
+    println!(
+        "Pruned {} files; kept {} in {:?}",
+        removed, remaining, dir_path
+    );
     Ok(())
+}
+
+fn parse_keep_arg(args: &[String]) -> Result<usize, String> {
+    if args.len() <= 1 {
+        return Ok(3);
+    }
+    args[1]
+        .parse::<usize>()
+        .map_err(|_| format!("Error: KEEP must be a positive integer (got: {})", args[1]))
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
-    let mut keep = 3;
-
-    if args.len() > 1 {
-        if let Ok(k) = args[1].parse::<usize>() {
-            keep = k;
-        } else {
-            eprintln!("Error: KEEP must be a positive integer (got: {})", args[1]);
+    let keep = match parse_keep_arg(&args) {
+        Ok(k) => k,
+        Err(msg) => {
+            eprintln!("{msg}");
             std::process::exit(1);
         }
-    }
+    };
 
     prune_directory(Path::new("apt/pool/main"), keep, true)?;
     prune_directory(Path::new("rpm/pool"), keep, false)?;
 
     println!("\nNext: regenerate the repository indices with: cargo run --bin update");
     Ok(())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::time::{SystemTime, UNIX_EPOCH};
+
+    fn temp_dir(label: &str) -> PathBuf {
+        let n = SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .map(|d| d.as_nanos())
+            .unwrap_or(0);
+        let dir = env::temp_dir().join(format!("crateria-prune-{label}-{n}"));
+        fs::create_dir_all(&dir).expect("create temp");
+        dir
+    }
+
+    #[test]
+    fn parse_keep_default_and_value() {
+        assert_eq!(parse_keep_arg(&["prune".into()]).expect("default"), 3);
+        assert_eq!(
+            parse_keep_arg(&["prune".into(), "5".into()]).expect("5"),
+            5
+        );
+        assert!(parse_keep_arg(&["prune".into(), "x".into()]).is_err());
+    }
+
+    #[test]
+    fn prune_keeps_newest_deb() {
+        let dir = temp_dir("deb");
+        for (name, ver) in [
+            ("pkg_1.0.0_amd64.deb", "1.0.0"),
+            ("pkg_1.1.0_amd64.deb", "1.1.0"),
+            ("pkg_2.0.0_amd64.deb", "2.0.0"),
+        ] {
+            let _ = ver;
+            fs::write(dir.join(name), b"x").expect("write");
+        }
+        prune_directory(&dir, 1, true).expect("prune");
+        let left: Vec<_> = fs::read_dir(&dir)
+            .expect("rd")
+            .filter_map(|e| e.ok())
+            .map(|e| e.file_name().to_string_lossy().into_owned())
+            .collect();
+        assert_eq!(left, vec!["pkg_2.0.0_amd64.deb".to_string()]);
+        let _ = fs::remove_dir_all(&dir);
+    }
+
+    #[test]
+    fn prune_missing_dir_ok() {
+        let dir = env::temp_dir().join("crateria-prune-missing-noexist");
+        let _ = fs::remove_dir_all(&dir);
+        prune_directory(&dir, 3, true).expect("missing ok");
+    }
 }
