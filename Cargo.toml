@@ -2,7 +2,7 @@
 name = "crateria-packages"
 version = "3.2.29"
 edition = "2024"
-description = "Repository maintenance tools for crateria package distribution"
+description = "Repository maintenance tools for IdleScreen package distribution"
 license = "Apache-2.0"
 
 [lib]

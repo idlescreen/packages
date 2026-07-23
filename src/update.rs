@@ -159,7 +159,7 @@ fn sign_apt_release(signing_key: &str, gpg_bin: &str) -> Result<(), String> {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("==========================================");
-    println!("Updating crateria Packages Repository (stable/main) via Rust...");
+    println!("Updating IdleScreen Packages Repository (stable/main) via Rust...");
     println!("==========================================");
 
     fs::create_dir_all("apt/pool/main")?;
@@ -191,9 +191,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         Command::new("apt-ftparchive")
             .args([
                 "-o",
-                "APT::FTPArchive::Release::Origin=crateria",
+                "APT::FTPArchive::Release::Origin=IdleScreen",
                 "-o",
-                "APT::FTPArchive::Release::Label=crateria",
+                "APT::FTPArchive::Release::Label=IdleScreen",
                 "-o",
                 "APT::FTPArchive::Release::Suite=stable",
                 "-o",
@@ -203,7 +203,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 "-o",
                 "APT::FTPArchive::Release::Components=main",
                 "-o",
-                "APT::FTPArchive::Release::Description=crateria APT Repository (stable/main)",
+                "APT::FTPArchive::Release::Description=IdleScreen APT Repository (stable/main)",
                 "release",
                 "dists/stable",
             ])

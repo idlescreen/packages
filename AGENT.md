@@ -1,6 +1,12 @@
-# AGENT.md — Crateria hardening contract
+# AGENT.md — IdleScreen packages hardening contract
 
 Enforce on every change in this repository.
+
+## Product / brand
+
+- Product brand: **IdleScreen** (org `idlescreen`, host `idlescreen.github.io`).
+- Cargo package/lib may remain `crateria-packages` / `crateria_packages` for
+  API stability; document IdleScreen in user-facing copy.
 
 ## Rust and license
 

@@ -1,7 +1,9 @@
-//! Shared library for crateria package repository maintenance tools.
+//! Shared library for IdleScreen package repository maintenance tools.
 //!
-//! Pure helpers for version ordering, package filename parsing, prune
-//! selection, pool path construction, and signing macro generation.
+//! Crate name remains `crateria_packages` for Cargo/API stability; product
+//! brand is IdleScreen (idlescreen.github.io). Pure helpers for version
+//! ordering, package filename parsing, prune selection, pool path
+//! construction, and signing macro generation.
 
 // SPDX-License-Identifier: Apache-2.0
 
