@@ -2,33 +2,31 @@
 
 Enforce on every change in this repository.
 
-## Product / brand
-
-- Product brand: **IdleScreen** (org `idlescreen`, host `idlescreen.github.io`).
-- Cargo package/lib may remain `crateria-packages` / `crateria_packages` for
-  API stability; document IdleScreen in user-facing copy.
-
 ## Rust and license
 
 - Strict Rust from first principles. Prefer `std` before crates.
-- License: **Apache-2.0** only for this project and new code.
-- Vetted dependencies only; no `unsafe` without a short safety comment.
+- License: **Apache-2.0**.
+- Vetted dependencies only.
 
 ## Constraints
 
-- Max **250 lines** per `.rs` file (split at functional boundaries).
+- Max **250 lines** per `.rs` file.
 - **Zero** `.unwrap()` or `.expect()` in production (non-test) code.
-  Tests may use `unwrap`/`expect` only when the failure message is clear.
-- Fallible APIs use `Result` / `Option` with explicit error types.
+- Cargo package/lib may remain `crateria-packages` / `crateria_packages` for
+  Cargo API stability until a coordinated rename.
 
 ## Testing
 
 - Target about **3:1** test lines to production lines where practical.
-- Protocol, parsing, path safety, and package index logic must have
-  **proptest** (or equivalent property) tests.
-- Prefer deterministic unit tests; integration tests for CLI boundaries.
+- Package parse and path safety logic must have **proptest** coverage.
+
+## Product identity
+
+- Product brand and GitHub org: **IdleScreen**.
+- Public host: **idlescreen.github.io**.
+- On-disk keyring/repo filenames and GPG env vars may still use historical
+  `CRATERIA_*` / `crateria-*` names until a coordinated migration.
 
 ## Git edges
 
 - Default branch: **`master`**.
-- After each hardening stage barrier: declarative commit message and push to `origin master`.

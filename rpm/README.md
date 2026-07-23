@@ -1,18 +1,17 @@
-# crateria RPM Repository
+# IdleScreen RPM repository
 
-This repository hosts compiled RPM distributions for the **crateria** ecosystem (specifically **trance**). It functions as a flat RPM package repository served directly via GitHub Pages raw file endpoints.
+Signed RPM packages for IdleScreen, served from
+[idlescreen.github.io/packages/rpm](https://idlescreen.github.io/packages/rpm).
 
-Supported formats:
-*   **RPM** (Fedora, RHEL, CentOS)
+Shipped package names remain `trance` / `trance-*` for install stability.
+Repo drop-in filename on the host may still be `crateria.repo`.
 
----
-
-## Client Installation & Setup
+## Add the repository
 
 ```bash
-# 1. Download the repository configuration
-sudo curl -fsSL https://idlescreen.github.io/packages/rpm/crateria.repo -o /etc/yum.repos.d/crateria.repo
-
-# 2. Refresh the package database
-sudo dnf check-update
+sudo curl -fsSL https://idlescreen.github.io/packages/rpm/crateria.repo \
+  -o /etc/yum.repos.d/idlescreen.repo
+sudo dnf install trance
 ```
+
+See the [packages README](../README.md) for the full pipeline.

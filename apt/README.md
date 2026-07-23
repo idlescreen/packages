@@ -1,28 +1,21 @@
-# crateria APT Repository
+# IdleScreen APT repository
 
-This repository hosts compiled Debian distributions for the **crateria** ecosystem (specifically **trance**). It functions as a flat package repository served directly via GitHub Pages raw file endpoints.
+Signed Debian packages for IdleScreen, served from
+[idlescreen.github.io/packages/apt](https://idlescreen.github.io/packages/apt).
 
-Supported formats:
-*   **APT** (Debian, Ubuntu, Pop!_OS)
+Shipped package names remain `trance` / `trance-*` for install stability.
+Keyring filename on the host may still be `crateria-keyring.gpg`.
 
----
+## Add the repository
 
-## Client Installation & Setup
+```bash
+sudo mkdir -p /etc/apt/keyrings
+sudo curl -fsSL https://idlescreen.github.io/packages/apt/crateria-keyring.gpg \
+  -o /etc/apt/keyrings/idlescreen.gpg
+echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/idlescreen.gpg] https://idlescreen.github.io/packages/apt stable main" \
+  | sudo tee /etc/apt/sources.list.d/idlescreen.list
+sudo apt update
+sudo apt install trance
+```
 
-1.  **Import the repository GPG key** into a dedicated keyring (do **not** use `/etc/apt/trusted.gpg.d/` unless you accept global trust):
-    ```bash
-    sudo mkdir -p /etc/apt/keyrings
-    sudo curl -fsSL https://idlescreen.github.io/packages/apt/crateria-keyring.gpg \
-      -o /etc/apt/keyrings/crateria.gpg
-    ```
-
-2.  **Add the repository entry** (matches `crateria.list` in this tree):
-    ```bash
-    echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/crateria.gpg] https://idlescreen.github.io/packages/apt stable main" \
-      | sudo tee /etc/apt/sources.list.d/crateria.list
-    ```
-
-3.  **Update the package index:**
-    ```bash
-    sudo apt update
-    ```
+See the [packages README](../README.md) for the full pipeline.

@@ -3,7 +3,7 @@
 [![CI](https://github.com/idlescreen/packages/actions/workflows/ci.yml/badge.svg)](https://github.com/idlescreen/packages/actions/workflows/ci.yml)
 [![Pages](https://img.shields.io/badge/index-idlescreen.github.io%2Fpackages-orange)](https://idlescreen.github.io/packages/)
 
-Signed APT (`.deb`) and DNF (`.rpm`) repositories for **IdleScreen** (Trance screensaver family).
+Signed APT (`.deb`) and DNF (`.rpm`) repositories for **IdleScreen**.
 
 | | |
 |---|---|
@@ -12,7 +12,9 @@ Signed APT (`.deb`) and DNF (`.rpm`) repositories for **IdleScreen** (Trance scr
 | Host | `idlescreen.github.io` |
 | Org | [idlescreen](https://github.com/idlescreen) |
 
-Server asset filenames may still use a `crateria-*` prefix for compatibility; the public host and brand are IdleScreen.
+Server asset filenames and some env vars may still use a historical
+`crateria-*` / `CRATERIA_*` prefix for compatibility. The public host and brand
+are IdleScreen. Shipped application package names remain `trance` / `trance-*`.
 
 ## User install
 
