@@ -3,10 +3,16 @@
 [![CI](https://github.com/idlescreen/packages/actions/workflows/ci.yml/badge.svg)](https://github.com/idlescreen/packages/actions/workflows/ci.yml)
 [![Pages](https://img.shields.io/badge/index-idlescreen.github.io%2Fpackages-orange)](https://idlescreen.github.io/packages/)
 
-APT (`.deb`) and DNF (`.rpm`) repositories for **IdleScreen** (Trance screensaver family).
+Signed APT (`.deb`) and DNF (`.rpm`) repositories for **IdleScreen** (Trance screensaver family).
 
-Public index: **[idlescreen.github.io/packages](https://idlescreen.github.io/packages/)**  
-Brand: [idlescreen/brand](https://github.com/idlescreen/brand)
+| | |
+|---|---|
+| Public index | [idlescreen.github.io/packages](https://idlescreen.github.io/packages/) |
+| Brand | [idlescreen/brand](https://github.com/idlescreen/brand) |
+| Host | `idlescreen.github.io` |
+| Org | [idlescreen](https://github.com/idlescreen) |
+
+Server asset filenames may still use a `crateria-*` prefix for compatibility; the public host and brand are IdleScreen.
 
 ## User install
 
@@ -30,18 +36,19 @@ sudo curl -fsSL https://idlescreen.github.io/packages/rpm/crateria.repo \
 sudo dnf install trance
 ```
 
-Optional: `trance-plugin-*`, meta package `trance-plugins-all`.
+Optional packages: `trance-plugin-*`, meta package `trance-plugins-all`.
 
-> Server filenames may still use the `crateria-*` prefix until assets are renamed; the host is **idlescreen.github.io**.
+## Release to index pipeline
 
-## Release → index pipeline
-
-1. Product repo tags `vX.Y.Z` and publishes `.deb` / `.rpm`.
-2. Product Release workflow may `repository_dispatch` type `new_release` here
-   (secret on product: `IDLESCREEN_PACKAGES_DISPATCH_TOKEN`).
-3. Import workflow downloads assets, signs, rebuilds indexes, deploys Pages.
+1. Product repo tags `vX.Y.Z` and publishes `.deb` / `.rpm` assets.
+2. Product Release workflow may send `repository_dispatch` type `new_release` here
+   (product secret: `IDLESCREEN_PACKAGES_DISPATCH_TOKEN`).
+3. Import workflow downloads assets, signs packages, rebuilds indexes, and deploys Pages.
 
 ## Build tooling from source
+
+Repository maintenance binaries (`update`, `prune`, `sign`) live in this repo.
+Cargo package name remains `crateria-packages` for API stability.
 
 ```bash
 git clone https://github.com/idlescreen/packages.git
@@ -49,9 +56,15 @@ cd packages
 cargo build --release
 ```
 
+CI runs on `master`: `fmt`, `clippy -D warnings`, `test`, and `cargo deny` advisories.
+
 ## Security
 
-[Private vulnerability reporting](https://github.com/idlescreen/packages/security/advisories/new)
+Private vulnerability reporting:
+https://github.com/idlescreen/packages/security/advisories/new
+
+Signing env (maintainers): `CRATERIA_GPG_NAME` (required), optional `CRATERIA_GPG_PATH`,
+`CRATERIA_GPG_BIN`. Metadata update refuses to succeed without a usable signing key.
 
 ## License
 
