@@ -299,7 +299,7 @@
                 <div class="step-item">
                     <div class="step-label">Step 1: Download GPG Keyring</div>
                     <div class="installer-box">
-                        <div class="command" id="apt1Cmd">sudo mkdir -p /etc/apt/keyrings &amp;&amp; sudo curl -fsSL https://idlescreen.github.io/packages/apt/crateria-keyring.gpg -o /etc/apt/keyrings/idlescreen.gpg</div>
+                        <div class="command" id="apt1Cmd">sudo mkdir -p /etc/apt/keyrings &amp;&amp; sudo curl -fsSL https://idlescreen.github.io/idle-packages/apt/crateria-keyring.gpg -o /etc/apt/keyrings/idlescreen.gpg</div>
                         <button class="copy-btn" onclick="copyCommand('apt1Cmd', this)">Copy</button>
                     </div>
                 </div>
@@ -307,7 +307,7 @@
                 <div class="step-item">
                     <div class="step-label">Step 2: Add APT Source</div>
                     <div class="installer-box">
-                        <div class="command" id="apt2Cmd">echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/idlescreen.gpg] https://idlescreen.github.io/packages/apt stable main" | sudo tee /etc/apt/sources.list.d/idlescreen.list</div>
+                        <div class="command" id="apt2Cmd">echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/idlescreen.gpg] https://idlescreen.github.io/idle-packages/apt stable main" | sudo tee /etc/apt/sources.list.d/idlescreen.list</div>
                         <button class="copy-btn" onclick="copyCommand('apt2Cmd', this)">Copy</button>
                     </div>
                 </div>
@@ -329,7 +329,7 @@
                 <div class="step-item">
                     <div class="step-label">Step 1: Download Repository Configuration</div>
                     <div class="installer-box">
-                        <div class="command" id="dnf1Cmd">sudo curl -fsSL https://idlescreen.github.io/packages/rpm/crateria.repo -o /etc/yum.repos.d/idlescreen.repo</div>
+                        <div class="command" id="dnf1Cmd">sudo curl -fsSL https://idlescreen.github.io/idle-packages/rpm/crateria.repo -o /etc/yum.repos.d/idlescreen.repo</div>
                         <button class="copy-btn" onclick="copyCommand('dnf1Cmd', this)">Copy</button>
                     </div>
                 </div>
@@ -347,7 +347,7 @@
         <div class="footer" style="line-height: 1.6;">
             <a href="https://github.com/idlescreen">github.com/idlescreen</a>
             ·
-            <a href="https://github.com/idlescreen/packages">source repository</a>
+            <a href="https://github.com/idlescreen/idle-packages">source repository</a>
         </div>
     </div>
 
