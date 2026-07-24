@@ -1,7 +1,7 @@
 Package: idle-cosmic
-Version: 2.1.0
+Version: 2.2.0
 Architecture: all
-Depends: idle, idle-savers
+Depends: idle-daemon, idle-savers
 Recommends: idle-cli, idle-tui
-Provides: app-cosmic
 Description: IdleScreen product for COSMIC
+ Users install idle-cosmic, not idle-daemon.
