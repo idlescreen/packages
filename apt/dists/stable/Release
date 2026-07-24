@@ -1,24 +1,24 @@
 Architectures: amd64
 Codename: stable
 Components: main
-Date: Mon, 13 Jul 2026 04:22:43 +0000
-Description: crateria APT Repository (stable/main)
-Label: crateria
-Origin: crateria
+Date: Fri, 24 Jul 2026 03:37:48 +0000
+Description: IdleScreen APT Repository (stable/main)
+Label: IdleScreen
+Origin: IdleScreen
 Suite: stable
 MD5Sum:
- 0de6f14c9efab10dcc9eab8700184705              191 Release
- a1f198d50bd7502a09e00d5901901fb1             9302 main/binary-amd64/Packages
- 20796fe2ef4c7b224bcca7bd799a221c             3023 main/binary-amd64/Packages.gz
+ 31982e5d39777c5c1e181887898e16dc              197 Release
+ 53fe35df748169e9d069fe2ee32e6467            11751 main/binary-amd64/Packages
+ cb5c3d1ec6ac0066071823c264314bea             3633 main/binary-amd64/Packages.gz
 SHA1:
- b27faebb6036344875167b357ba1a4a2b6b2e4ea              191 Release
- cd9e2e62f30caa99f8d060956fd64618ae0cf9f9             9302 main/binary-amd64/Packages
- d16a7b82964f77212804c26c1daa3f2c7bf35666             3023 main/binary-amd64/Packages.gz
+ 820f556320573b9ff49b7a73cf6ffddfdca5de24              197 Release
+ 97ed29699932bd8e60277c944e382c0377591cab            11751 main/binary-amd64/Packages
+ d9d2c36eee5e12f8ecaa7b1dd6fbbfca29614f74             3633 main/binary-amd64/Packages.gz
 SHA256:
- a3bf041ed0b432134b625a85ce8d567fa0c9704281eeabd4b549bdd9f4a9345e              191 Release
- 5248bdbaa3f7b3c949b5c0c1aa38dc7d2e4559ec27f85268f6f5863ee4a37d3c             9302 main/binary-amd64/Packages
- 0f1aaef9f176b0081c53ad69838b0c5a66b7bc5288ff0a14fd2960899edf3f98             3023 main/binary-amd64/Packages.gz
+ a5b1e04d6cc9f496cf694c885310058821b950aa61da85d4ea880d5fbfbae6f6              197 Release
+ 460c852c2fc9529afc0dc15b3b6389b026ec6123ee90c774abde34c893b8657e            11751 main/binary-amd64/Packages
+ 570dfc5755566d98edfb9baa70fde7e53d49977dd1c91d340639fb9089b9e2fe             3633 main/binary-amd64/Packages.gz
 SHA512:
- 40242f77e2fa328a4e26772b1520f78a287f731cf0de391c01a0993d4c67cf565c9e845adc94f234ee43e6bd20bd8e6383a1451480f892e6c091c694d4f1ae6b              191 Release
- 11dd9676128a3ea8aa46bdf13cc44b2432b72329de2823441cddbe0ac94b36fcfcd2df81e0c8a186a01d7db1c1aa825d462a194f499748c3429495a62142329b             9302 main/binary-amd64/Packages
- 0a6df46c4931b4842cf02cc10b00c6eb8e184696656d1ab6a313c955968a99a00f8983f5529d0657a93b7a60649daac1d440927a62bf32f81764a4e6afe9dd54             3023 main/binary-amd64/Packages.gz
+ dea28f7a7a30c3ba935222a762acb20edff6bd574ce09271febe775b9f261320e1d79e2c0c2b89694d7e99d68abf561c26dbd335b46c605d32a80d116b66ec57              197 Release
+ a2e4711ad7bfe2d126a0eb3016d2ea6ae235f386aee3ef93033a01ab3334252222e78ed7ca71b9eb00037619cb29586eeb0b1f41e202e64a8f007ec6106c18a8            11751 main/binary-amd64/Packages
+ db75ea66a3c802b8e322b98e6f8cd9cf22b0a60ccb1bfc4f75bd360545861633d1534dbb912adf73814877bd9a21fbda571e65fe560ff8fa2701bfaa3eaef722             3633 main/binary-amd64/Packages.gz
