@@ -78,6 +78,26 @@ Description: City skyline fireworks particle show
  City skyline fireworks particle show. Official IdleScreen (Trance) screensaver
  plugin.
 
+Package: idle-saver-chaos
+Version: 2.0.2-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 402
+Depends: libc6
+Conflicts: trance-plugin-chaos (<< 2.0.0)
+Replaces: trance-plugin-chaos
+Provides: trance-plugin-chaos
+Filename: pool/main/idle-saver-chaos_2.0.2-1_amd64.deb
+Size: 180952
+MD5sum: d1f945245b964feebca7c057d3489cdc
+SHA1: fd9f4e70f45249204277fd62c0eb79c8e8d8f608
+SHA256: 9aad25d3b107262a0d6821ea726c7801a55d1c763e2d036baf589da7d36751fa
+Section: utils
+Priority: optional
+Description: Chromatic-aberration system logo glitch
+ Chromatic-aberration system logo glitch. Official IdleScreen (Trance)
+ screensaver plugin.
+
 Package: idle-savers
 Version: 2.3.1-1
 Architecture: amd64
