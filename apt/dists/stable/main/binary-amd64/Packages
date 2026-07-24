@@ -217,6 +217,26 @@ Description: Rain on a still pond: expanding rings and soft drizzle
  Rain on a still pond with expanding rings. Official IdleScreen (Trance)
  screensaver plugin.
 
+Package: idle-saver-storm
+Version: 2.0.2-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 439
+Depends: libc6
+Conflicts: trance-plugin-storm (<< 2.0.0)
+Replaces: trance-plugin-storm
+Provides: trance-plugin-storm
+Filename: pool/main/idle-saver-storm_2.0.2-1_amd64.deb
+Size: 195160
+MD5sum: 7db30b04fb36db3a3067b56c5fd03bd8
+SHA1: b57aea6d8812f54209db64bd170dbb9a5a0c1463
+SHA256: f9424d18091403824ca66a1c5fc139613075e149ce1ef291ac5db94eca9306e6
+Section: utils
+Priority: optional
+Description: Forest rain, lightning, and wildlife silhouettes
+ Forest rain, lightning, and wildlife silhouettes. Official IdleScreen (Trance)
+ screensaver plugin.
+
 Package: idle-savers
 Version: 2.3.1-1
 Architecture: amd64
