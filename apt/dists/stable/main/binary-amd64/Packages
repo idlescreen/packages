@@ -197,6 +197,26 @@ Description: Retro CRT tactical radar sweep
  Retro CRT tactical radar sweep. Official IdleScreen (Trance) screensaver
  plugin.
 
+Package: idle-saver-ripple
+Version: 2.0.2-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 372
+Depends: libc6
+Conflicts: trance-plugin-ripple (<< 2.0.0)
+Replaces: trance-plugin-ripple
+Provides: trance-plugin-ripple
+Filename: pool/main/idle-saver-ripple_2.0.2-1_amd64.deb
+Size: 158268
+MD5sum: b15155234b5c71987df29d334dba2f16
+SHA1: 617b56e9a53e83c72fb6cb24566a1a52782fd7d3
+SHA256: 5e367d431a50edf8006ca6e93276e13f985c90acacce0e1707c0acdc03718ebf
+Section: utils
+Priority: optional
+Description: Rain on a still pond: expanding rings and soft drizzle
+ Rain on a still pond with expanding rings. Official IdleScreen (Trance)
+ screensaver plugin.
+
 Package: idle-savers
 Version: 2.3.1-1
 Architecture: amd64
