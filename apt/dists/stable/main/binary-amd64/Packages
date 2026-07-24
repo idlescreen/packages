@@ -138,6 +138,25 @@ Description: Matrix-style rain with live system information
  Matrix-style rain with live system information. Official IdleScreen (Trance)
  screensaver plugin.
 
+Package: idle-saver-gnats
+Version: 2.0.2-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 411
+Depends: libc6
+Conflicts: trance-plugin-gnats (<< 2.0.0)
+Replaces: trance-plugin-gnats
+Provides: trance-plugin-gnats
+Filename: pool/main/idle-saver-gnats_2.0.2-1_amd64.deb
+Size: 192880
+MD5sum: c82929f19d34f34fd24d3454ec372a8c
+SHA1: d9f8f273b9905e48f345f597ed492b47bd38ec63
+SHA256: e8def00dcdb2ad9b779db6036d6c21ae1a224f2ecef96365d1485d9fd747467f
+Section: utils
+Priority: optional
+Description: Predator-prey firefly swarm
+ Predator-prey firefly swarm. Official IdleScreen (Trance) screensaver plugin.
+
 Package: idle-savers
 Version: 2.3.1-1
 Architecture: amd64
