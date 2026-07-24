@@ -177,6 +177,26 @@ Description: Cozy fireplace: rising embers, log glow, heat shimmer
  Cozy fireplace with rising embers and heat shimmer. Official IdleScreen
  (Trance) screensaver plugin.
 
+Package: idle-saver-radar
+Version: 2.0.2-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 379
+Depends: libc6
+Conflicts: trance-plugin-radar (<< 2.0.0)
+Replaces: trance-plugin-radar
+Provides: trance-plugin-radar
+Filename: pool/main/idle-saver-radar_2.0.2-1_amd64.deb
+Size: 170776
+MD5sum: 304a463545900fcd05fe474caa7261a4
+SHA1: a9aafbb1584aafbe5c6bd758e0a4f4f074bb6494
+SHA256: c180f30a286f908a06b7606bc60d457bddd53c2af43da5b2b94b887b8bbf71aa
+Section: utils
+Priority: optional
+Description: Retro CRT tactical radar sweep
+ Retro CRT tactical radar sweep. Official IdleScreen (Trance) screensaver
+ plugin.
+
 Package: idle-savers
 Version: 2.3.1-1
 Architecture: amd64
