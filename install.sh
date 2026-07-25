@@ -280,7 +280,7 @@ install_packages() {
     countdown 3 "Package deployment"
 
     if [ "$PKG_MGR" = "dnf" ]; then
-        story_line "Calling dnf — resolving dependencies across the void…"
+        story_line "Calling dnf — resolving dependencies…"
         # shellcheck disable=SC2086
         if ! sudo dnf install -y $_pkgs; then
             err "dnf install failed for: $_pkgs"
@@ -361,7 +361,7 @@ victory() {
         ║                                                      ║
         ║              ✦  INSTALLATION COMPLETE  ✦             ║
         ║                                                      ║
-        ║         Welcome to IdleScreen. The void is ready.    ║
+        ║              Welcome to IdleScreen.                  ║
         ║                                                      ║
         ╚══════════════════════════════════════════════════════╝
 DONE
