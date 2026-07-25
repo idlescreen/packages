@@ -3,8 +3,8 @@
 
 use idlescreen_packages::paths::{is_rpm_path, safe_join_under};
 use idlescreen_packages::sign_macros::{
-    build_rpmmacros, resolve_gpg_bin_from_env, resolve_gpg_name_from_env, resolve_gpg_path_from_env,
-    skip_rpm_sign_install_from_env,
+    build_rpmmacros, resolve_gpg_bin_from_env, resolve_gpg_name_from_env,
+    resolve_gpg_path_from_env, skip_rpm_sign_install_from_env,
 };
 use std::env;
 use std::fs;

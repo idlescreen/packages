@@ -49,11 +49,7 @@ fn run_createrepo() -> Result<(), String> {
     if has_local {
         println!("Running createrepo_c...");
         let _ = fs::remove_dir_all("rpm/repodata");
-        run_cmd(
-            Command::new("createrepo_c")
-                .arg(".")
-                .current_dir("rpm"),
-        )?;
+        run_cmd(Command::new("createrepo_c").arg(".").current_dir("rpm"))?;
     } else {
         let nix_check = Command::new("which").arg("nix-shell").output();
         let has_nix = nix_check.map(|o| o.status.success()).unwrap_or(false);

@@ -63,7 +63,11 @@ fn run_status(cmd: &mut Command) -> bool {
 }
 
 fn run_capture(cmd: &mut Command) -> Option<String> {
-    let out = cmd.stdout(Stdio::piped()).stderr(Stdio::null()).output().ok()?;
+    let out = cmd
+        .stdout(Stdio::piped())
+        .stderr(Stdio::null())
+        .output()
+        .ok()?;
     if !out.status.success() {
         return None;
     }
@@ -386,9 +390,7 @@ fn main() {
             "  {C_GREEN}→{C_RESET} Generic / other DE — core package set"
         )),
     }
-    println!(
-        "  {C_GREEN}→{C_RESET} Always:     idle-daemon  idle-cli  idle-savers  idle-tui"
-    );
+    println!("  {C_GREEN}→{C_RESET} Always:     idle-daemon  idle-cli  idle-savers  idle-tui");
     if cosmic {
         println!("  {C_GREEN}→{C_RESET} Plus:       idle-cosmic");
     }
@@ -438,7 +440,10 @@ fn main() {
         if !survey.install.is_empty() {
             story_line("Seating new IdleScreen modules…");
             if !dnf_install(&survey.install) {
-                err(&format!("dnf install failed for: {}", survey.install.join(" ")));
+                err(&format!(
+                    "dnf install failed for: {}",
+                    survey.install.join(" ")
+                ));
                 exit(1);
             }
         }
@@ -505,7 +510,9 @@ fn main() {
     }
     println!();
     if !survey.upgrade.is_empty() {
-        ok(&format!("{C_BOLD}Payload secured — outdated modules raised.{C_RESET}"));
+        ok(&format!(
+            "{C_BOLD}Payload secured — outdated modules raised.{C_RESET}"
+        ));
     } else {
         ok(&format!("{C_BOLD}Payload secured.{C_RESET}"));
     }
@@ -518,16 +525,16 @@ fn main() {
     story_line("Reloading user systemd units…");
     let _ = run_status(Command::new("systemctl").args(["--user", "daemon-reload"]));
     story_line("Enabling idle-daemon.service…");
-    let _ = run_status(
-        Command::new("systemctl").args(["--user", "enable", "--now", "idle-daemon.service"]),
-    );
-    let active = run_capture(Command::new("systemctl").args([
+    let _ = run_status(Command::new("systemctl").args([
         "--user",
-        "is-active",
+        "enable",
+        "--now",
         "idle-daemon.service",
-    ]))
-    .map(|s| s == "active")
-    .unwrap_or(false);
+    ]));
+    let active =
+        run_capture(Command::new("systemctl").args(["--user", "is-active", "idle-daemon.service"]))
+            .map(|s| s == "active")
+            .unwrap_or(false);
     if active {
         ok(&format!(
             "Daemon {C_GREEN}{C_BOLD}active{C_RESET}  ·  idle-daemon.service"

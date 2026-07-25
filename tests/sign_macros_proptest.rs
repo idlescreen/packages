@@ -1,7 +1,9 @@
 //! Property tests for GPG identity helpers and rpmmacros generation.
 // SPDX-License-Identifier: Apache-2.0
 
-use idlescreen_packages::{build_rpmmacros, gpg_name_is_valid, resolve_gpg_bin, resolve_signing_key};
+use idlescreen_packages::{
+    build_rpmmacros, gpg_name_is_valid, resolve_gpg_bin, resolve_signing_key,
+};
 use proptest::prelude::*;
 
 fn non_empty_line() -> impl Strategy<Value = String> {
