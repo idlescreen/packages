@@ -1,14 +1,25 @@
-# Metapackages (historical / archive)
+# Metapackages
 
-The **live** product is shipped as modular packages in `rpm/pool` and `apt/pool`:
+## Live product meta
 
-- `idle-daemon`, `idle-cli`, `idle-savers`, `idle-tui`, `idle-cosmic`
-- optional: `idle-studio` (RPM; may lag on APT)
+**`idlescreen/`** — product metapackage (empty package that **Requires** the modular stack).
 
-Directories under this folder (`app-cosmic`, `idlescreen`, `idlescreen-cosmic`, …) are **legacy packaging sketches**. They are **not** the source of truth for the published pool.
+| Action | Command |
+|--------|---------|
+| Install | `sudo dnf install idlescreen` / `sudo apt install idlescreen` |
+| Remove | `sudo dnf remove idlescreen` / `sudo apt remove idlescreen` |
 
-- Prefer: `curl -fsSL https://idlescreen.github.io/packages/install.sh | sh`
-- Or install the modular packages listed above.
-- `idle-cosmic` **Provides** transitional names such as `app-cosmic` / `idlescreen-applet` for upgrades.
+Pulls: `idle-daemon`, `idle-cli`, `idle-savers`, `idle-tui`. Recommends `idle-cosmic`.
 
-Do not build these metas for new releases unless they are rewritten to match the live package graph.
+Build (RPM example):
+
+```bash
+# from packages/ with rpmbuild or podman — see idlescreen/idlescreen.spec
+# ship to rpm/pool/ + apt/pool/main/, then ./sign_all.sh
+```
+
+`install.sh` always installs modular packages **and** `idlescreen` so brand install/remove works.
+
+## Legacy sketches
+
+`app-cosmic/`, `idlescreen-cosmic/`, … are historical and not the published product graph.

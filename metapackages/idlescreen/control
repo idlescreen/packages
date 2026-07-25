@@ -1,7 +1,12 @@
 Package: idlescreen
-Version: 2.3.2
+Version: 2.4.0-1
 Architecture: all
-Depends: idle-tui, idle-daemon, idle-savers, idle-cli
-Recommends: idle-cosmic, idle-studio
-Description: IdleScreen standard product package
- Main package for IdleScreen — installs universal TUI host, background daemon, and screensavers.
+Depends: idle-daemon, idle-cli, idle-savers, idle-tui
+Recommends: idle-cosmic
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Description: IdleScreen product metapackage for Wayland screensavers
+ Installs the modular host stack: idle-daemon, idle-cli, idle-savers, idle-tui.
+ On COSMIC Desktop, install idle-cosmic as well (or use install.sh which detects DE).
+ .
+ Install:  sudo dnf install idlescreen   /   sudo apt install idlescreen
+ Remove:   sudo dnf remove idlescreen    /   sudo apt remove idlescreen

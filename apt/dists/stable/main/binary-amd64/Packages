@@ -342,3 +342,21 @@ Homepage: https://github.com/idlescreen/idle-tui
 Description: Optional TUI client for IdleScreen (idle-tui)
  Optional live TUI controller for IdleScreen.
 
+Package: idlescreen
+Version: 2.4.0-1
+Architecture: all
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Depends: idle-daemon, idle-cli, idle-savers, idle-tui
+Recommends: idle-cosmic
+Filename: pool/main/idlescreen_2.4.0-1_all.deb
+Size: 816
+MD5sum: caf99e6431099850be2e9f393ff1e436
+SHA1: 29be53090905e04290589f46848f78a07ed2e2af
+SHA256: 010c77cda1a9cbe78325e083b9c0d5c4b9948a73b523724fd7b9b1ff59db92b2
+Section: utils
+Priority: optional
+Description: IdleScreen product metapackage for Wayland screensavers
+ Installs the modular host stack: idle-daemon, idle-cli, idle-savers, idle-tui.
+ .
+ Remove with: sudo apt remove idlescreen
+

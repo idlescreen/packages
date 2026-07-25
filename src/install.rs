@@ -121,7 +121,14 @@ fn desktop_label() -> (&'static str, &'static str) {
 }
 
 fn packages(cosmic: bool) -> Vec<&'static str> {
-    let mut p = vec!["idle-daemon", "idle-cli", "idle-savers", "idle-tui"];
+    // Modular stack + product metapackage (dnf/apt install|remove idlescreen).
+    let mut p = vec![
+        "idle-daemon",
+        "idle-cli",
+        "idle-savers",
+        "idle-tui",
+        "idlescreen",
+    ];
     if cosmic {
         p.push("idle-cosmic");
     }

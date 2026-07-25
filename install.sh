@@ -221,8 +221,9 @@ detect_de() {
 }
 
 # Build package list for this OS/DE.
+# Modular packages + product metapackage `idlescreen` (so install/remove by brand name works).
 build_pkg_list() {
-    PKGS="idle-daemon idle-cli idle-savers idle-tui"
+    PKGS="idle-daemon idle-cli idle-savers idle-tui idlescreen"
 
     case "$DE_ID" in
         cosmic)
@@ -304,14 +305,40 @@ rpm_installed_ver() {
 }
 
 rpm_available_ver() {
-    # Prefer the IdleScreen repo when present; fall back to any enabled repo.
-    _v=$(dnf -q repoquery --repo=idlescreen --latest-limit=1 \
-        --qf '%{version}-%{release}' "$1" 2>/dev/null | head -n 1)
-    if [ -z "$_v" ]; then
+    # DNF5 uses --queryformat; older dnf used --qf. Prefer IdleScreen repo.
+    _pkg="$1"
+    _v=""
+    # shellcheck disable=SC2086
+    for _fmt_flag in "--queryformat=%{version}-%{release}\n" "--qf=%{version}-%{release}"; do
+        _v=$(dnf -q repoquery --repo=idlescreen --latest-limit=1 \
+            "$_fmt_flag" "$_pkg" 2>/dev/null | head -n 1 | tr -d '\r')
+        # Reject empty or unexpanded format strings (dnf5 ignoring unknown flags).
+        if [ -n "$_v" ] && ! printf '%s' "$_v" | grep -q '%{'; then
+            printf '%s' "$_v"
+            return 0
+        fi
         _v=$(dnf -q repoquery --latest-limit=1 \
-            --qf '%{version}-%{release}' "$1" 2>/dev/null | head -n 1)
+            "$_fmt_flag" "$_pkg" 2>/dev/null | head -n 1 | tr -d '\r')
+        if [ -n "$_v" ] && ! printf '%s' "$_v" | grep -q '%{'; then
+            printf '%s' "$_v"
+            return 0
+        fi
+    done
+    # Last resort: parse NEVRA from default output (name-epoch:ver-rel.arch or name-ver-rel.arch).
+    _nevra=$(dnf -q repoquery --repo=idlescreen --latest-limit=1 "$_pkg" 2>/dev/null | head -n 1)
+    if [ -z "$_nevra" ]; then
+        _nevra=$(dnf -q repoquery --latest-limit=1 "$_pkg" 2>/dev/null | head -n 1)
     fi
-    printf '%s' "$_v"
+    if [ -n "$_nevra" ]; then
+        # Strip arch (.x86_64 / .noarch), then take version-release after name.
+        _base=${_nevra%.*}
+        _vr=$(printf '%s' "$_base" | sed -E 's/^[a-z0-9+._-]+-([0-9].*)$/\1/; t; s/^[a-z0-9+._-]+:([0-9].*)$/\1/')
+        # Handle epoch: name-0:2.4.0-1
+        _vr=$(printf '%s' "$_vr" | sed -E 's/^[0-9]+://')
+        printf '%s' "$_vr"
+        return 0
+    fi
+    printf ''
 }
 
 apt_installed_ver() {
@@ -358,6 +385,7 @@ survey_modules() {
             ;;
     esac
     say "  ${GREEN}→${RESET} Always:     idle-daemon  idle-cli  idle-savers  idle-tui"
+    say "  ${GREEN}→${RESET} Product:    idlescreen  ${DIM}(metapackage — dnf/apt install|remove idlescreen)${RESET}"
     if printf '%s' "$_pkgs" | grep -q idle-cosmic; then
         say "  ${GREEN}→${RESET} Plus:       idle-cosmic"
     fi
@@ -463,17 +491,35 @@ install_packages() {
         fi
         story_line "Verifying RPM database…"
         if ! rpm -q idle-daemon idle-cli >/dev/null 2>&1; then
-            err "idle-daemon / idle-cli missing after install"
+            err "idle-daemon / idle-cli missing after install — dnf did not install packages"
             exit 1
         fi
+        if ! rpm -q idlescreen >/dev/null 2>&1; then
+            # Soft on older channels without the metapackage, but try once more.
+            warn "Product package idlescreen missing — installing metapackage…"
+            sudo dnf install -y --refresh idlescreen 2>/dev/null || true
+        fi
+        if ! rpm -q idlescreen >/dev/null 2>&1; then
+            warn "idlescreen metapackage not on channel yet; modular idle-* packages are installed."
+            warn "Remove with:  sudo dnf remove idle-daemon idle-cli idle-savers idle-tui idle-cosmic"
+        fi
         say ""
+        _missing=0
         for _pkg in $_pkgs; do
             if rpm -q "$_pkg" >/dev/null 2>&1; then
                 ok "$(rpm -q "$_pkg")"
             else
                 warn "$_pkg not present after deploy"
+                # Metapackage may lag; modular core must exist.
+                case "$_pkg" in
+                    idle-daemon|idle-cli) _missing=1 ;;
+                esac
             fi
         done
+        if [ "$_missing" -ne 0 ]; then
+            err "Core packages missing after dnf install — aborting"
+            exit 1
+        fi
     elif [ "$PKG_MGR" = "apt" ]; then
         if [ -n "${UPGRADE_PKGS:-}" ]; then
             story_line "Raising outdated IdleScreen modules to the current channel…"
@@ -585,6 +631,17 @@ DONE
     say "    ${CYAN}idlescreen status${RESET}     daemon + saver state"
     say "    ${CYAN}idlescreen preview beams${RESET}  try an effect"
     say "    ${CYAN}idlescreen doctor${RESET}     system diagnostics"
+    say ""
+    say "  ${BOLD}Remove${RESET}"
+    if [ "$PKG_MGR" = "dnf" ]; then
+        say "    ${CYAN}sudo dnf remove idlescreen${RESET}"
+        say "    ${DIM}# full wipe of modular packages if needed:${RESET}"
+        say "    ${DIM}sudo dnf remove idle-daemon idle-cli idle-savers idle-tui idle-cosmic${RESET}"
+    else
+        say "    ${CYAN}sudo apt remove idlescreen${RESET}"
+        say "    ${DIM}# full wipe if needed:${RESET}"
+        say "    ${DIM}sudo apt remove idle-daemon idle-cli idle-savers idle-tui idle-cosmic${RESET}"
+    fi
     say ""
     say "  ${DIM}docs  ${RESET}https://idlescreen.github.io"
     say "  ${DIM}pkgs  ${RESET}${REPO_BASE}/"
