@@ -304,7 +304,6 @@
             <button class="tab-btn active" id="apt-tab" onclick="switchTab('apt')">Debian / Ubuntu</button>
             <button class="tab-btn" id="dnf-tab" onclick="switchTab('dnf')">Fedora / RHEL</button>
             <button class="tab-btn" id="arch-tab" onclick="switchTab('arch')">Arch Linux</button>
-            <button class="tab-btn" id="flatpak-tab" onclick="switchTab('flatpak')">Flatpak</button>
         </div>
 
         <!-- APT Content -->
@@ -330,7 +329,7 @@
                 <div class="step-item">
                     <div class="step-label">Step 3: Install Package & Run</div>
                     <div class="installer-box">
-                        <div class="command" id="apt3Cmd">sudo apt install idlescreen && idlescreen tui</div>
+                        <div class="command" id="apt3Cmd">sudo apt install idle-daemon idle-cli idle-savers idle-tui && idlescreen tui</div>
                         <button class="copy-btn" onclick="copyCommand('apt3Cmd', this)">Copy</button>
                     </div>
                 </div>
@@ -352,7 +351,7 @@
                 <div class="step-item">
                     <div class="step-label">Step 2: Refresh DNF Metadata & Install Package</div>
                     <div class="installer-box">
-                        <div class="command" id="dnf2Cmd">sudo dnf check-update && sudo dnf install idlescreen && idlescreen tui</div>
+                        <div class="command" id="dnf2Cmd">sudo dnf check-update && sudo dnf install idle-daemon idle-cli idle-savers idle-tui && idlescreen tui</div>
                         <button class="copy-btn" onclick="copyCommand('dnf2Cmd', this)">Copy</button>
                     </div>
                 </div>
@@ -381,28 +380,6 @@
             </div>
         </div>
 
-        <!-- Flatpak Content -->
-        <div id="flatpak-content" class="tab-content">
-            <div class="section-title">Flatpak (Cross-Distribution)</div>
-            <div class="steps">
-                <div class="step-item">
-                    <div class="step-label">Step 1: Clone & Build Manifest</div>
-                    <div class="installer-box">
-                        <div class="command" id="flat1Cmd">git clone https://github.com/idlescreen/packages.git && cd packages/flatpak</div>
-                        <button class="copy-btn" onclick="copyCommand('flat1Cmd', this)">Copy</button>
-                    </div>
-                </div>
-
-                <div class="step-item">
-                    <div class="step-label">Step 2: Install Flatpak Package</div>
-                    <div class="installer-box">
-                        <div class="command" id="flat2Cmd">flatpak-builder --user --install --force-clean build-dir io.github.idlescreen.idle.yaml</div>
-                        <button class="copy-btn" onclick="copyCommand('flat2Cmd', this)">Copy</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
         <div class="footer" style="line-height: 1.6;">
             <a href="https://github.com/idlescreen">github.com/idlescreen</a>
             ·
