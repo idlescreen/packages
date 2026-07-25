@@ -246,6 +246,20 @@ setup_repo_dnf() {
         -o /etc/yum.repos.d/idlescreen.repo
     ok "Repo written → ${BOLD}/etc/yum.repos.d/idlescreen.repo${RESET}"
     dim "   baseurl ${REPO_BASE}/rpm  ·  gpgcheck on"
+    story_line "Refreshing IdleScreen channel metadata (so older builds are not left behind)…"
+    # Force a fresh view of the channel; ignore soft failures and fall back.
+    sudo dnf clean metadata --repo=idlescreen >/dev/null 2>&1 || true
+    if [ "$IS_TTY" -eq 1 ]; then
+        sudo dnf makecache --refresh --repo=idlescreen >/dev/null 2>&1 &
+        spin_while $! "syncing DNF metadata" || {
+            sudo dnf makecache --refresh >/dev/null 2>&1 || true
+        }
+    else
+        sudo dnf makecache --refresh --repo=idlescreen >/dev/null 2>&1 \
+            || sudo dnf makecache --refresh >/dev/null 2>&1 \
+            || true
+    fi
+    ok "DNF channel metadata current"
 }
 
 setup_repo_apt() {
@@ -271,18 +285,179 @@ setup_repo_apt() {
     ok "APT channel ready"
 }
 
+# True when version string $1 is older than $2 (sort -V). Equal → false.
+version_is_older() {
+    _a="$1"
+    _b="$2"
+    if [ -z "$_a" ] || [ -z "$_b" ]; then
+        return 1
+    fi
+    if [ "$_a" = "$_b" ]; then
+        return 1
+    fi
+    _first=$(printf '%s\n%s\n' "$_a" "$_b" | sort -V | head -n 1)
+    [ "$_first" = "$_a" ]
+}
+
+rpm_installed_ver() {
+    rpm -q --qf '%{VERSION}-%{RELEASE}' "$1" 2>/dev/null || true
+}
+
+rpm_available_ver() {
+    # Prefer the IdleScreen repo when present; fall back to any enabled repo.
+    _v=$(dnf -q repoquery --repo=idlescreen --latest-limit=1 \
+        --qf '%{version}-%{release}' "$1" 2>/dev/null | head -n 1)
+    if [ -z "$_v" ]; then
+        _v=$(dnf -q repoquery --latest-limit=1 \
+            --qf '%{version}-%{release}' "$1" 2>/dev/null | head -n 1)
+    fi
+    printf '%s' "$_v"
+}
+
+apt_installed_ver() {
+    dpkg-query -W -f='${Version}' "$1" 2>/dev/null || true
+}
+
+apt_candidate_ver() {
+    # apt-cache policy: "  Candidate: 2.3.6-1"
+    apt-cache policy "$1" 2>/dev/null \
+        | awk '/Candidate:/ { print $2; exit }' \
+        | grep -v '^(none)$' || true
+}
+
+# Survey installed IdleScreen modules vs channel; set UPGRADE_PKGS / INSTALL_PKGS / CURRENT_PKGS.
+survey_modules() {
+    _pkgs="$1"
+    UPGRADE_PKGS=""
+    INSTALL_PKGS=""
+    CURRENT_PKGS=""
+    UPGRADE_COUNT=0
+    INSTALL_COUNT=0
+    CURRENT_COUNT=0
+
+    step "[3/5]  Composing the install plan"
+    story_line "Matching desktop profile → ${BOLD}${DE_LABEL}${RESET}"
+    case "$DE_ID" in
+        cosmic)
+            say "  ${GREEN}→${RESET} COSMIC detected — including ${BOLD}idle-cosmic${RESET} panel applet"
+            ;;
+        hyprland)
+            say "  ${GREEN}→${RESET} Hyprland detected — daemon + TUI + full saver set"
+            ;;
+        sway)
+            say "  ${GREEN}→${RESET} Sway detected — daemon + TUI + full saver set"
+            ;;
+        gnome)
+            say "  ${GREEN}→${RESET} GNOME detected — daemon + TUI + full saver set"
+            ;;
+        kde)
+            say "  ${GREEN}→${RESET} KDE Plasma detected — daemon + TUI + full saver set"
+            ;;
+        *)
+            say "  ${GREEN}→${RESET} Generic / other DE — core package set"
+            ;;
+    esac
+    say "  ${GREEN}→${RESET} Always:     idle-daemon  idle-cli  idle-savers  idle-tui"
+    if printf '%s' "$_pkgs" | grep -q idle-cosmic; then
+        say "  ${GREEN}→${RESET} Plus:       idle-cosmic"
+    fi
+    say ""
+    story_line "Surveying what is already on this host…"
+    say "  ${DIM}manifest:${RESET} ${BOLD}${_pkgs}${RESET}"
+    say ""
+
+    for _pkg in $_pkgs; do
+        _inst=""
+        _cand=""
+        if [ "$PKG_MGR" = "dnf" ]; then
+            if rpm -q "$_pkg" >/dev/null 2>&1; then
+                _inst=$(rpm_installed_ver "$_pkg")
+                _cand=$(rpm_available_ver "$_pkg")
+            fi
+        else
+            if dpkg-query -W "$_pkg" >/dev/null 2>&1; then
+                _inst=$(apt_installed_ver "$_pkg")
+                _cand=$(apt_candidate_ver "$_pkg")
+            fi
+        fi
+
+        if [ -z "$_inst" ]; then
+            say "  ${ORANGE}○${RESET} ${BOLD}${_pkg}${RESET}  ${DIM}not installed${RESET}  →  ${CYAN}install${RESET}"
+            INSTALL_PKGS="${INSTALL_PKGS} ${_pkg}"
+            INSTALL_COUNT=$((INSTALL_COUNT + 1))
+        elif [ -n "$_cand" ] && version_is_older "$_inst" "$_cand"; then
+            say "  ${YELLOW}↑${RESET} ${BOLD}${_pkg}${RESET}  ${DIM}${_inst}${RESET}  →  ${GREEN}${_cand}${RESET}  ${ORANGE}upgrade${RESET}"
+            UPGRADE_PKGS="${UPGRADE_PKGS} ${_pkg}"
+            UPGRADE_COUNT=$((UPGRADE_COUNT + 1))
+        else
+            if [ -n "$_cand" ]; then
+                say "  ${GREEN}✔${RESET} ${BOLD}${_pkg}${RESET}  ${DIM}${_inst}${RESET}  ${GREEN}current${RESET}"
+            else
+                say "  ${GREEN}✔${RESET} ${BOLD}${_pkg}${RESET}  ${DIM}${_inst}${RESET}  ${DIM}(no channel version yet)${RESET}"
+            fi
+            CURRENT_PKGS="${CURRENT_PKGS} ${_pkg}"
+            CURRENT_COUNT=$((CURRENT_COUNT + 1))
+        fi
+    done
+
+    # trim leading spaces
+    UPGRADE_PKGS=$(printf '%s' "$UPGRADE_PKGS" | sed 's/^ *//')
+    INSTALL_PKGS=$(printf '%s' "$INSTALL_PKGS" | sed 's/^ *//')
+    CURRENT_PKGS=$(printf '%s' "$CURRENT_PKGS" | sed 's/^ *//')
+
+    say ""
+    if [ "$UPGRADE_COUNT" -gt 0 ]; then
+        say "  ${ORANGE}${BOLD}Found ${UPGRADE_COUNT} outdated IdleScreen module(s)${RESET} — will raise to channel."
+    fi
+    if [ "$INSTALL_COUNT" -gt 0 ]; then
+        say "  ${CYAN}${BOLD}Found ${INSTALL_COUNT} missing module(s)${RESET} — will install."
+    fi
+    if [ "$UPGRADE_COUNT" -eq 0 ] && [ "$INSTALL_COUNT" -eq 0 ]; then
+        say "  ${GREEN}${BOLD}All planned modules already current${RESET} — will still re-sync with the channel."
+    fi
+    say "  ${BOLD}Will ensure:${RESET} ${CYAN}${_pkgs}${RESET}"
+    pause 0.5
+}
+
 install_packages() {
     _pkgs="$1"
     step "[4/5]  Deploying modules into the system"
     say "  ${DIM}manifest:${RESET} ${BOLD}${_pkgs}${RESET}"
     say ""
 
-    countdown 3 "Package deployment"
+    if [ "${UPGRADE_COUNT:-0}" -gt 0 ]; then
+        countdown 3 "Module upgrade"
+    elif [ "${INSTALL_COUNT:-0}" -gt 0 ]; then
+        countdown 3 "Package deployment"
+    else
+        countdown 3 "Channel re-sync"
+    fi
 
     if [ "$PKG_MGR" = "dnf" ]; then
-        story_line "Calling dnf — resolving dependencies…"
+        # Explicit upgrade path first so older installs are never skipped.
+        if [ -n "${UPGRADE_PKGS:-}" ]; then
+            story_line "Raising outdated IdleScreen modules to the current channel…"
+            # shellcheck disable=SC2086
+            if ! sudo dnf upgrade -y --refresh $UPGRADE_PKGS; then
+                warn "dnf upgrade reported issues — continuing with install re-sync…"
+            fi
+        fi
+        if [ -n "${INSTALL_PKGS:-}" ]; then
+            story_line "Seating new IdleScreen modules…"
+            # shellcheck disable=SC2086
+            if ! sudo dnf install -y --refresh $INSTALL_PKGS; then
+                err "dnf install failed for: $INSTALL_PKGS"
+                exit 1
+            fi
+        fi
+        # Full set re-sync: installs missing + upgrades any remaining lag.
+        story_line "Re-syncing the full IdleScreen set against the channel…"
         # shellcheck disable=SC2086
-        if ! sudo dnf install -y $_pkgs; then
+        if ! sudo dnf upgrade -y --refresh $_pkgs; then
+            warn "dnf upgrade (full set) soft-failed — trying install…"
+        fi
+        # shellcheck disable=SC2086
+        if ! sudo dnf install -y --refresh $_pkgs; then
             err "dnf install failed for: $_pkgs"
             exit 1
         fi
@@ -292,16 +467,29 @@ install_packages() {
             exit 1
         fi
         say ""
-        rpm -q idle-daemon idle-cli idle-tui idle-savers 2>/dev/null | while read -r line; do
-            ok "$line"
+        for _pkg in $_pkgs; do
+            if rpm -q "$_pkg" >/dev/null 2>&1; then
+                ok "$(rpm -q "$_pkg")"
+            else
+                warn "$_pkg not present after deploy"
+            fi
         done
-        if printf '%s' "$_pkgs" | grep -q idle-cosmic; then
-            rpm -q idle-cosmic 2>/dev/null | while read -r line; do
-                ok "$line"
-            done
-        fi
     elif [ "$PKG_MGR" = "apt" ]; then
-        story_line "Calling apt-get — packing the payload…"
+        if [ -n "${UPGRADE_PKGS:-}" ]; then
+            story_line "Raising outdated IdleScreen modules to the current channel…"
+            # shellcheck disable=SC2086
+            if ! sudo apt-get install -y --only-upgrade $UPGRADE_PKGS; then
+                warn "apt only-upgrade soft-failed — continuing with full install…"
+            fi
+        fi
+        if [ -n "${INSTALL_PKGS:-}" ]; then
+            story_line "Seating new IdleScreen modules…"
+            # shellcheck disable=SC2086
+            if ! sudo apt-get install -y $INSTALL_PKGS; then
+                warn "Partial install failed — retrying core set…"
+            fi
+        fi
+        story_line "Re-syncing the full IdleScreen set against the channel…"
         # shellcheck disable=SC2086
         if ! sudo apt-get install -y $_pkgs; then
             warn "Full set failed — retrying without idle-tui (older indexes)…"
@@ -321,17 +509,20 @@ install_packages() {
             exit 1
         fi
         say ""
-        dpkg-query -W idle-daemon idle-cli idle-tui idle-savers 2>/dev/null | while read -r line; do
-            ok "$line"
-        done || true
-        if printf '%s' "$_pkgs" | grep -q idle-cosmic; then
-            dpkg-query -W idle-cosmic 2>/dev/null | while read -r line; do
-                ok "$line"
-            done || true
-        fi
+        for _pkg in $_pkgs; do
+            if dpkg-query -W "$_pkg" >/dev/null 2>&1; then
+                ok "$(dpkg-query -W -f='${Package} ${Version}' "$_pkg")"
+            else
+                warn "$_pkg not present after deploy"
+            fi
+        done
     fi
     say ""
-    ok "${BOLD}Payload secured.${RESET}"
+    if [ "${UPGRADE_COUNT:-0}" -gt 0 ]; then
+        ok "${BOLD}Payload secured — outdated modules raised.${RESET}"
+    else
+        ok "${BOLD}Payload secured.${RESET}"
+    fi
 }
 
 awaken_daemon() {
@@ -368,6 +559,12 @@ DONE
     say "  ${DIM}desktop${RESET}  ${DE_LABEL}"
     say "  ${DIM}channel${RESET}  ${PKG_HOST_LABEL}"
     say "  ${DIM}modules${RESET}  ${_pkgs}"
+    if [ "${UPGRADE_COUNT:-0}" -gt 0 ]; then
+        say "  ${DIM}raised${RESET}   ${GREEN}${UPGRADE_COUNT}${RESET} outdated module(s) upgraded to channel"
+    fi
+    if [ "${INSTALL_COUNT:-0}" -gt 0 ]; then
+        say "  ${DIM}seated${RESET}   ${CYAN}${INSTALL_COUNT}${RESET} new module(s) installed"
+    fi
     say ""
 
     case "$DE_ID" in
@@ -438,39 +635,11 @@ main() {
 
     pause 0.3
 
-    # --- Phase 3: plan ---
-    step "[3/5]  Composing the install plan"
+    # --- Phase 3: plan + survey installed vs channel ---
     PKGS=$(build_pkg_list)
-    story_line "Matching desktop profile → ${BOLD}${DE_LABEL}${RESET}"
-    case "$DE_ID" in
-        cosmic)
-            say "  ${GREEN}→${RESET} COSMIC detected — including ${BOLD}idle-cosmic${RESET} panel applet"
-            ;;
-        hyprland)
-            say "  ${GREEN}→${RESET} Hyprland detected — daemon + TUI + full saver set"
-            ;;
-        sway)
-            say "  ${GREEN}→${RESET} Sway detected — daemon + TUI + full saver set"
-            ;;
-        gnome)
-            say "  ${GREEN}→${RESET} GNOME detected — daemon + TUI + full saver set"
-            ;;
-        kde)
-            say "  ${GREEN}→${RESET} KDE Plasma detected — daemon + TUI + full saver set"
-            ;;
-        *)
-            say "  ${GREEN}→${RESET} Generic / other DE — core package set"
-            ;;
-    esac
-    say "  ${GREEN}→${RESET} Always:     idle-daemon  idle-cli  idle-savers  idle-tui"
-    if printf '%s' "$PKGS" | grep -q idle-cosmic; then
-        say "  ${GREEN}→${RESET} Plus:       idle-cosmic"
-    fi
-    say ""
-    say "  ${BOLD}Will install:${RESET} ${CYAN}${PKGS}${RESET}"
-    pause 0.5
+    survey_modules "$PKGS"
 
-    # --- Phase 4: install ---
+    # --- Phase 4: upgrade outdated + install missing + full re-sync ---
     install_packages "$PKGS"
 
     # --- Phase 5: daemon ---

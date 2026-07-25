@@ -1,9 +1,11 @@
-//! IdleScreen installer — same product matrix as `install.sh`.
+//! IdleScreen installer — same product matrix and upgrade story as `install.sh`.
 // SPDX-License-Identifier: Apache-2.0
 
+use idlescreen_packages::compare_versions;
+use std::cmp::Ordering;
 use std::env;
 use std::path::Path;
-use std::process::{Command, exit};
+use std::process::{Command, Stdio, exit};
 use std::thread::sleep;
 use std::time::Duration;
 
@@ -11,22 +13,41 @@ const C_ORANGE: &str = "\x1b[38;5;208m";
 const C_CYAN: &str = "\x1b[38;5;51m";
 const C_GREEN: &str = "\x1b[38;5;82m";
 const C_YELLOW: &str = "\x1b[38;5;220m";
+const C_MAGENTA: &str = "\x1b[38;5;213m";
 const C_DIM: &str = "\x1b[38;5;242m";
 const C_BOLD: &str = "\x1b[1m";
 const C_RESET: &str = "\x1b[0m";
+
+const REPO_BASE: &str = "https://idlescreen.github.io/packages";
 
 fn pause(ms: u64) {
     sleep(Duration::from_millis(ms));
 }
 
-fn ok_cmd(cmd: &mut Command, what: &str) -> bool {
-    match cmd.status() {
-        Ok(st) if st.success() => true,
-        _ => {
-            eprintln!("{C_YELLOW}ERROR:{C_RESET} {what} failed");
-            false
-        }
-    }
+fn say(line: &str) {
+    println!("{line}");
+}
+
+fn story_line(msg: &str) {
+    println!("  {C_MAGENTA}›{C_RESET} {C_DIM}{msg}{C_RESET}");
+    pause(200);
+}
+
+fn ok(msg: &str) {
+    println!(" {C_GREEN}✔{C_RESET} {msg}");
+}
+
+fn warn(msg: &str) {
+    println!(" {C_YELLOW}!{C_RESET} {msg}");
+}
+
+fn err(msg: &str) {
+    eprintln!(" {C_YELLOW}ERROR:{C_RESET} {msg}");
+}
+
+fn step(msg: &str) {
+    println!();
+    println!(" {C_CYAN}{C_BOLD}{msg}{C_RESET}");
 }
 
 fn which(bin: &str) -> bool {
@@ -35,6 +56,19 @@ fn which(bin: &str) -> bool {
         .status()
         .map(|s| s.success())
         .unwrap_or(false)
+}
+
+fn run_status(cmd: &mut Command) -> bool {
+    cmd.status().map(|s| s.success()).unwrap_or(false)
+}
+
+fn run_capture(cmd: &mut Command) -> Option<String> {
+    let out = cmd.stdout(Stdio::piped()).stderr(Stdio::null()).output().ok()?;
+    if !out.status.success() {
+        return None;
+    }
+    let s = String::from_utf8_lossy(&out.stdout).trim().to_string();
+    if s.is_empty() { None } else { Some(s) }
 }
 
 fn is_dnf() -> bool {
@@ -101,6 +135,151 @@ fn os_pretty() -> String {
     "Unknown Linux".into()
 }
 
+fn version_is_older(installed: &str, candidate: &str) -> bool {
+    !installed.is_empty()
+        && !candidate.is_empty()
+        && compare_versions(installed, candidate) == Ordering::Less
+}
+
+fn rpm_installed(pkg: &str) -> Option<String> {
+    run_capture(Command::new("rpm").args(["-q", "--qf", "%{VERSION}-%{RELEASE}", pkg]))
+}
+
+fn rpm_available(pkg: &str) -> Option<String> {
+    run_capture(Command::new("dnf").args([
+        "-q",
+        "repoquery",
+        "--repo=idlescreen",
+        "--latest-limit=1",
+        "--qf",
+        "%{version}-%{release}",
+        pkg,
+    ]))
+    .or_else(|| {
+        run_capture(Command::new("dnf").args([
+            "-q",
+            "repoquery",
+            "--latest-limit=1",
+            "--qf",
+            "%{version}-%{release}",
+            pkg,
+        ]))
+    })
+}
+
+fn apt_installed(pkg: &str) -> Option<String> {
+    run_capture(Command::new("dpkg-query").args(["-W", "-f=${Version}", pkg]))
+}
+
+fn apt_candidate(pkg: &str) -> Option<String> {
+    let out = run_capture(Command::new("apt-cache").args(["policy", pkg]))?;
+    for line in out.lines() {
+        let t = line.trim();
+        if let Some(rest) = t.strip_prefix("Candidate:") {
+            let v = rest.trim();
+            if v.is_empty() || v == "(none)" {
+                return None;
+            }
+            return Some(v.to_string());
+        }
+    }
+    None
+}
+
+#[derive(Default)]
+struct Survey {
+    upgrade: Vec<String>,
+    install: Vec<String>,
+    current: Vec<String>,
+}
+
+fn survey(pkgs: &[&str], dnf: bool) -> Survey {
+    let mut s = Survey::default();
+    for pkg in pkgs {
+        let (inst, cand) = if dnf {
+            (rpm_installed(pkg), rpm_available(pkg))
+        } else {
+            (apt_installed(pkg), apt_candidate(pkg))
+        };
+
+        match (inst.as_deref(), cand.as_deref()) {
+            (None, _) => {
+                println!(
+                    "  {C_ORANGE}○{C_RESET} {C_BOLD}{pkg}{C_RESET}  {C_DIM}not installed{C_RESET}  →  {C_CYAN}install{C_RESET}"
+                );
+                s.install.push((*pkg).to_string());
+            }
+            (Some(i), Some(c)) if version_is_older(i, c) => {
+                println!(
+                    "  {C_YELLOW}↑{C_RESET} {C_BOLD}{pkg}{C_RESET}  {C_DIM}{i}{C_RESET}  →  {C_GREEN}{c}{C_RESET}  {C_ORANGE}upgrade{C_RESET}"
+                );
+                s.upgrade.push((*pkg).to_string());
+            }
+            (Some(i), Some(c)) => {
+                println!(
+                    "  {C_GREEN}✔{C_RESET} {C_BOLD}{pkg}{C_RESET}  {C_DIM}{i}{C_RESET}  {C_GREEN}current{C_RESET} {C_DIM}(={c}){C_RESET}"
+                );
+                s.current.push((*pkg).to_string());
+            }
+            (Some(i), None) => {
+                println!(
+                    "  {C_GREEN}✔{C_RESET} {C_BOLD}{pkg}{C_RESET}  {C_DIM}{i}{C_RESET}  {C_DIM}(no channel version yet){C_RESET}"
+                );
+                s.current.push((*pkg).to_string());
+            }
+        }
+    }
+    s
+}
+
+fn dnf_upgrade(pkgs: &[String]) -> bool {
+    if pkgs.is_empty() {
+        return true;
+    }
+    let mut cmd = Command::new("sudo");
+    cmd.arg("dnf")
+        .arg("upgrade")
+        .arg("-y")
+        .arg("--refresh")
+        .args(pkgs);
+    run_status(&mut cmd)
+}
+
+fn dnf_install(pkgs: &[String]) -> bool {
+    if pkgs.is_empty() {
+        return true;
+    }
+    let mut cmd = Command::new("sudo");
+    cmd.arg("dnf")
+        .arg("install")
+        .arg("-y")
+        .arg("--refresh")
+        .args(pkgs);
+    run_status(&mut cmd)
+}
+
+fn apt_only_upgrade(pkgs: &[String]) -> bool {
+    if pkgs.is_empty() {
+        return true;
+    }
+    let mut cmd = Command::new("sudo");
+    cmd.arg("apt-get")
+        .arg("install")
+        .arg("-y")
+        .arg("--only-upgrade")
+        .args(pkgs);
+    run_status(&mut cmd)
+}
+
+fn apt_install(pkgs: &[String]) -> bool {
+    if pkgs.is_empty() {
+        return true;
+    }
+    let mut cmd = Command::new("sudo");
+    cmd.arg("apt-get").arg("install").arg("-y").args(pkgs);
+    run_status(&mut cmd)
+}
+
 fn main() {
     let arch = env::consts::ARCH;
     let session = env::var("XDG_SESSION_TYPE").unwrap_or_else(|_| "unknown".into());
@@ -111,9 +290,10 @@ fn main() {
 
     println!("\n{C_ORANGE}{C_BOLD}IdleScreen installer{C_RESET}");
     println!("{C_DIM}  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{C_RESET}");
+    story_line("Preparing IdleScreen for this machine…");
     pause(150);
 
-    println!("\n {C_CYAN}{C_BOLD}[1/5]{C_RESET} {C_BOLD}Scanning host identity{C_RESET}");
+    step("[1/5]  Scanning host identity");
     println!("  {C_DIM}os{C_RESET}       {C_GREEN}{os_name}{C_RESET}");
     println!("  {C_DIM}arch{C_RESET}     {C_GREEN}{arch}{C_RESET}");
     println!("  {C_DIM}session{C_RESET}  {C_GREEN}{session}{C_RESET}");
@@ -122,119 +302,278 @@ fn main() {
     let dnf = is_dnf();
     let apt = is_apt();
     if !dnf && !apt {
-        eprintln!("{C_YELLOW}ERROR:{C_RESET} need DNF or APT — https://idlescreen.github.io/packages/");
+        err("need DNF or APT — https://idlescreen.github.io/packages/");
         exit(1);
     }
-    println!(
-        "  {C_DIM}packages{C_RESET} {C_GREEN}{}{C_RESET}",
-        if dnf { "DNF · RPM host" } else { "APT · Debian family" }
-    );
+    let channel = if dnf {
+        "DNF · RPM host"
+    } else {
+        "APT · Debian family"
+    };
+    println!("  {C_DIM}packages{C_RESET} {C_GREEN}{channel}{C_RESET}");
     pause(200);
 
-    println!("\n {C_CYAN}{C_BOLD}[2/5]{C_RESET} {C_BOLD}Opening the package gate{C_RESET}");
+    step("[2/5]  Opening the package gate");
     if dnf {
-        if !ok_cmd(
-            Command::new("sudo").args([
-                "curl",
-                "-fsSL",
-                "https://idlescreen.github.io/packages/rpm/idlescreen.repo",
-                "-o",
-                "/etc/yum.repos.d/idlescreen.repo",
-            ]),
-            "repo install",
-        ) {
+        story_line("Fetching signed repository manifest…");
+        if !run_status(Command::new("sudo").args([
+            "curl",
+            "-fsSL",
+            &format!("{REPO_BASE}/rpm/idlescreen.repo"),
+            "-o",
+            "/etc/yum.repos.d/idlescreen.repo",
+        ])) {
+            err("repo install failed");
             exit(1);
         }
-        println!("  {C_GREEN}✔{C_RESET} /etc/yum.repos.d/idlescreen.repo");
+        ok("/etc/yum.repos.d/idlescreen.repo");
+        story_line("Refreshing IdleScreen channel metadata (so older builds are not left behind)…");
+        let _ = run_status(
+            Command::new("sudo")
+                .args(["dnf", "clean", "metadata", "--repo=idlescreen"])
+                .stdout(Stdio::null())
+                .stderr(Stdio::null()),
+        );
+        if !run_status(
+            Command::new("sudo")
+                .args(["dnf", "makecache", "--refresh", "--repo=idlescreen"])
+                .stdout(Stdio::null())
+                .stderr(Stdio::null()),
+        ) {
+            let _ = run_status(
+                Command::new("sudo")
+                    .args(["dnf", "makecache", "--refresh"])
+                    .stdout(Stdio::null())
+                    .stderr(Stdio::null()),
+            );
+        }
+        ok("DNF channel metadata current");
     } else {
-        let _ = Command::new("sudo")
-            .args(["mkdir", "-p", "/etc/apt/keyrings"])
+        story_line("Provisioning keyring vault…");
+        let _ = run_status(Command::new("sudo").args(["mkdir", "-p", "/etc/apt/keyrings"]));
+        story_line("Importing IdleScreen signing key…");
+        let _ = Command::new("sh")
+            .arg("-c")
+            .arg(format!(
+                "curl -fsSL {REPO_BASE}/idlescreen-keyring.gpg | sudo tee /etc/apt/keyrings/idlescreen-keyring.gpg >/dev/null"
+            ))
             .status();
-        let _ = Command::new("sh").arg("-c").arg(
-            "curl -fsSL https://idlescreen.github.io/packages/idlescreen-keyring.gpg | sudo tee /etc/apt/keyrings/idlescreen-keyring.gpg >/dev/null",
-        ).status();
-        let _ = Command::new("sh").arg("-c").arg(
-            "echo 'deb [signed-by=/etc/apt/keyrings/idlescreen-keyring.gpg] https://idlescreen.github.io/packages/apt/ stable main' | sudo tee /etc/apt/sources.list.d/idlescreen.list >/dev/null",
-        ).status();
-        if !ok_cmd(
-            Command::new("sudo").args(["apt-get", "update"]),
-            "apt-get update",
-        ) {
+        story_line("Registering stable/main channel…");
+        let _ = Command::new("sh")
+            .arg("-c")
+            .arg(format!(
+                "echo 'deb [signed-by=/etc/apt/keyrings/idlescreen-keyring.gpg] {REPO_BASE}/apt/ stable main' | sudo tee /etc/apt/sources.list.d/idlescreen.list >/dev/null"
+            ))
+            .status();
+        story_line("Refreshing package index…");
+        if !run_status(Command::new("sudo").args(["apt-get", "update"])) {
+            err("apt-get update failed");
             exit(1);
         }
-        println!("  {C_GREEN}✔{C_RESET} APT channel ready");
+        ok("APT channel ready");
     }
 
-    println!("\n {C_CYAN}{C_BOLD}[3/5]{C_RESET} {C_BOLD}Composing the install plan{C_RESET}");
-    println!("  {C_GREEN}→{C_RESET} {de_label}");
-    println!("  {C_GREEN}→{C_RESET} {C_CYAN}{}{C_RESET}", pkgs.join(" "));
-    for n in (1..=3).rev() {
-        println!("  {C_ORANGE}deploy in {n}…{C_RESET}");
-        pause(350);
+    step("[3/5]  Composing the install plan");
+    story_line(&format!("Matching desktop profile → {de_label}"));
+    match de_id {
+        "cosmic" => say(&format!(
+            "  {C_GREEN}→{C_RESET} COSMIC detected — including {C_BOLD}idle-cosmic{C_RESET} panel applet"
+        )),
+        "hyprland" | "sway" | "gnome" | "kde" => say(&format!(
+            "  {C_GREEN}→{C_RESET} {de_label} detected — daemon + TUI + full saver set"
+        )),
+        _ => say(&format!(
+            "  {C_GREEN}→{C_RESET} Generic / other DE — core package set"
+        )),
     }
+    println!(
+        "  {C_GREEN}→{C_RESET} Always:     idle-daemon  idle-cli  idle-savers  idle-tui"
+    );
+    if cosmic {
+        println!("  {C_GREEN}→{C_RESET} Plus:       idle-cosmic");
+    }
+    println!();
+    story_line("Surveying what is already on this host…");
+    println!(
+        "  {C_DIM}manifest:{C_RESET} {C_BOLD}{}{C_RESET}",
+        pkgs.join(" ")
+    );
+    println!();
 
-    println!("\n {C_CYAN}{C_BOLD}[4/5]{C_RESET} {C_BOLD}Deploying modules{C_RESET}");
+    let survey = survey(&pkgs, dnf);
+    println!();
+    if !survey.upgrade.is_empty() {
+        say(&format!(
+            "  {C_ORANGE}{C_BOLD}Found {} outdated IdleScreen module(s){C_RESET} — will raise to channel.",
+            survey.upgrade.len()
+        ));
+    }
+    if !survey.install.is_empty() {
+        say(&format!(
+            "  {C_CYAN}{C_BOLD}Found {} missing module(s){C_RESET} — will install.",
+            survey.install.len()
+        ));
+    }
+    if survey.upgrade.is_empty() && survey.install.is_empty() {
+        say(&format!(
+            "  {C_GREEN}{C_BOLD}All planned modules already current{C_RESET} — will still re-sync with the channel."
+        ));
+    }
+    println!(
+        "  {C_BOLD}Will ensure:{C_RESET} {C_CYAN}{}{C_RESET}",
+        pkgs.join(" ")
+    );
+    pause(400);
+
+    step("[4/5]  Deploying modules into the system");
+    let all: Vec<String> = pkgs.iter().map(|s| (*s).to_string()).collect();
+
     if dnf {
-        let mut cmd = Command::new("sudo");
-        cmd.arg("dnf").arg("install").arg("-y").args(&pkgs);
-        if !ok_cmd(&mut cmd, "dnf install") {
-            exit(1);
+        if !survey.upgrade.is_empty() {
+            story_line("Raising outdated IdleScreen modules to the current channel…");
+            if !dnf_upgrade(&survey.upgrade) {
+                warn("dnf upgrade reported issues — continuing with install re-sync…");
+            }
         }
-        if !ok_cmd(
-            Command::new("rpm").args(["-q", "idle-daemon", "idle-cli"]),
-            "rpm verify",
-        ) {
-            exit(1);
-        }
-    } else {
-        let mut cmd = Command::new("sudo");
-        cmd.arg("apt-get").arg("install").arg("-y").args(&pkgs);
-        if !ok_cmd(&mut cmd, "apt-get install") {
-            let retry: Vec<&str> = pkgs.iter().copied().filter(|p| *p != "idle-tui").collect();
-            let mut cmd2 = Command::new("sudo");
-            cmd2.arg("apt-get").arg("install").arg("-y").args(&retry);
-            if !ok_cmd(&mut cmd2, "apt-get install (retry)") {
+        if !survey.install.is_empty() {
+            story_line("Seating new IdleScreen modules…");
+            if !dnf_install(&survey.install) {
+                err(&format!("dnf install failed for: {}", survey.install.join(" ")));
                 exit(1);
             }
         }
-        if !ok_cmd(
-            Command::new("dpkg-query").args(["-W", "idle-daemon", "idle-cli"]),
-            "dpkg verify",
-        ) {
+        story_line("Re-syncing the full IdleScreen set against the channel…");
+        if !dnf_upgrade(&all) {
+            warn("dnf upgrade (full set) soft-failed — trying install…");
+        }
+        if !dnf_install(&all) {
+            err(&format!("dnf install failed for: {}", all.join(" ")));
             exit(1);
         }
+        story_line("Verifying RPM database…");
+        if rpm_installed("idle-daemon").is_none() || rpm_installed("idle-cli").is_none() {
+            err("idle-daemon / idle-cli missing after install");
+            exit(1);
+        }
+        println!();
+        for p in &pkgs {
+            if let Some(v) = run_capture(Command::new("rpm").args(["-q", p])) {
+                ok(&v);
+            } else {
+                warn(&format!("{p} not present after deploy"));
+            }
+        }
+    } else {
+        if !survey.upgrade.is_empty() {
+            story_line("Raising outdated IdleScreen modules to the current channel…");
+            if !apt_only_upgrade(&survey.upgrade) {
+                warn("apt only-upgrade soft-failed — continuing with full install…");
+            }
+        }
+        if !survey.install.is_empty() {
+            story_line("Seating new IdleScreen modules…");
+            let _ = apt_install(&survey.install);
+        }
+        story_line("Re-syncing the full IdleScreen set against the channel…");
+        if !apt_install(&all) {
+            warn("Full set failed — retrying without idle-tui…");
+            let retry: Vec<String> = all
+                .iter()
+                .filter(|p| p.as_str() != "idle-tui")
+                .cloned()
+                .collect();
+            if !apt_install(&retry) {
+                err("apt-get install failed");
+                exit(1);
+            }
+        }
+        story_line("Verifying dpkg database…");
+        if apt_installed("idle-daemon").is_none() || apt_installed("idle-cli").is_none() {
+            err("idle-daemon / idle-cli missing after install");
+            exit(1);
+        }
+        println!();
+        for p in &pkgs {
+            if let Some(v) =
+                run_capture(Command::new("dpkg-query").args(["-W", "-f=${Package} ${Version}", p]))
+            {
+                ok(&v);
+            } else {
+                warn(&format!("{p} not present after deploy"));
+            }
+        }
+    }
+    println!();
+    if !survey.upgrade.is_empty() {
+        ok(&format!("{C_BOLD}Payload secured — outdated modules raised.{C_RESET}"));
+    } else {
+        ok(&format!("{C_BOLD}Payload secured.{C_RESET}"));
     }
 
-    println!("\n {C_CYAN}{C_BOLD}[5/5]{C_RESET} {C_BOLD}Awakening the idle daemon{C_RESET}");
+    step("[5/5]  Awakening the idle daemon");
+    story_line("Creating user config directories…");
     if let Ok(home) = env::var("HOME") {
         let _ = std::fs::create_dir_all(format!("{home}/.config/idle"));
         let _ = std::fs::create_dir_all(format!("{home}/.config/idlescreen"));
     }
-    let _ = Command::new("systemctl")
-        .args(["--user", "daemon-reload"])
-        .status();
-    let _ = Command::new("systemctl")
-        .args(["--user", "enable", "--now", "idle-daemon.service"])
-        .status();
-    let active = Command::new("systemctl")
-        .args(["--user", "is-active", "idle-daemon.service"])
-        .output()
-        .map(|o| String::from_utf8_lossy(&o.stdout).trim() == "active")
-        .unwrap_or(false);
+    story_line("Reloading user systemd units…");
+    let _ = run_status(Command::new("systemctl").args(["--user", "daemon-reload"]));
+    story_line("Enabling idle-daemon.service…");
+    let _ = run_status(
+        Command::new("systemctl").args(["--user", "enable", "--now", "idle-daemon.service"]),
+    );
+    let active = run_capture(Command::new("systemctl").args([
+        "--user",
+        "is-active",
+        "idle-daemon.service",
+    ]))
+    .map(|s| s == "active")
+    .unwrap_or(false);
     if active {
-        println!("  {C_GREEN}✔{C_RESET} daemon active · idle-daemon.service");
+        ok(&format!(
+            "Daemon {C_GREEN}{C_BOLD}active{C_RESET}  ·  idle-daemon.service"
+        ));
     } else {
-        println!("  {C_YELLOW}!{C_RESET} unit configured — systemctl --user enable --now idle-daemon.service");
+        warn("Daemon unit configured — start later with:");
+        println!("    systemctl --user enable --now idle-daemon.service");
     }
 
-    println!("\n {C_GREEN}{C_BOLD}✦ INSTALLATION COMPLETE ✦{C_RESET}");
-    println!("  modules: {C_CYAN}{}{C_RESET}", pkgs.join(" "));
+    println!();
+    println!("  {C_GREEN}{C_BOLD}");
+    println!("        ╔══════════════════════════════════════════════════════╗");
+    println!("        ║                                                      ║");
+    println!("        ║             ✦  INSTALLATION COMPLETE  ✦              ║");
+    println!("        ║                                                      ║");
+    println!("        ╚══════════════════════════════════════════════════════╝");
+    println!("  {C_RESET}");
+    println!("  {C_DIM}host{C_RESET}     {os_name}  ({arch})");
+    println!("  {C_DIM}desktop{C_RESET}  {de_label}");
+    println!("  {C_DIM}channel{C_RESET}  {channel}");
+    println!("  {C_DIM}modules{C_RESET}  {}", pkgs.join(" "));
+    if !survey.upgrade.is_empty() {
+        println!(
+            "  {C_DIM}raised{C_RESET}   {C_GREEN}{}{C_RESET} outdated module(s) upgraded to channel",
+            survey.upgrade.len()
+        );
+    }
+    if !survey.install.is_empty() {
+        println!(
+            "  {C_DIM}seated{C_RESET}   {C_CYAN}{}{C_RESET} new module(s) installed",
+            survey.install.len()
+        );
+    }
     if cosmic {
         println!("  {C_ORANGE}COSMIC{C_RESET} applet package idle-cosmic included");
     }
-    println!("\n {C_BOLD}Quick start{C_RESET}");
-    println!("   {C_CYAN}idlescreen tui{C_RESET}");
-    println!("   {C_CYAN}idlescreen status{C_RESET}");
-    println!("   {C_CYAN}idlescreen doctor{C_RESET}");
+    println!();
+    println!("  {C_BOLD}Quick start{C_RESET}");
+    println!("    {C_CYAN}idlescreen tui{C_RESET}        interactive dashboard");
+    println!("    {C_CYAN}idlescreen status{C_RESET}     daemon + saver state");
+    println!("    {C_CYAN}idlescreen preview beams{C_RESET}  try an effect");
+    println!("    {C_CYAN}idlescreen doctor{C_RESET}     system diagnostics");
+    println!();
+    println!("  {C_DIM}docs  {C_RESET}https://idlescreen.github.io");
+    println!("  {C_DIM}pkgs  {C_RESET}{REPO_BASE}/");
+    println!("  {C_DIM}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{C_RESET}");
     println!();
 }
