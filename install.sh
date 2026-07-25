@@ -359,9 +359,7 @@ victory() {
     cat <<'DONE'
         ╔══════════════════════════════════════════════════════╗
         ║                                                      ║
-        ║              ✦  INSTALLATION COMPLETE  ✦             ║
-        ║                                                      ║
-        ║              Welcome to IdleScreen.                  ║
+        ║             ✦  INSTALLATION COMPLETE  ✦              ║
         ║                                                      ║
         ╚══════════════════════════════════════════════════════╝
 DONE
