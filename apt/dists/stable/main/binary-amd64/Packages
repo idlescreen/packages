@@ -17,6 +17,25 @@ Priority: optional
 Description: Command-line interface for the IdleScreen daemon
  CLI for controlling the Idle daemon over D-Bus (command: idle).
 
+Package: idle-cli
+Version: 2.4.0-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 5768
+Depends: idle-daemon, libc6
+Conflicts: idlescreen-cli (<< 2.1.0), idle-cli (<< 2.0.0)
+Replaces: idlescreen-cli, idle-cli
+Provides: idlescreen-cli, idle-cli
+Filename: pool/main/idle-cli_2.4.0-1_amd64.deb
+Size: 829012
+MD5sum: 402612091101600a69c31785c3a879fb
+SHA1: d2bbce9d03bef79d14251de5fccaf261556ae1ca
+SHA256: 611b0fdc1319bedd30d3f772c335a4326c053e545f9cd813d15803b15c3f5abb
+Section: utils
+Priority: optional
+Description: Command-line interface for the IdleScreen daemon
+ CLI for controlling the Idle daemon over D-Bus (command: idle).
+
 Package: idle-cosmic
 Version: 2.1.2-1
 Architecture: amd64
@@ -58,6 +77,27 @@ Size: 2354316
 MD5sum: 30537bd572ead9025c353bd5f6d1fe49
 SHA1: 6a73d41a3d81799b822da1466f2d0147c1c9b136
 SHA256: 3e3df82f35302ae1d34e9081ddd98aaa2a50d7bb81133cf0b2ac199d0fbae9de
+Section: utils
+Priority: optional
+Description: IdleScreen background idle daemon (Wayland screensaver host)
+ IdleScreen background idle monitoring and screensaver host for Wayland.
+
+Package: idle-daemon
+Version: 2.4.0-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 16458
+Depends: dbus, fonts-dejavu-core, idle-cli, libc6
+Recommends: idle-cli, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
+Suggests: idle-cosmic
+Conflicts: idlescreen (<< 2.1.0), trance (<< 2.0.0)
+Replaces: idlescreen, trance
+Provides: idle, idlescreen, trance
+Filename: pool/main/idle-daemon_2.4.0-1_amd64.deb
+Size: 2246976
+MD5sum: 4ede6ec106e07933697f0d64bf67c015
+SHA1: 218dc129edc13be7ec474f05cfc35bb6a098f677
+SHA256: 015b8aab5ae1aa33f0509950916f41e30a810bbb129e1ec8f643d19bfd2464b2
 Section: utils
 Priority: optional
 Description: IdleScreen background idle daemon (Wayland screensaver host)
