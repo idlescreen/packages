@@ -76,23 +76,43 @@ fi
 
 echo ""
 # Phase 3: Package Installation
+# Install real package NEVRAs (idle-daemon, idle-cli, …). Do not rely on the
+# legacy product name "idlescreen" alone: pool may resolve it via Provides or a
+# stale 2.0.0 package, and doctor / rpm -q need the modular names installed.
 echo " ${CYAN}[3/4]${RESET} ${BOLD}Deploying IdleScreen Core Engine & Modules...${RESET}"
+CORE_PKGS="idle-daemon idle-cli idle-savers idle-tui"
+if [ "$IS_COSMIC" -eq 1 ]; then
+    CORE_PKGS="$CORE_PKGS idle-cosmic"
+fi
 if [ "$IS_DNF" -eq 1 ]; then
-    if [ "$IS_COSMIC" -eq 1 ]; then
-        echo "       ├─ Executing dnf install idlescreen idle-cosmic..."
-        sudo dnf install -y idlescreen idle-cosmic
-    else
-        echo "       ├─ Executing dnf install idlescreen..."
-        sudo dnf install -y idlescreen
+    echo "       ├─ Executing dnf install $CORE_PKGS..."
+    sudo dnf install -y $CORE_PKGS
+    echo "       ├─ Verifying RPMs..."
+    if ! rpm -q idle-daemon idle-cli >/dev/null 2>&1; then
+        echo "       └─ ${YELLOW}ERROR: idle-daemon / idle-cli not present after dnf install.${RESET}"
+        exit 1
     fi
+    rpm -q idle-daemon idle-cli idle-tui idle-savers 2>/dev/null | while read -r line; do
+        echo "       │  $line"
+    done
     echo "       └─ ${GREEN}Core engine binaries & visual modules installed.${RESET}"
 elif [ "$IS_APT" -eq 1 ]; then
-    if [ "$IS_COSMIC" -eq 1 ]; then
-        echo "       ├─ Executing apt-get install idlescreen idle-cosmic..."
-        sudo apt-get install -y idlescreen idle-cosmic
-    else
-        echo "       ├─ Executing apt-get install idlescreen..."
-        sudo apt-get install -y idlescreen
+    echo "       ├─ Executing apt-get install $CORE_PKGS..."
+    # idle-tui may be missing from older APT indexes; install what is available.
+    # shellcheck disable=SC2086
+    if ! sudo apt-get install -y $CORE_PKGS; then
+        echo "       ├─ Full set failed; retrying without idle-tui..."
+        RETRY="idle-daemon idle-cli idle-savers"
+        if [ "$IS_COSMIC" -eq 1 ]; then
+            RETRY="$RETRY idle-cosmic"
+        fi
+        # shellcheck disable=SC2086
+        sudo apt-get install -y $RETRY
+    fi
+    echo "       ├─ Verifying DEBs..."
+    if ! dpkg-query -W idle-daemon idle-cli >/dev/null 2>&1; then
+        echo "       └─ ${YELLOW}ERROR: idle-daemon / idle-cli not present after apt install.${RESET}"
+        exit 1
     fi
     echo "       └─ ${GREEN}Core engine binaries & visual modules installed.${RESET}"
 fi

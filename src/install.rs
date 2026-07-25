@@ -62,19 +62,35 @@ fn main() {
 
         sleep(Duration::from_millis(200));
 
-        // Phase 3: Package Installation
+        // Phase 3: Package Installation — real modular NEVRAs, not legacy "idlescreen" alone.
         println!("\n {cyan}[3/4]{reset} {bold}Deploying IdleScreen Core Engine & Modules...{reset}");
         println!("       ├─ Executing dnf package installation...");
-        let mut pkgs = vec!["idlescreen"];
+        let mut pkgs = vec![
+            "idle-daemon",
+            "idle-cli",
+            "idle-savers",
+            "idle-tui",
+        ];
         if is_cosmic {
             pkgs.push("idle-cosmic");
         }
-        let _ = Command::new("sudo")
+        let st = Command::new("sudo")
             .arg("dnf")
             .arg("install")
             .arg("-y")
             .args(&pkgs)
             .status();
+        if st.map(|s| !s.success()).unwrap_or(true) {
+            eprintln!("       └─ {yellow}ERROR: dnf install failed.{reset}");
+            std::process::exit(1);
+        }
+        let verify = Command::new("rpm")
+            .args(["-q", "idle-daemon", "idle-cli"])
+            .status();
+        if verify.map(|s| !s.success()).unwrap_or(true) {
+            eprintln!("       └─ {yellow}ERROR: idle-daemon / idle-cli missing after install.{reset}");
+            std::process::exit(1);
+        }
         println!("       └─ {green}Core engine binaries & visual modules installed.{reset}");
     } else if is_apt {
         println!("       ├─ Provisioning APT keyring folder...");
@@ -99,19 +115,48 @@ fn main() {
 
         sleep(Duration::from_millis(200));
 
-        // Phase 3: Package Installation
+        // Phase 3: Package Installation — real modular NEVRAs.
         println!("\n {cyan}[3/4]{reset} {bold}Deploying IdleScreen Core Engine & Modules...{reset}");
         println!("       ├─ Executing apt package installation...");
-        let mut pkgs = vec!["idlescreen"];
+        let mut pkgs = vec![
+            "idle-daemon",
+            "idle-cli",
+            "idle-savers",
+            "idle-tui",
+        ];
         if is_cosmic {
             pkgs.push("idle-cosmic");
         }
-        let _ = Command::new("sudo")
+        let st = Command::new("sudo")
             .arg("apt-get")
             .arg("install")
             .arg("-y")
             .args(&pkgs)
             .status();
+        if st.map(|s| !s.success()).unwrap_or(true) {
+            // idle-tui may be missing from older APT indexes
+            let mut retry = vec!["idle-daemon", "idle-cli", "idle-savers"];
+            if is_cosmic {
+                retry.push("idle-cosmic");
+            }
+            let st2 = Command::new("sudo")
+                .arg("apt-get")
+                .arg("install")
+                .arg("-y")
+                .args(&retry)
+                .status();
+            if st2.map(|s| !s.success()).unwrap_or(true) {
+                eprintln!("       └─ {yellow}ERROR: apt-get install failed.{reset}");
+                std::process::exit(1);
+            }
+        }
+        let verify = Command::new("dpkg-query")
+            .args(["-W", "idle-daemon", "idle-cli"])
+            .status();
+        if verify.map(|s| !s.success()).unwrap_or(true) {
+            eprintln!("       └─ {yellow}ERROR: idle-daemon / idle-cli missing after install.{reset}");
+            std::process::exit(1);
+        }
         println!("       └─ {green}Core engine binaries & visual modules installed.{reset}");
     } else {
         println!(" {yellow}⚠️  Unsupported package manager. Please check manual installation at https://idlescreen.github.io/packages/{reset}");
