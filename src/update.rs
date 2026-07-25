@@ -44,9 +44,9 @@ fn run_createrepo() -> Result<(), String> {
 
     if has_local {
         println!("Running createrepo_c...");
+        let _ = fs::remove_dir_all("rpm/repodata");
         run_cmd(
             Command::new("createrepo_c")
-                .arg("--update")
                 .arg(".")
                 .current_dir("rpm"),
         )?;
