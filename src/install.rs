@@ -65,8 +65,15 @@ fn main() {
         // Phase 3: Package Installation
         println!("\n {cyan}[3/4]{reset} {bold}Deploying IdleScreen Core Engine & Modules...{reset}");
         println!("       ├─ Executing dnf package installation...");
+        let mut pkgs = vec!["idlescreen"];
+        if is_cosmic {
+            pkgs.push("idle-cosmic");
+        }
         let _ = Command::new("sudo")
-            .args(["dnf", "install", "-y", "idlescreen"])
+            .arg("dnf")
+            .arg("install")
+            .arg("-y")
+            .args(&pkgs)
             .status();
         println!("       └─ {green}Core engine binaries & visual modules installed.{reset}");
     } else if is_apt {
@@ -95,8 +102,15 @@ fn main() {
         // Phase 3: Package Installation
         println!("\n {cyan}[3/4]{reset} {bold}Deploying IdleScreen Core Engine & Modules...{reset}");
         println!("       ├─ Executing apt package installation...");
+        let mut pkgs = vec!["idlescreen"];
+        if is_cosmic {
+            pkgs.push("idle-cosmic");
+        }
         let _ = Command::new("sudo")
-            .args(["apt-get", "install", "-y", "idlescreen"])
+            .arg("apt-get")
+            .arg("install")
+            .arg("-y")
+            .args(&pkgs)
             .status();
         println!("       └─ {green}Core engine binaries & visual modules installed.{reset}");
     } else {
