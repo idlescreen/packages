@@ -355,7 +355,7 @@ fn main() {
         let _ = Command::new("sh")
             .arg("-c")
             .arg(format!(
-                "curl -fsSL {REPO_BASE}/idlescreen-keyring.gpg | sudo tee /etc/apt/keyrings/idlescreen-keyring.gpg >/dev/null"
+                "curl -fsSL {REPO_BASE}/apt/idlescreen-keyring.gpg | sudo tee /etc/apt/keyrings/idlescreen-keyring.gpg >/dev/null"
             ))
             .status();
         story_line("Registering stable/main channel…");
@@ -514,7 +514,6 @@ fn main() {
     story_line("Creating user config directories…");
     if let Ok(home) = env::var("HOME") {
         let _ = std::fs::create_dir_all(format!("{home}/.config/idle"));
-        let _ = std::fs::create_dir_all(format!("{home}/.config/idlescreen"));
     }
     story_line("Reloading user systemd units…");
     let _ = run_status(Command::new("systemctl").args(["--user", "daemon-reload"]));

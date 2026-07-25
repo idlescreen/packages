@@ -1,7 +1,7 @@
 //! Property tests for prune selection (keep newest N per package).
 // SPDX-License-Identifier: Apache-2.0
 
-use crateria_packages::{PackageFile, compare_versions, group_by_name, select_to_remove};
+use idlescreen_packages::{PackageFile, compare_versions, group_by_name, select_to_remove};
 use proptest::prelude::*;
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;

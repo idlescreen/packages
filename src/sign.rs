@@ -2,7 +2,10 @@
 // SPDX-License-Identifier: Apache-2.0
 
 use idlescreen_packages::paths::{is_rpm_path, safe_join_under};
-use idlescreen_packages::sign_macros::{build_rpmmacros, gpg_name_is_valid, resolve_gpg_bin};
+use idlescreen_packages::sign_macros::{
+    build_rpmmacros, resolve_gpg_bin_from_env, resolve_gpg_name_from_env, resolve_gpg_path_from_env,
+    skip_rpm_sign_install_from_env,
+};
 use std::env;
 use std::fs;
 use std::path::{Path, PathBuf};
@@ -54,34 +57,33 @@ fn collect_rpms(pool: &Path) -> Result<Vec<PathBuf>, String> {
 }
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
-    let gpg_name = match env::var("CRATERIA_GPG_NAME") {
-        Ok(val) if gpg_name_is_valid(&val) => val,
-        _ => {
+    let gpg_name = match resolve_gpg_name_from_env() {
+        Some(val) => val,
+        None => {
             eprintln!(
-                "ERROR: CRATERIA_GPG_NAME is unset or invalid (empty/newlines).\n\n\
+                "ERROR: IDLESCREEN_GPG_NAME (or legacy CRATERIA_GPG_NAME) is unset or invalid.\n\n\
                  Export the signing identity (email or exact uid string), for example:\n\
-                 \texport CRATERIA_GPG_NAME='packages@example.com'\n\
+                 \texport IDLESCREEN_GPG_NAME='packages@example.com'\n\
                  \t# optional:\n\
-                 \texport CRATERIA_GPG_PATH=\"$HOME/.gnupg\"\n\
-                 \texport CRATERIA_GPG_BIN=gpg\n\
+                 \texport IDLESCREEN_GPG_PATH=\"$HOME/.gnupg\"\n\
+                 \texport IDLESCREEN_GPG_BIN=gpg\n\
+                 \t# legacy aliases CRATERIA_GPG_* still work\n\
                  \tcargo run --release --bin sign\n\n\
-                 See README Security and the import-release workflow."
+                 See AGENT.md signing SOP and the import-release workflow."
             );
             std::process::exit(1);
         }
     };
 
-    // Sanitize like update: reject empty/CRLF so macros and Command stay single-line.
-    let gpg_bin = resolve_gpg_bin(env::var("CRATERIA_GPG_BIN").ok().as_deref());
-    let gpg_path = env::var("CRATERIA_GPG_PATH")
-        .ok()
-        .filter(|p| !p.is_empty() && !p.contains('\n') && !p.contains('\r'));
-    let skip_install = env::var_os("CRATERIA_SKIP_RPM_SIGN_INSTALL").is_some();
+    let gpg_bin = resolve_gpg_bin_from_env();
+    let gpg_path = resolve_gpg_path_from_env();
+    let skip_install = skip_rpm_sign_install_from_env();
 
     if !command_exists("rpmsign") {
         if skip_install {
-            // Explicit opt-out of package-manager install must not soft-succeed.
-            eprintln!("ERROR: rpmsign not found and CRATERIA_SKIP_RPM_SIGN_INSTALL is set.");
+            eprintln!(
+                "ERROR: rpmsign not found and IDLESCREEN_SKIP_RPM_SIGN_INSTALL (or CRATERIA_*) is set."
+            );
             std::process::exit(1);
         }
         if command_exists("dnf") {
@@ -170,7 +172,7 @@ mod tests {
             .duration_since(UNIX_EPOCH)
             .map(|d| d.as_nanos())
             .unwrap_or(0);
-        let dir = env::temp_dir().join(format!("crateria-sign-rpms-{n}"));
+        let dir = env::temp_dir().join(format!("idlescreen-sign-rpms-{n}"));
         fs::create_dir_all(&dir).expect("mkdir");
         fs::write(dir.join("a.rpm"), b"r").expect("rpm");
         fs::write(dir.join("b.deb"), b"d").expect("deb");
@@ -185,7 +187,7 @@ mod tests {
 
     #[test]
     fn collect_rpms_missing_dir() {
-        let dir = env::temp_dir().join("crateria-sign-missing-noexist");
+        let dir = env::temp_dir().join("idlescreen-sign-missing-noexist");
         let _ = fs::remove_dir_all(&dir);
         assert!(collect_rpms(&dir).expect("ok").is_empty());
     }
@@ -196,7 +198,7 @@ mod tests {
             .duration_since(UNIX_EPOCH)
             .map(|d| d.as_nanos())
             .unwrap_or(0);
-        let dir = env::temp_dir().join(format!("crateria-sign-under-{n}"));
+        let dir = env::temp_dir().join(format!("idlescreen-sign-under-{n}"));
         fs::create_dir_all(&dir).expect("mkdir");
         fs::write(dir.join("pkg-1.0-1.x86_64.rpm"), b"r").expect("rpm");
         let found = collect_rpms(&dir).expect("collect");

@@ -48,10 +48,16 @@ jobs:
       - name: Prune old versions from pool
         run: |
           # Keep the latest 3 versions of each package to prevent bloat
-          cargo run --release --bin prune || true
+          cargo run --release --bin prune
+
+      - name: Require GPG private key
+        run: |
+          if [ -z "$GPG_PRIVATE_KEY" ]; then
+            echo "ERROR: secret GPG_PRIVATE_KEY is required (refuse unsigned publish)"
+            exit 1
+          fi
 
       - name: Import GPG private key
-        if: env.GPG_PRIVATE_KEY != ''
         run: |
           # Set up GPG agent to allow loopback pinentry
           mkdir -p ~/.gnupg
@@ -74,23 +80,25 @@ jobs:
 
       - name: Sign packages and rebuild metadata indexes
         env:
+          IDLESCREEN_GPG_NAME: ${{ secrets.IDLESCREEN_GPG_NAME }}
           CRATERIA_GPG_NAME: ${{ secrets.CRATERIA_GPG_NAME }}
+          IDLESCREEN_SKIP_RPM_SIGN_INSTALL: "true"
           CRATERIA_SKIP_RPM_SIGN_INSTALL: "true"
         run: |
-          # Re-sign the RPM package files and rebuild all repository metadata indices
-          export CRATERIA_GPG_NAME="${CRATERIA_GPG_NAME:-jerydleuck@gmail.com}"
-          if [ -n "$GPG_PRIVATE_KEY" ]; then
-            if [ -n "$GPG_PASSPHRASE" ]; then
-              export CRATERIA_GPG_BIN="/tmp/gpg-wrapper"
-            fi
-            # Run GPG signing and metadata rebuilding tool
-            cargo run --release --bin sign
-            # Clean up passphrase file
-            rm -f /tmp/gpg-passphrase.txt /tmp/gpg-wrapper
-          else
-            # Rebuild metadata without GPG signing if key is not configured
-            cargo run --release --bin update
+          # Prefer IDLESCREEN_GPG_NAME; fall back to CRATERIA_GPG_NAME / default identity
+          export IDLESCREEN_GPG_NAME="${IDLESCREEN_GPG_NAME:-${CRATERIA_GPG_NAME:-jerydleuck@gmail.com}}"
+          export CRATERIA_GPG_NAME="$IDLESCREEN_GPG_NAME"
+          if [ -n "$GPG_PASSPHRASE" ]; then
+            export IDLESCREEN_GPG_BIN="/tmp/gpg-wrapper"
+            export CRATERIA_GPG_BIN="/tmp/gpg-wrapper"
           fi
+          # Sign RPM payloads + rebuild APT/RPM indexes (see docs/SIGNING.md)
+          cargo run --release --bin sign
+          rm -f /tmp/gpg-passphrase.txt /tmp/gpg-wrapper
+          # Fail if any RPM lacks a signature
+          for f in rpm/pool/*.rpm; do
+            rpm -K "$f" | grep -q 'signatures OK' || { echo "UNSIGNED: $f"; exit 1; }
+          done
 
       - name: Commit and push changes
         run: |

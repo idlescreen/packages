@@ -142,6 +142,12 @@ idlescreen tui
 
 ---
 
+## Maintainer docs
+
+- [Signing SOP](docs/SIGNING.md) — required before publishing RPMs
+- [Migration guide](docs/MIGRATION.md) — Crateria/Trance → IdleScreen
+- [AGENT.md](AGENT.md) — hardening contract
+
 ## Links
 
 - Website: [https://idlescreen.github.io](https://idlescreen.github.io)

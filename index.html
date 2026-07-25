@@ -296,7 +296,7 @@
         <p class="subtitle">Step-by-step instructions to install the IdleScreen repository & packages for your OS.</p>
 
         <div class="info-badge">
-            ⚡ <strong>Standard Package:</strong> <code>idlescreen</code> (Universal for all Wayland compositors & DEs)<br>
+            ⚡ <strong>Install:</strong> modular packages <code>idle-daemon idle-cli idle-savers idle-tui</code> (+ <code>idle-cosmic</code> on COSMIC)<br>
             🪐 <strong>COSMIC DE Only:</strong> <code>idle-cosmic</code> (Applet integration for COSMIC Desktop)
         </div>
         
@@ -313,7 +313,7 @@
                 <div class="step-item">
                     <div class="step-label">Step 1: Install GPG Keyring & Add APT Repository</div>
                     <div class="installer-box">
-                        <div class="command" id="apt1Cmd">sudo mkdir -p /etc/apt/keyrings && sudo curl -fsSL https://idlescreen.github.io/packages/apt/idlescreen-keyring.gpg -o /etc/apt/keyrings/idlescreen.gpg && echo "deb [arch=amd64 signed-by=/etc/apt/keyrings/idlescreen.gpg] https://idlescreen.github.io/packages/apt stable main" | sudo tee /etc/apt/sources.list.d/idlescreen.list</div>
+                        <div class="command" id="apt1Cmd">sudo mkdir -p /etc/apt/keyrings && curl -fsSL https://idlescreen.github.io/packages/apt/idlescreen-keyring.gpg | sudo tee /etc/apt/keyrings/idlescreen-keyring.gpg >/dev/null && echo "deb [signed-by=/etc/apt/keyrings/idlescreen-keyring.gpg] https://idlescreen.github.io/packages/apt stable main" | sudo tee /etc/apt/sources.list.d/idlescreen.list >/dev/null</div>
                         <button class="copy-btn" onclick="copyCommand('apt1Cmd', this)">Copy</button>
                     </div>
                 </div>
@@ -373,7 +373,7 @@
                 <div class="step-item">
                     <div class="step-label">Step 2: Build & Install</div>
                     <div class="installer-box">
-                        <div class="command" id="arch2Cmd">makepkg -si && idlescreen tui</div>
+                        <div class="command" id="arch2Cmd"># Experimental: applet PKGBUILD only — not a full install. Prefer Fedora/Debian install.sh</div>
                         <button class="copy-btn" onclick="copyCommand('arch2Cmd', this)">Copy</button>
                     </div>
                 </div>

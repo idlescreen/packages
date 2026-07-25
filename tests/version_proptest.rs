@@ -1,7 +1,7 @@
 //! Property tests for version splitting and comparison.
 // SPDX-License-Identifier: Apache-2.0
 
-use crateria_packages::{compare_versions, split_parts};
+use idlescreen_packages::{compare_versions, split_parts};
 use proptest::prelude::*;
 use std::cmp::Ordering;
 

@@ -1,7 +1,7 @@
 //! Property tests for pool path construction and path-safety.
 // SPDX-License-Identifier: Apache-2.0
 
-use crateria_packages::{
+use idlescreen_packages::{
     deb_pool_dest, is_under_base, package_sweep_dest, rpm_pool_dest, safe_join_under,
 };
 use proptest::prelude::*;

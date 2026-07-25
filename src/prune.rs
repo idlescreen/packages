@@ -127,7 +127,7 @@ mod tests {
             .duration_since(UNIX_EPOCH)
             .map(|d| d.as_nanos())
             .unwrap_or(0);
-        let dir = env::temp_dir().join(format!("crateria-prune-{label}-{n}"));
+        let dir = env::temp_dir().join(format!("idlescreen-prune-{label}-{n}"));
         fs::create_dir_all(&dir).expect("create temp");
         dir
     }
@@ -162,7 +162,7 @@ mod tests {
 
     #[test]
     fn prune_missing_dir_ok() {
-        let dir = env::temp_dir().join("crateria-prune-missing-noexist");
+        let dir = env::temp_dir().join("idlescreen-prune-missing-noexist");
         let _ = fs::remove_dir_all(&dir);
         prune_directory(&dir, 3, true).expect("missing ok");
     }

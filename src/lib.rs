@@ -1,9 +1,11 @@
 //! Shared library for IdleScreen package repository maintenance tools.
 //!
-//! Crate name remains `crateria_packages` for Cargo/API stability; product
-//! brand is IdleScreen (idlescreen.github.io). Pure helpers for version
-//! ordering, package filename parsing, prune selection, pool path
-//! construction, and signing macro generation.
+//! Crate/lib: `idlescreen-packages` / `idlescreen_packages`. Product brand and
+//! host: IdleScreen (`idlescreen.github.io`). Pure helpers for version ordering,
+//! package filename parsing, prune selection, pool path construction, and
+//! signing macro generation.
+//!
+//! GPG env vars: prefer `IDLESCREEN_GPG_*`; legacy `CRATERIA_GPG_*` still accepted.
 
 // SPDX-License-Identifier: Apache-2.0
 

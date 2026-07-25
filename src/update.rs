@@ -1,7 +1,9 @@
 //! Rebuild APT and RPM repository indexes and sign metadata.
 // SPDX-License-Identifier: Apache-2.0
 
-use idlescreen_packages::sign_macros::{resolve_gpg_bin, resolve_signing_key};
+use idlescreen_packages::sign_macros::{
+    resolve_gpg_bin_from_env, resolve_gpg_name_from_env, resolve_signing_key,
+};
 use idlescreen_packages::sweep::sweep_loose_packages;
 use std::fs;
 use std::path::Path;
@@ -35,6 +37,8 @@ fn dearmor_key() -> Result<(), String> {
     }
     // Legacy filename for bookmarks still using crateria-keyring.gpg
     let _ = fs::copy("apt/idlescreen-keyring.gpg", "apt/crateria-keyring.gpg");
+    // Canonical path for installers that fetch from repo root (historical URL).
+    let _ = fs::copy("apt/idlescreen-keyring.gpg", "idlescreen-keyring.gpg");
     Ok(())
 }
 
@@ -72,10 +76,10 @@ fn run_createrepo() -> Result<(), String> {
 
 fn sign_rpm_metadata() -> Result<(), String> {
     let signing_key = resolve_signing_key(
-        std::env::var("CRATERIA_GPG_NAME").ok().as_deref(),
+        resolve_gpg_name_from_env().as_deref(),
         "jerydleuck@gmail.com",
     );
-    let gpg_bin = resolve_gpg_bin(std::env::var("CRATERIA_GPG_BIN").ok().as_deref());
+    let gpg_bin = resolve_gpg_bin_from_env();
     if !Path::new("rpm/repodata/repomd.xml").exists() {
         return Ok(());
     }
@@ -217,10 +221,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     )?;
 
     let signing_key = resolve_signing_key(
-        std::env::var("CRATERIA_GPG_NAME").ok().as_deref(),
+        resolve_gpg_name_from_env().as_deref(),
         "jerydleuck@gmail.com",
     );
-    let gpg_bin = resolve_gpg_bin(std::env::var("CRATERIA_GPG_BIN").ok().as_deref());
+    let gpg_bin = resolve_gpg_bin_from_env();
     sign_apt_release(&signing_key, &gpg_bin)?;
 
     run_createrepo()?;

@@ -267,7 +267,7 @@ setup_repo_apt() {
     story_line "Provisioning keyring vault…"
     sudo mkdir -p /etc/apt/keyrings
     story_line "Importing IdleScreen signing key…"
-    curl -fsSL "${REPO_BASE}/idlescreen-keyring.gpg" \
+    curl -fsSL "${REPO_BASE}/apt/idlescreen-keyring.gpg" \
         | sudo tee /etc/apt/keyrings/idlescreen-keyring.gpg >/dev/null
     story_line "Registering stable/main channel…"
     echo "deb [signed-by=/etc/apt/keyrings/idlescreen-keyring.gpg] ${REPO_BASE}/apt/ stable main" \
@@ -528,7 +528,7 @@ install_packages() {
 awaken_daemon() {
     step "[5/5]  Awakening the idle daemon"
     story_line "Creating user config directories…"
-    mkdir -p "${HOME}/.config/idle" "${HOME}/.config/idlescreen"
+    mkdir -p "${HOME}/.config/idle"
     story_line "Reloading user systemd units…"
     systemctl --user daemon-reload 2>/dev/null || true
     systemctl --user reset-failed idle-daemon.service 2>/dev/null || true

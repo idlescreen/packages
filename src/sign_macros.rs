@@ -46,12 +46,56 @@ pub fn resolve_signing_key(env_val: Option<&str>, default_key: &str) -> String {
     }
 }
 
-/// Default GPG binary name when `CRATERIA_GPG_BIN` is unset.
+/// Prefer `IDLESCREEN_GPG_NAME`, fall back to legacy `CRATERIA_GPG_NAME`.
+pub fn resolve_gpg_name_from_env() -> Option<String> {
+    for key in ["IDLESCREEN_GPG_NAME", "CRATERIA_GPG_NAME"] {
+        if let Ok(v) = std::env::var(key)
+            && gpg_name_is_valid(&v)
+        {
+            return Some(v);
+        }
+    }
+    None
+}
+
+/// Default GPG binary name when `IDLESCREEN_GPG_BIN` / `CRATERIA_GPG_BIN` unset.
 pub fn resolve_gpg_bin(env_val: Option<&str>) -> String {
     match env_val {
         Some(v) if macro_field_is_safe(v) => v.to_string(),
         _ => "gpg".to_string(),
     }
+}
+
+/// Prefer `IDLESCREEN_GPG_BIN`, fall back to `CRATERIA_GPG_BIN`, then `gpg`.
+pub fn resolve_gpg_bin_from_env() -> String {
+    for key in ["IDLESCREEN_GPG_BIN", "CRATERIA_GPG_BIN"] {
+        if let Ok(v) = std::env::var(key)
+            && macro_field_is_safe(&v)
+        {
+            return v;
+        }
+    }
+    "gpg".into()
+}
+
+/// Prefer `IDLESCREEN_GPG_PATH`, fall back to `CRATERIA_GPG_PATH`.
+pub fn resolve_gpg_path_from_env() -> Option<String> {
+    for key in ["IDLESCREEN_GPG_PATH", "CRATERIA_GPG_PATH"] {
+        if let Ok(v) = std::env::var(key)
+            && !v.is_empty()
+            && !v.contains('\n')
+            && !v.contains('\r')
+        {
+            return Some(v);
+        }
+    }
+    None
+}
+
+/// True when skip-install of rpm-sign is requested (either env name).
+pub fn skip_rpm_sign_install_from_env() -> bool {
+    std::env::var_os("IDLESCREEN_SKIP_RPM_SIGN_INSTALL").is_some()
+        || std::env::var_os("CRATERIA_SKIP_RPM_SIGN_INSTALL").is_some()
 }
 
 #[cfg(test)]

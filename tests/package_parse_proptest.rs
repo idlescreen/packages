@@ -1,7 +1,7 @@
 //! Property tests for deb/rpm filename parsing.
 // SPDX-License-Identifier: Apache-2.0
 
-use crateria_packages::{parse_deb_filename, parse_rpm_filename};
+use idlescreen_packages::{parse_deb_filename, parse_rpm_filename};
 use proptest::prelude::*;
 
 fn pkg_name() -> impl Strategy<Value = String> {

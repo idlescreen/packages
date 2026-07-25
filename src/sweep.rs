@@ -66,7 +66,7 @@ mod tests {
             .duration_since(UNIX_EPOCH)
             .map(|d| d.as_nanos())
             .unwrap_or(0);
-        let root = env::temp_dir().join(format!("crateria-sweep-{n}"));
+        let root = env::temp_dir().join(format!("idlescreen-sweep-{n}"));
         let _ = fs::remove_dir_all(&root);
         fs::create_dir_all(root.join("apt/pool/main")).expect("apt");
         fs::create_dir_all(root.join("rpm/pool")).expect("rpm");
