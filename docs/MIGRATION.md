@@ -60,12 +60,31 @@ sudo curl -fsSL https://idlescreen.github.io/packages/rpm/idlescreen.repo \
 
 ## D-Bus (advanced)
 
-The control-plane wire names remain historical for ABI stability:
+**Primary (prefer):**
 
-- Service/interface: `io.github.ubermetroid.trance`
-- Object path: `/io/github/crateria/trance`
+- Service: `io.github.idlescreen.Idle`
+- Path: `/io/github/idlescreen/Idle`
 
-Clients should use packaged `idle-cli` / `idle-tui` / `idle-cosmic` rather than hardcoding these.
+**Legacy (still dual-exported for upgrades):**
+
+- Service: `io.github.ubermetroid.trance`
+- Path: `/io/github/crateria/trance`
+
+Interface methods remain `io.github.ubermetroid.trance` on both endpoints during
+the migration window. Prefer packaged clients (`idle-cli` / `idle-tui` /
+`idle-cosmic`) over hardcoding names.
+
+## Environment (plugins / export)
+
+Prefer `IDLE_*` keys; legacy `TRANCE_*` still works. Examples:
+
+| Prefer | Legacy |
+|--------|--------|
+| `IDLE_EXPORT_MODE` | `TRANCE_EXPORT_MODE` |
+| `IDLE_DISABLE_SANDBOX` | `TRANCE_DISABLE_SANDBOX` |
+| `IDLE_RENDER_SCALE` | `TRANCE_RENDER_SCALE` |
+| `IDLE_MAX_FPS` / `IDLE_TICK_HZ` | `TRANCE_MAX_FPS` / `TRANCE_TICK_HZ` |
+| `RENDER_SEED` / `IDLE_RENDER_SEED` | `TRANCE_SEED` |
 
 ## Arch Linux
 
