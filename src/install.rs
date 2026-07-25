@@ -1,5 +1,4 @@
 //! IdleScreen installer — same product matrix as `install.sh`.
-//! Never installs `idle-studio` (separate product).
 // SPDX-License-Identifier: Apache-2.0
 
 use std::env;
@@ -80,10 +79,9 @@ fn desktop_label() -> (&'static str, &'static str) {
     if de.contains("xfce") {
         return ("xfce", "Xfce");
     }
-    ("other", "Generic Wayland / unknown DE")
+    ("other", "Generic / unknown DE")
 }
 
-/// Core product set. Never includes idle-studio.
 fn packages(cosmic: bool) -> Vec<&'static str> {
     let mut p = vec!["idle-daemon", "idle-cli", "idle-savers", "idle-tui"];
     if cosmic {
@@ -112,7 +110,6 @@ fn main() {
     let os_name = os_pretty();
 
     println!("\n{C_ORANGE}{C_BOLD}IdleScreen installer{C_RESET}");
-    println!("{C_DIM}  Ambient screensavers for Wayland · not studio{C_RESET}");
     println!("{C_DIM}  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{C_RESET}");
     pause(150);
 
@@ -171,7 +168,6 @@ fn main() {
     println!("\n {C_CYAN}{C_BOLD}[3/5]{C_RESET} {C_BOLD}Composing the install plan{C_RESET}");
     println!("  {C_GREEN}→{C_RESET} {de_label}");
     println!("  {C_GREEN}→{C_RESET} {C_CYAN}{}{C_RESET}", pkgs.join(" "));
-    println!("  {C_DIM}→ skip: idle-studio (separate product){C_RESET}");
     for n in (1..=3).rev() {
         println!("  {C_ORANGE}deploy in {n}…{C_RESET}");
         pause(350);
@@ -233,7 +229,6 @@ fn main() {
 
     println!("\n {C_GREEN}{C_BOLD}✦ INSTALLATION COMPLETE ✦{C_RESET}");
     println!("  modules: {C_CYAN}{}{C_RESET}", pkgs.join(" "));
-    println!("  studio:  {C_DIM}not installed (separate product){C_RESET}");
     if cosmic {
         println!("  {C_ORANGE}COSMIC{C_RESET} applet package idle-cosmic included");
     }
