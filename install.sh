@@ -1,9 +1,6 @@
 #!/bin/sh
 # IdleScreen Installer
 # Usage: curl -fsSL https://idlescreen.github.io/packages/install.sh | sh
-#
-# Installs the IdleScreen ambient suite for your OS + desktop.
-# Never installs idle-studio (separate product).
 
 set -eu
 
@@ -110,13 +107,9 @@ banner() {
         ║   ███████║╚██████╗██║  ██║███████╗███████╗██║ ╚████║     ║
         ║   ╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═══╝     ║
         ║                                                          ║
-        ║            ambient · wayland · not studio                ║
-        ║                                                          ║
         ╚══════════════════════════════════════════════════════════╝
 BANNER
     say "${RESET}"
-    say "  ${BOLD}Ambient screensavers for Wayland${RESET}"
-    say "  ${DIM}engine · effects · desktop hosts  ·  not studio${RESET}"
     say "  ${DIM}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
     say ""
 }
@@ -221,32 +214,19 @@ detect_de() {
         DE_LABEL="$_de"
     else
         DE_ID="other"
-        DE_LABEL="Generic Wayland / unknown DE"
+        DE_LABEL="Generic / unknown DE"
     fi
     # silence unused
     : "$_xd" "$_xs"
 }
 
-# Build package list for this OS/DE. Never includes idle-studio.
-# Outputs space-separated package names on stdout (last line used by caller).
+# Build package list for this OS/DE.
 build_pkg_list() {
-    # Core product path for all supported hosts
     PKGS="idle-daemon idle-cli idle-savers idle-tui"
-    EXTRA_NOTES=""
 
     case "$DE_ID" in
         cosmic)
             PKGS="$PKGS idle-cosmic"
-            EXTRA_NOTES="COSMIC panel applet (idle-cosmic)"
-            ;;
-        hyprland|sway)
-            EXTRA_NOTES="TUI host for compositor control (idle-tui)"
-            ;;
-        gnome|kde|xfce)
-            EXTRA_NOTES="TUI + daemon; DE panel applet not required"
-            ;;
-        *)
-            EXTRA_NOTES="Universal Wayland stack (daemon + TUI + savers)"
             ;;
     esac
 
@@ -295,7 +275,6 @@ install_packages() {
     _pkgs="$1"
     step "[4/5]  Deploying modules into the system"
     say "  ${DIM}manifest:${RESET} ${BOLD}${_pkgs}${RESET}"
-    say "  ${DIM}excluded:${RESET} idle-studio ${DIM}(separate product)${RESET}"
     say ""
 
     countdown 3 "Package deployment"
@@ -391,7 +370,6 @@ DONE
     say "  ${DIM}desktop${RESET}  ${DE_LABEL}"
     say "  ${DIM}channel${RESET}  ${PKG_HOST_LABEL}"
     say "  ${DIM}modules${RESET}  ${_pkgs}"
-    say "  ${DIM}studio${RESET}   ${DIM}not installed (separate product)${RESET}"
     say ""
 
     case "$DE_ID" in
@@ -424,9 +402,7 @@ DONE
 # ---------------------------------------------------------------------------
 main() {
     banner
-    story_line "A Wayland session flickers in the dark…"
-    story_line "IdleScreen is preparing an ambient stack for this machine."
-    story_line "Studio is not part of this story — different product, different install."
+    story_line "Preparing IdleScreen for this machine…"
     say ""
     countdown 3 "System scan"
 
@@ -451,11 +427,6 @@ main() {
         dim "  Arch users: see ${REPO_BASE}/  → arch/"
         dim "  Manual:     ${REPO_BASE}/"
         exit 1
-    fi
-
-    if [ "$SESSION_TYPE" != "wayland" ] && [ "$SESSION_TYPE" != "unknown" ]; then
-        warn "Session type is '${SESSION_TYPE}'. IdleScreen targets Wayland."
-        dim "  Continuing anyway — doctor can confirm protocols later."
     fi
 
     pause 0.4
@@ -490,14 +461,13 @@ main() {
             say "  ${GREEN}→${RESET} KDE Plasma detected — daemon + TUI + full saver set"
             ;;
         *)
-            say "  ${GREEN}→${RESET} Generic / other DE — universal Wayland stack"
+            say "  ${GREEN}→${RESET} Generic / other DE — core package set"
             ;;
     esac
     say "  ${GREEN}→${RESET} Always:     idle-daemon  idle-cli  idle-savers  idle-tui"
     if printf '%s' "$PKGS" | grep -q idle-cosmic; then
         say "  ${GREEN}→${RESET} Plus:       idle-cosmic"
     fi
-    say "  ${DIM}→ Skip:       idle-studio${RESET}"
     say ""
     say "  ${BOLD}Will install:${RESET} ${CYAN}${PKGS}${RESET}"
     pause 0.5
