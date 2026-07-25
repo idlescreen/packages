@@ -73,7 +73,10 @@ echo "deb [signed-by=/etc/apt/keyrings/idlescreen-keyring.gpg] https://idlescree
 
 # Update Index & Install Product
 sudo apt update
-sudo apt install idlescreen
+# Prefer the install script (OS/DE aware). Manual:
+sudo apt install idle-daemon idle-cli idle-savers idle-tui
+# COSMIC Desktop also:
+# sudo apt install idle-cosmic
 ```
 </details>
 
@@ -88,7 +91,10 @@ sudo curl -fsSL https://idlescreen.github.io/packages/rpm/idlescreen.repo -o /et
 
 # Refresh Metadata & Install Product
 sudo dnf check-update
-sudo dnf install idlescreen
+# Prefer the install script (OS/DE aware). Manual:
+sudo dnf install idle-daemon idle-cli idle-savers idle-tui
+# COSMIC Desktop also:
+# sudo dnf install idle-cosmic
 ```
 </details>
 

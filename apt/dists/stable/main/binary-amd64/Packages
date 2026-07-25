@@ -1,36 +1,17 @@
 Package: idle-cli
-Version: 2.3.1-1
+Version: 2.3.5-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 5685
+Installed-Size: 5722
 Depends: idle-daemon, libc6
 Conflicts: idlescreen-cli (<< 2.1.0), idle-cli (<< 2.0.0)
 Replaces: idlescreen-cli, idle-cli
 Provides: idlescreen-cli, idle-cli
-Filename: pool/main/idle-cli_2.3.1-1_amd64.deb
-Size: 871884
-MD5sum: 57a2ebfeb02ae3d764daa90e61608a5a
-SHA1: f3f5a2bd143d67ee98fd369e907521bd34afa86e
-SHA256: 76e264ef64473d1719af065bb67d9c3f3014841473fb9c60a3c8e83aef1335eb
-Section: utils
-Priority: optional
-Description: Command-line interface for the IdleScreen daemon
- CLI for controlling the Idle daemon over D-Bus (command: idle).
-
-Package: idle-cli
-Version: 2.3.4-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 5728
-Depends: idle-daemon, libc6
-Conflicts: idlescreen-cli (<< 2.1.0), idle-cli (<< 2.0.0)
-Replaces: idlescreen-cli, idle-cli
-Provides: idlescreen-cli, idle-cli
-Filename: pool/main/idle-cli_2.3.4-1_amd64.deb
-Size: 875392
-MD5sum: a18752733b474c7021d4e2b0f54b8ef3
-SHA1: a9326f5ba3b3fac8987b1b9fa2692704cd42ae78
-SHA256: feaf011590de5689bf159ca558419eed4997be04ff99cfee5ba6c9635cbfac22
+Filename: pool/main/idle-cli_2.3.5-1_amd64.deb
+Size: 867000
+MD5sum: 03cd717158cb2eae27de17e87d58f825
+SHA1: 19f644c321f8e938b6016366f1c9dd1c2aeef671
+SHA256: fad2db52c41e2d6be8bd25be84393b9368e2165d00a8370a3dca41da639ee38c
 Section: utils
 Priority: optional
 Description: Command-line interface for the IdleScreen daemon
@@ -62,42 +43,21 @@ Description: IdleScreen for COSMIC — product package (applet + pulls daemon an
  official savers.
 
 Package: idle-daemon
-Version: 2.3.1-1
+Version: 2.3.10-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 16462
-Depends: dbus, fonts-dejavu-core, idle-saver-beams, libc6
-Recommends: idle-savers, idle-cli
-Suggests: idle-cosmic
-Conflicts: idlescreen (<< 2.1.0), trance (<< 2.0.0)
-Replaces: idlescreen, trance
-Provides: idle, idlescreen, trance
-Filename: pool/main/idle-daemon_2.3.1-1_amd64.deb
-Size: 2485868
-MD5sum: c47c9231a7e356f1c3d6e4ada63085b5
-SHA1: 3efcafd973d1134557c9e0da111f6c514d0ad9c5
-SHA256: b268a51461b94f0d5250a3c2c433a431c43b04b9a811a881f12e5f84ab117327
-Section: utils
-Priority: optional
-Description: IdleScreen background idle daemon (Wayland screensaver host)
- IdleScreen background idle monitoring and screensaver host for Wayland.
-
-Package: idle-daemon
-Version: 2.3.9-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 16504
+Installed-Size: 16432
 Depends: dbus, fonts-dejavu-core, idle-cli, libc6
 Recommends: idle-cli, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
 Suggests: idle-cosmic
 Conflicts: idlescreen (<< 2.1.0), trance (<< 2.0.0)
 Replaces: idlescreen, trance
 Provides: idle, idlescreen, trance
-Filename: pool/main/idle-daemon_2.3.9-1_amd64.deb
-Size: 2438824
-MD5sum: 680cc2d8a9e8ff6e07176ca05975d95f
-SHA1: a4558ed8b620b5166a6f46f4237d886d65de41cd
-SHA256: e97491760e3620c346e8df6cdf89b3843913c5d0504013d7b04fe9c89fa29a84
+Filename: pool/main/idle-daemon_2.3.10-1_amd64.deb
+Size: 2354316
+MD5sum: 30537bd572ead9025c353bd5f6d1fe49
+SHA1: 6a73d41a3d81799b822da1466f2d0147c1c9b136
+SHA256: 3e3df82f35302ae1d34e9081ddd98aaa2a50d7bb81133cf0b2ac199d0fbae9de
 Section: utils
 Priority: optional
 Description: IdleScreen background idle daemon (Wayland screensaver host)
@@ -322,336 +282,23 @@ Description: Meta package that hard-depends on all official IdleScreen saver plu
  Installs every official IdleScreen screensaver plugin (saver-*). Pulled in by
  idle-cosmic (not installed alone by end users).
 
-Package: idlescreen
-Version: 2.0.0-1
+Package: idle-tui
+Version: 2.2.1-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 10983
-Depends: dbus, fonts-dejavu-core, libc6, saver-beams
-Recommends: idlescreen-savers, idlescreen-cli, idlescreen-tui
-Suggests: idlescreen-applet
-Conflicts: trance (<< 2.0.0)
-Replaces: trance
-Provides: trance
-Filename: pool/main/idlescreen_2.0.0-1_amd64.deb
-Size: 2130948
-MD5sum: 15fd47c74f3708fde01b7222b9261d00
-SHA1: 86a7bb3fc10adab90f8e012344cd007d3cb5dbf4
-SHA256: c11c7d397a00960cf134ae6812bd2aa99687d9e9304c2cf78920914fc93c009b
+Installed-Size: 14012
+Depends: idle-daemon, libc6
+Conflicts: app-tui (<< 2.1.0), idlescreen-tui (<< 2.1.0), trance-tui (<< 2.0.0)
+Replaces: app-tui, idlescreen-tui, trance-tui
+Provides: app-tui, idlescreen-tui, trance-tui
+Filename: pool/main/idle-tui_2.2.1-1_amd64.deb
+Size: 1016848
+MD5sum: aaa8b1f1481a8820d22e9c52c3387758
+SHA1: 2b97b729b45f7196e464aa38646ab82c216f8980
+SHA256: e7361a607840e98210bfd312f325e9769cda2f44670978f2113c25a5592a14d2
 Section: utils
 Priority: optional
-Description: IdleScreen background idle daemon (Wayland screensaver host)
- IdleScreen background idle monitoring and screensaver host for Wayland.
-
-Package: idlescreen-cli
-Version: 2.0.0-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 3792
-Depends: idlescreen, libc6
-Conflicts: trance-cli (<< 2.0.0)
-Replaces: trance-cli
-Provides: trance-cli
-Filename: pool/main/idlescreen-cli_2.0.0-1_amd64.deb
-Size: 761180
-MD5sum: e752cfc9f7fb73f8b6be76989532e86a
-SHA1: 3d615824ca187911e65e9d22388c2e16076b5dfb
-SHA256: b6b8719c6bb16a10967d701e74edd6f194ae9a7b8146fb2231e2614d5b5b55ef
-Section: utils
-Priority: optional
-Description: Command-line interface for the IdleScreen daemon
- CLI for controlling the IdleScreen daemon over D-Bus.
-
-Package: idlescreen-cosmic
-Version: 1.0.0
-Architecture: all
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Depends: trance, trance-applet, trance-plugins-all
-Recommends: trance-tui, trance-cli
-Filename: pool/main/idlescreen-cosmic_1.0.0_all.deb
-Size: 1032
-MD5sum: 0b34fb2f25d29e92748ef50b80d2073b
-SHA1: 89c5de629c110f36d893487c696bc95aae1680d3
-SHA256: dad5e6bcc1ffd9957ad46b079b0a9c0a1f98b43255c47a3231844a5d31fdac1f
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/app-cosmic
-Description: IdleScreen full stack for COSMIC Desktop
- Metapackage that installs the IdleScreen daemon (trance), the COSMIC
- panel applet (trance-applet), and all official saver plugins
- (trance-plugins-all). Recommends the optional TUI controller.
-
-Package: idlescreen-savers
-Version: 2.0.0-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 4
-Depends: idlescreen, saver-beams
-Recommends: saver-bursts, saver-chaos, saver-cosmos, saver-glyphs, saver-gnats, saver-radar, saver-storm, saver-hearth, saver-ripple
-Conflicts: trance-plugins-all (<< 2.0.0)
-Replaces: trance-plugins-all
-Provides: trance-plugins-all
-Filename: pool/main/idlescreen-savers_2.0.0-1_amd64.deb
-Size: 1176
-MD5sum: 597d3050ecbf2ce67b84b0517fc4ad02
-SHA1: 3589d7bc98ad30d584b76619e03b05fff9c7813f
-SHA256: 3b6ae6b0969a2153078bb9cf1010856c6a61ed611055f42190b1d63b6c81ba31
-Section: utils
-Priority: optional
-Description: Meta package for all official IdleScreen saver plugins
- Meta package for all official IdleScreen saver plugins. The default beams
- effect ships as saver-beams with the core package.
-
-Package: trance
-Version: 0.3.57-1
-Architecture: amd64
-Maintainer: crateria <jerydleuck@gmail.com>
-Installed-Size: 5571
-Depends: dbus, fonts-dejavu-core, libc6, trance-plugin-beams
-Recommends: trance-plugins-all, trance-cli, trance-tui
-Suggests: trance-applet
-Filename: pool/main/trance_0.3.57-1_amd64.deb
-Size: 1863964
-MD5sum: c23fb07660e88b40f9ac36403cb91d3b
-SHA1: ea746196f725fcc41de38e4c52e868eedd7dc08f
-SHA256: 9012910aa3ff265823b787c03d62b24fcf6bf85c3de510738a3df53699d3163e
-Section: utils
-Priority: optional
-Description: Background idle daemon and core package for trance screensavers
- Background idle monitoring service for trance screensavers.
-
-Package: trance-applet
-Version: 0.3.56-1
-Architecture: amd64
-Maintainer: crateria <jerydleuck@gmail.com>
-Installed-Size: 12208
-Depends: libc6, trance
-Enhances: cosmic-session, cosmic-panel
-Filename: pool/main/trance-applet_0.3.56-1_amd64.deb
-Size: 3761600
-MD5sum: 8479f046c63b2c6fe9ceef65738df896
-SHA1: 9111f62a8166fc56fbe921f7e061004416185921
-SHA256: a257c2b5b9536272724893109ecfae6340f0c488b1392cf4da9f016e83207031
-Section: utils
-Priority: optional
-Homepage: https://github.com/crateria/trance
-Description: COSMIC Desktop panel applet for the trance screensavers
- Native System76 COSMIC Desktop panel applet for the trance screensaver daemon.
- Optional: install only on COSMIC (not needed for GNOME/KDE/Hyprland — use
- trance-tui there).
-
-Package: trance-cli
-Version: 0.3.56-1
-Architecture: amd64
-Maintainer: crateria <jerydleuck@gmail.com>
-Installed-Size: 1920
-Depends: libc6, trance
-Filename: pool/main/trance-cli_0.3.56-1_amd64.deb
-Size: 691784
-MD5sum: e709dd0e6cdda7228326c1707b1dda49
-SHA1: b4b638e528ef211ae56520fd731b7714b8e6b1be
-SHA256: 5a327f10da9376f3ff5c51c4c0dfce18b9d9f9d9e480768462720c6868125878
-Section: utils
-Priority: optional
-Description: Command-line interface for the trance screensaver daemon
- Thin CLI for controlling the trance screensaver daemon over D-Bus.
-
-Package: trance-plugin-beams
-Version: 0.3.8-1
-Architecture: amd64
-Maintainer: crateria <jerydleuck@gmail.com>
-Installed-Size: 330
-Depends: libc6
-Filename: pool/main/trance-plugin-beams_0.3.8-1_amd64.deb
-Size: 153876
-MD5sum: 8f676f9f6964be8eb77a5a0ddb40ef7b
-SHA1: 93d906caf6b8cb06726f03fa5da53ceadcddc66b
-SHA256: 3e53870427c6cb4935d315e442cf99cc4c5dc4590a43d223421fd2b24520791e
-Section: utils
-Priority: optional
-Description: Spotlight cones sweeping a rising dust starfield
- Spotlight cones sweeping a rising dust starfield. Official trance screensaver
- plugin.
-
-Package: trance-plugin-bursts
-Version: 0.3.8-1
-Architecture: amd64
-Maintainer: crateria <jerydleuck@gmail.com>
-Installed-Size: 348
-Depends: libc6
-Filename: pool/main/trance-plugin-bursts_0.3.8-1_amd64.deb
-Size: 170096
-MD5sum: ca9210d6192deb3413212dd6644a1e7f
-SHA1: 952b6cbdf03272fe8acd8b887eb40f4e2f8be0e5
-SHA256: 2652b3ad4aaf0d3e2baa299bbc945e8fe1d70e4db5642dacd786f2498deac9f6
-Section: utils
-Priority: optional
-Description: City skyline fireworks particle show
- City skyline fireworks particle show. Official trance screensaver plugin.
-
-Package: trance-plugin-chaos
-Version: 0.3.8-1
-Architecture: amd64
-Maintainer: crateria <jerydleuck@gmail.com>
-Installed-Size: 334
-Depends: libc6
-Filename: pool/main/trance-plugin-chaos_0.3.8-1_amd64.deb
-Size: 156612
-MD5sum: d3e461643b1acb6278bff2d350461515
-SHA1: ec3b2aa232b8b31d6ecfc9f3bc03182474cbdf59
-SHA256: 44ee601861f85374a8f5109aaa411a2b59181e3a49bb7b34683c16e20f709eae
-Section: utils
-Priority: optional
-Description: Chromatic-aberration system logo glitch
- Chromatic-aberration system logo glitch. Official trance screensaver plugin.
-
-Package: trance-plugin-cosmos
-Version: 0.3.8-1
-Architecture: amd64
-Maintainer: crateria <jerydleuck@gmail.com>
-Installed-Size: 351
-Depends: libc6
-Filename: pool/main/trance-plugin-cosmos_0.3.8-1_amd64.deb
-Size: 161324
-MD5sum: 213a816492af1a3ced1e4f1ce797de86
-SHA1: 760690c05c191fb567a498bbec504a3d6608b3f1
-SHA256: b63cfce5acbde4b834cb2778c0855ae70c64a5016076fdb499c5d64a01a53edb
-Section: utils
-Priority: optional
-Description: Accretion disk to collapsed singularity lifecycle
- Accretion disk to collapsed singularity lifecycle. Official trance screensaver
- plugin.
-
-Package: trance-plugin-glyphs
-Version: 0.3.8-1
-Architecture: amd64
-Maintainer: crateria <jerydleuck@gmail.com>
-Installed-Size: 315
-Depends: libc6
-Filename: pool/main/trance-plugin-glyphs_0.3.8-1_amd64.deb
-Size: 147188
-MD5sum: 3dce071b8dd6feb02017f7388a0cd3cd
-SHA1: f053e24bb6170709759ac561d40d7089f00ce522
-SHA256: 2daa6e1fc6210fbcd009b164b14886c36f86f91ebf5b15b4a01f2035e76025cd
-Section: utils
-Priority: optional
-Description: Matrix-style rain with live system information
- Matrix-style rain with live system information. Official trance screensaver
- plugin.
-
-Package: trance-plugin-gnats
-Version: 0.3.8-1
-Architecture: amd64
-Maintainer: crateria <jerydleuck@gmail.com>
-Installed-Size: 343
-Depends: libc6
-Filename: pool/main/trance-plugin-gnats_0.3.8-1_amd64.deb
-Size: 168020
-MD5sum: f77cba20d1fb9c537fd9d4173a5ef108
-SHA1: a0e1b6f7fc521157f69bc9aa48d1c26dba426692
-SHA256: 86b9ccdae64e6e944f56d6a917d9aa710956d4cc714b8c193167c63674c322e6
-Section: utils
-Priority: optional
-Description: Predator-prey firefly swarm
- Predator-prey firefly swarm. Official trance screensaver plugin.
-
-Package: trance-plugin-hearth
-Version: 0.3.8-1
-Architecture: amd64
-Maintainer: crateria <jerydleuck@gmail.com>
-Installed-Size: 323
-Depends: libc6
-Filename: pool/main/trance-plugin-hearth_0.3.8-1_amd64.deb
-Size: 142920
-MD5sum: 747860d01e2243bfb8c9a46709cdb564
-SHA1: a2adfae95b9e93f92b4dfff99a8e94e510018f76
-SHA256: 2f545e6b8083208f5791af2a57c5b439c4ef7a644c23d57177c798c3ee7c877b
-Section: utils
-Priority: optional
-Description: Cozy fireplace: rising embers, log glow, heat shimmer
- Cozy fireplace with rising embers and heat shimmer. Official trance screensaver
- plugin.
-
-Package: trance-plugin-radar
-Version: 0.3.8-1
-Architecture: amd64
-Maintainer: crateria <jerydleuck@gmail.com>
-Installed-Size: 319
-Depends: libc6
-Filename: pool/main/trance-plugin-radar_0.3.8-1_amd64.deb
-Size: 148480
-MD5sum: 3378608f15ed7016753fbc0bba4b8bf5
-SHA1: b96e60255bc71e97e7f54ced9410d8b4f8462bd3
-SHA256: 3a9ec04ec2f298c72cb1473fc836dac7aa3f2c80987d9e168771768676470b03
-Section: utils
-Priority: optional
-Description: Retro CRT tactical radar sweep
- Retro CRT tactical radar sweep. Official trance screensaver plugin.
-
-Package: trance-plugin-ripple
-Version: 0.3.8-1
-Architecture: amd64
-Maintainer: crateria <jerydleuck@gmail.com>
-Installed-Size: 327
-Depends: libc6
-Filename: pool/main/trance-plugin-ripple_0.3.8-1_amd64.deb
-Size: 144632
-MD5sum: 65ec953efc92fc2b8f877ebbf0dad0ad
-SHA1: 0763eb91efc9dd791cf811e5c06be88159554d43
-SHA256: 2483ff8e72f82d6006dc1a65da713da1be921cfbc7ba1ac59c794dcced316817
-Section: utils
-Priority: optional
-Description: Rain on a still pond: expanding rings and soft drizzle
- Rain on a still pond with expanding rings. Official trance screensaver plugin.
-
-Package: trance-plugin-storm
-Version: 0.3.8-1
-Architecture: amd64
-Maintainer: crateria <jerydleuck@gmail.com>
-Installed-Size: 367
-Depends: libc6
-Filename: pool/main/trance-plugin-storm_0.3.8-1_amd64.deb
-Size: 170992
-MD5sum: 9f3e40be1d37f6fd787e4b9940b90ac2
-SHA1: 7c33afd539c59a36a11b18b61ed11f4c772c4dcb
-SHA256: 8c5d5e23218269b4bbe7efda21753e8befbc82b9040fc11fd7f2b304b63661c6
-Section: utils
-Priority: optional
-Description: Forest rain, lightning, and wildlife silhouettes
- Forest rain, lightning, and wildlife silhouettes. Official trance screensaver
- plugin.
-
-Package: trance-plugins-all
-Version: 0.3.56-1
-Architecture: amd64
-Maintainer: crateria <jerydleuck@gmail.com>
-Installed-Size: 4
-Depends: trance
-Recommends: trance-plugin-bursts, trance-plugin-chaos, trance-plugin-cosmos, trance-plugin-glyphs, trance-plugin-gnats, trance-plugin-radar, trance-plugin-storm, trance-plugin-hearth, trance-plugin-ripple
-Filename: pool/main/trance-plugins-all_0.3.56-1_amd64.deb
-Size: 1484
-MD5sum: a1e9da68ae9a4636832b0876b90c558f
-SHA1: 93678798ae35ea5e62092da80b098ea6c1044f72
-SHA256: b54a5b5d5cb919da3e9e62b23ca7b19c17f6d7315a71849e8e80f083dc4a1b9e
-Section: utils
-Priority: optional
-Description: Meta package that recommends all official trance screensaver plugins
- Convenience meta package that recommends the optional trance screensaver
- plugins. The stock beams effect ships with the core trance package.
-
-Package: trance-tui
-Version: 0.3.56-1
-Architecture: amd64
-Maintainer: crateria <jerydleuck@gmail.com>
-Installed-Size: 1616
-Depends: libc6, trance
-Filename: pool/main/trance-tui_0.3.56-1_amd64.deb
-Size: 597624
-MD5sum: bb8cbb02d165a248c9647b38ddf0be3c
-SHA1: 552e51555a6e4545a299e47b63c74426f93e525c
-SHA256: c42775c3ef04ee9a9567f9a744e61d2e4c5dfe11dd23eee1a087d17cd0436e7f
-Section: utils
-Priority: optional
-Description: TUI client for screensaver daemon configuration
- TUI client for screensaver daemon configuration.
+Homepage: https://github.com/idlescreen/idle-tui
+Description: Optional TUI client for IdleScreen (idle-tui)
+ Optional live TUI controller for IdleScreen.
 
