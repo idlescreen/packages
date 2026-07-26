@@ -17,7 +17,24 @@ Website: [https://idlescreen.github.io](https://idlescreen.github.io)
 curl -fsSL https://idlescreen.github.io/packages/install.sh | sh
 ```
 
-The script installs `idle-daemon`, `idle-cli`, `idle-savers`, and `idle-tui`. On COSMIC Desktop it also installs `idle-cosmic`.
+Or, after the repo is configured:
+
+```bash
+sudo dnf install idlescreen    # Fedora / RHEL family
+sudo apt install idlescreen    # Debian / Ubuntu family
+# COSMIC: also  sudo dnf install idle-cosmic   /   sudo apt install idle-cosmic
+```
+
+The installer seats the product metapackage **`idlescreen`** (depends on `idle-daemon`, `idle-cli`, `idle-savers`, `idle-tui`) and on COSMIC also **`idle-cosmic`**.
+
+**Remove:**
+
+```bash
+sudo dnf remove idlescreen
+# or: sudo apt remove idlescreen
+# full wipe of modules if needed:
+# sudo dnf remove idle-daemon idle-cli idle-savers idle-tui idle-cosmic
+```
 
 ---
 
@@ -25,6 +42,7 @@ The script installs `idle-daemon`, `idle-cli`, `idle-savers`, and `idle-tui`. On
 
 | Package | Role |
 |---------|------|
+| **`idlescreen`** | **Product metapackage** (depends on the modular stack below) |
 | `idle-daemon` | Idle policy, plugin host, Wayland presentation |
 | `idle-cli` | CLI (`idlescreen` / `idle`) over D-Bus |
 | `idle-savers` | Meta package pulling the official saver plugins |
@@ -75,9 +93,10 @@ Prefer the one-line installer above when possible.
 sudo curl -fsSL https://idlescreen.github.io/packages/rpm/idlescreen.repo \
   -o /etc/yum.repos.d/idlescreen.repo
 sudo dnf check-update
-sudo dnf install idle-daemon idle-cli idle-savers idle-tui
+sudo dnf install idlescreen
 # COSMIC Desktop:
 # sudo dnf install idle-cosmic
+# Remove: sudo dnf remove idlescreen
 ```
 </details>
 
@@ -91,9 +110,10 @@ curl -fsSL https://idlescreen.github.io/packages/apt/idlescreen-keyring.gpg \
 echo "deb [signed-by=/etc/apt/keyrings/idlescreen-keyring.gpg] https://idlescreen.github.io/packages/apt stable main" \
   | sudo tee /etc/apt/sources.list.d/idlescreen.list >/dev/null
 sudo apt update
-sudo apt install idle-daemon idle-cli idle-savers idle-tui
+sudo apt install idlescreen
 # COSMIC Desktop:
 # sudo apt install idle-cosmic
+# Remove: sudo apt remove idlescreen
 ```
 </details>
 

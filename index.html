@@ -296,7 +296,7 @@
         <p class="subtitle">Step-by-step instructions to install the IdleScreen repository & packages for your OS.</p>
 
         <div class="info-badge">
-            ⚡ <strong>Install:</strong> modular packages <code>idle-daemon idle-cli idle-savers idle-tui</code> (+ <code>idle-cosmic</code> on COSMIC)<br>
+            ⚡ <strong>Install:</strong> product metapackage <code>idlescreen</code> (pulls <code>idle-daemon idle-cli idle-savers idle-tui</code>) · remove with <code>dnf/apt remove idlescreen</code> · (+ <code>idle-cosmic</code> on COSMIC)<br>
             🪐 <strong>COSMIC DE Only:</strong> <code>idle-cosmic</code> (Applet integration for COSMIC Desktop)
         </div>
         
@@ -329,7 +329,7 @@
                 <div class="step-item">
                     <div class="step-label">Step 3: Install Package & Run</div>
                     <div class="installer-box">
-                        <div class="command" id="apt3Cmd">sudo apt install idle-daemon idle-cli idle-savers idle-tui && idlescreen tui</div>
+                        <div class="command" id="apt3Cmd">sudo apt install idlescreen && idlescreen tui</div>
                         <button class="copy-btn" onclick="copyCommand('apt3Cmd', this)">Copy</button>
                     </div>
                 </div>
@@ -351,7 +351,7 @@
                 <div class="step-item">
                     <div class="step-label">Step 2: Refresh DNF Metadata & Install Package</div>
                     <div class="installer-box">
-                        <div class="command" id="dnf2Cmd">sudo dnf check-update && sudo dnf install idle-daemon idle-cli idle-savers idle-tui && idlescreen tui</div>
+                        <div class="command" id="dnf2Cmd">sudo dnf check-update && sudo dnf install idlescreen && idlescreen tui</div>
                         <button class="copy-btn" onclick="copyCommand('dnf2Cmd', this)">Copy</button>
                     </div>
                 </div>
