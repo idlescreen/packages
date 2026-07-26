@@ -14,7 +14,7 @@ sudo dnf install idlescreen
 |---------|------|
 | **idlescreen** | Product metapackage (depends on modular stack) |
 | idle-daemon | Wayland idle host |
-| idle-cli | CLI (`idlescreen` / `idle`) |
+| idle-cli | CLI (`idlescreen` only — not `/usr/bin/idle`) |
 | idle-savers | Official saver plugins |
 | idle-tui | Terminal dashboard |
 | idle-cosmic | COSMIC panel applet |
@@ -49,8 +49,7 @@ idlescreen preview beams
 idlescreen doctor
 ```
 
-Alias: `idle` is the same CLI binary.
-
 ## Note
 
-System76’s **`cosmic-idle`** package is unrelated; do not remove it when uninstalling IdleScreen.
+- System76’s **`cosmic-idle`** package is unrelated.
+- Fedora’s **`python3-idle`** owns `/usr/bin/idle` (Python IDE). IdleScreen uses **`idlescreen`** only.

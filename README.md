@@ -44,7 +44,7 @@ sudo dnf remove idlescreen
 |---------|------|
 | **`idlescreen`** | **Product metapackage** (depends on the modular stack below) |
 | `idle-daemon` | Idle policy, plugin host, Wayland presentation |
-| `idle-cli` | CLI (`idlescreen` / `idle`) over D-Bus |
+| `idle-cli` | CLI (`idlescreen`) over D-Bus — does **not** install `/usr/bin/idle` (Fedora `python3-idle`) |
 | `idle-savers` | Meta package pulling the official saver plugins |
 | `idle-saver-*` | Individual plugins (beams, cosmos, …) |
 | `idle-tui` | Terminal dashboard (`idle-tui`; also `idlescreen tui`) |
@@ -77,7 +77,7 @@ Ten procedural **cell-grid plugins**. The host rasterizes frames (optional wgpu 
 - **Wayland presentation** — needs compositor support for idle-notify and layer-shell (or equivalent). Strongest on COSMIC, Hyprland, and Sway; GNOME and KDE vary by protocol coverage.
 - **Cell-grid plugins + host raster** — savers draw a cell grid; host turns cells into pixels (optional wgpu, CPU fallback).
 - **COSMIC panel applet** — optional `idle-cosmic` package.
-- **CLI and TUI** — `idlescreen` (alias `idle`); `idlescreen tui` launches `idle-tui`.
+- **CLI and TUI** — `idlescreen`; `idlescreen tui` launches `idle-tui`.
 - **Inhibit and battery** — skips presentation for logind / MPRIS2 active media; on battery, frame and simulation targets are capped (30 FPS/Hz).
 
 ---
@@ -140,8 +140,6 @@ idlescreen preview <name>   # Preview a saver now
 idlescreen stop             # Stop preview / presentation
 idlescreen doctor           # Diagnostics
 ```
-
-Alias: `idle` is the same binary as `idlescreen`.
 
 ---
 

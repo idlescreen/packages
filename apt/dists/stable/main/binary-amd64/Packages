@@ -1,18 +1,18 @@
 Package: idle-cli
-Version: 2.5.0-1
+Version: 2.5.1-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 3846
+Installed-Size: 1936
 Depends: idle-daemon, libc6
-Filename: pool/main/idle-cli_2.5.0-1_amd64.deb
-Size: 782156
-MD5sum: f223578347f82c5fe62902cf79fe8b99
-SHA1: b832cb2822804f3a94fb8c7b36bb325bd46824ee
-SHA256: 0f1ea65ba5e9220b5d1096417a9119ccfa2080f2abb08bfb36ad83b9b423778f
+Filename: pool/main/idle-cli_2.5.1-1_amd64.deb
+Size: 713908
+MD5sum: 28e5a4bae54e4f2f3a38f9a6880220d9
+SHA1: 7774238651975df7c9cffa6f2c0d1b9139e9b04d
+SHA256: 8241f9c644fa06b2734cc23834bf26396e068e3d9f07358a854b127330118ec4
 Section: utils
 Priority: optional
 Description: Command-line interface for the IdleScreen daemon
- CLI for controlling the Idle daemon over D-Bus (command: idle).
+ CLI for controlling the Idle daemon over D-Bus (command: idlescreen).
 
 Package: idle-cosmic
 Version: 2.2.1-1
@@ -39,18 +39,18 @@ Description: IdleScreen for COSMIC — product package (applet + pulls daemon an
  Installs the COSMIC panel applet and depends on idle-daemon.
 
 Package: idle-daemon
-Version: 2.5.0-1
+Version: 2.5.1-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
 Installed-Size: 10975
 Depends: dbus, fonts-dejavu-core, idle-cli, libc6
 Recommends: idle-cli, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
 Suggests: idle-cosmic
-Filename: pool/main/idle-daemon_2.5.0-1_amd64.deb
-Size: 2170792
-MD5sum: 364d8db12026d6931a0aee592cd600be
-SHA1: 95b3517a411e6236d9a8685e3aba1bb8ba233e87
-SHA256: 3793103c6df6cc114ac56218d11ae8157ec8bb81d51633e41aec9b34c137c647
+Filename: pool/main/idle-daemon_2.5.1-1_amd64.deb
+Size: 2110436
+MD5sum: 67eaefe36c0169916b98404c124d258a
+SHA1: d89915a75cd89a38af7a3084d919eb6555155d58
+SHA256: b562fa63e6f44e3fb45e5be90dab1cc67d6a5f1891eaefa5cedc69b003096e05
 Section: utils
 Priority: optional
 Description: IdleScreen background idle daemon (Wayland screensaver host)
