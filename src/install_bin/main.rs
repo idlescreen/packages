@@ -11,9 +11,7 @@ mod victory;
 use std::process::{Command, Stdio, exit};
 
 use deploy::{deploy, print_deploy_result, recount, start_daemon};
-use host::{
-    desktop_label, is_apt, is_cosmic, is_dnf, os_pretty, packages, run_status,
-};
+use host::{desktop_label, is_apt, is_cosmic, is_dnf, os_pretty, packages, run_status};
 use pkg::survey;
 use ui::{
     C_BOLD, C_CYAN, C_DIM, C_GREEN, C_ORANGE, C_RESET, err, ok, pause, say, step, story_line, warn,
@@ -72,17 +70,7 @@ fn main() {
     step("[5/5]  Starting the idle user service");
     let active = start_daemon();
     print_victory(
-        &os_name,
-        arch,
-        de_label,
-        channel,
-        cosmic,
-        dnf,
-        &pkgs,
-        &present,
-        &missing,
-        &survey,
-        active,
+        &os_name, arch, de_label, channel, cosmic, dnf, &pkgs, &present, &missing, &survey, active,
     );
 }
 
@@ -188,7 +176,10 @@ fn print_plan(de_label: &str, cosmic: bool, pkgs: &[&str]) {
     }
     println!();
     story_line("Surveying what is already on this host (installed vs channel)…");
-    println!("  {C_DIM}plan:{C_RESET} {C_BOLD}{}{C_RESET}", pkgs.join(" "));
+    println!(
+        "  {C_DIM}plan:{C_RESET} {C_BOLD}{}{C_RESET}",
+        pkgs.join(" ")
+    );
     println!();
 }
 

@@ -2,7 +2,7 @@
 
 //! Final summary screen (truthful post-deploy counts).
 
-use super::pkg::{pkg_present, Survey};
+use super::pkg::{Survey, pkg_present};
 use super::ui::{C_BOLD, C_CYAN, C_DIM, C_GREEN, C_ORANGE, C_RESET, C_YELLOW};
 
 const REPO_BASE: &str = "https://idlescreen.github.io/packages";

@@ -7,8 +7,8 @@ use std::process::{Command, exit};
 
 use super::host::{run_capture, run_status};
 use super::pkg::{
-    apt_install, apt_installed, apt_only_upgrade, dnf_install, dnf_upgrade, pkg_present,
-    rpm_installed, Survey,
+    Survey, apt_install, apt_installed, apt_only_upgrade, dnf_install, dnf_upgrade, pkg_present,
+    rpm_installed,
 };
 use super::ui::{C_BOLD, C_GREEN, C_RESET, err, ok, story_line, warn};
 
