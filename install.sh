@@ -241,39 +241,52 @@ REPO_BASE="https://idlescreen.github.io/packages"
 
 setup_repo_dnf() {
     step "[2/5]  Opening the package gate  ·  RPM repository"
-    story_line "Fetching signed repository manifest…"
+    story_line "Writing IdleScreen DNF repo file…"
     pause 0.3
     sudo curl -fsSL "${REPO_BASE}/rpm/idlescreen.repo" \
         -o /etc/yum.repos.d/idlescreen.repo
     ok "Repo written → ${BOLD}/etc/yum.repos.d/idlescreen.repo${RESET}"
-    dim "   baseurl ${REPO_BASE}/rpm  ·  gpgcheck on"
-    story_line "Refreshing IdleScreen channel metadata (so older builds are not left behind)…"
-    # Force a fresh view of the channel; ignore soft failures and fall back.
+    # Truth: packages are GPG-checked (gpgcheck=1); repo metadata itself is not
+    # signed (repo_gpgcheck=0 in the .repo file).
+    dim "   baseurl ${REPO_BASE}/rpm  ·  package gpgcheck=1  ·  repo_gpgcheck=0"
+    story_line "Refreshing IdleScreen channel metadata…"
     sudo dnf clean metadata --repo=idlescreen >/dev/null 2>&1 || true
+    _meta_ok=0
     if [ "$IS_TTY" -eq 1 ]; then
         sudo dnf makecache --refresh --repo=idlescreen >/dev/null 2>&1 &
-        spin_while $! "syncing DNF metadata" || {
-            sudo dnf makecache --refresh >/dev/null 2>&1 || true
-        }
+        if spin_while $! "syncing DNF metadata"; then
+            _meta_ok=1
+        elif sudo dnf makecache --refresh >/dev/null 2>&1; then
+            _meta_ok=1
+        fi
     else
-        sudo dnf makecache --refresh --repo=idlescreen >/dev/null 2>&1 \
-            || sudo dnf makecache --refresh >/dev/null 2>&1 \
-            || true
+        if sudo dnf makecache --refresh --repo=idlescreen >/dev/null 2>&1 \
+            || sudo dnf makecache --refresh >/dev/null 2>&1; then
+            _meta_ok=1
+        fi
     fi
-    ok "DNF channel metadata current"
+    if [ "$_meta_ok" -eq 1 ]; then
+        ok "DNF metadata refreshed for this session"
+    else
+        warn "Could not refresh DNF metadata — install will still try the channel"
+    fi
 }
 
 setup_repo_apt() {
     step "[2/5]  Opening the package gate  ·  APT repository"
-    story_line "Provisioning keyring vault…"
+    story_line "Creating /etc/apt/keyrings if needed…"
     sudo mkdir -p /etc/apt/keyrings
-    story_line "Importing IdleScreen signing key…"
-    curl -fsSL "${REPO_BASE}/apt/idlescreen-keyring.gpg" \
-        | sudo tee /etc/apt/keyrings/idlescreen-keyring.gpg >/dev/null
-    story_line "Registering stable/main channel…"
+    story_line "Downloading IdleScreen APT signing keyring…"
+    if ! curl -fsSL "${REPO_BASE}/apt/idlescreen-keyring.gpg" \
+        | sudo tee /etc/apt/keyrings/idlescreen-keyring.gpg >/dev/null; then
+        err "Could not download APT keyring from ${REPO_BASE}/apt/idlescreen-keyring.gpg"
+        exit 1
+    fi
+    ok "Keyring → ${BOLD}/etc/apt/keyrings/idlescreen-keyring.gpg${RESET}"
+    story_line "Writing APT source list (stable/main, signed-by keyring)…"
     echo "deb [signed-by=/etc/apt/keyrings/idlescreen-keyring.gpg] ${REPO_BASE}/apt/ stable main" \
         | sudo tee /etc/apt/sources.list.d/idlescreen.list >/dev/null
-    story_line "Refreshing package index (this can take a moment)…"
+    story_line "Running apt-get update…"
     if [ "$IS_TTY" -eq 1 ]; then
         sudo apt-get update -qq &
         spin_while $! "syncing APT metadata" || {
@@ -283,7 +296,7 @@ setup_repo_apt() {
     else
         sudo apt-get update -qq
     fi
-    ok "APT channel ready"
+    ok "APT index updated with IdleScreen source"
 }
 
 # True when version string $1 is older than $2 (sort -V). Equal → false.
@@ -363,35 +376,22 @@ survey_modules() {
     CURRENT_COUNT=0
 
     step "[3/5]  Composing the install plan"
-    story_line "Matching desktop profile → ${BOLD}${DE_LABEL}${RESET}"
+    story_line "Desktop profile → ${BOLD}${DE_LABEL}${RESET}"
+    # Package set is the same on every DE except COSMIC (+idle-cosmic). Do not
+    # imply Hyprland/GNOME get “more” than generic — that would be false.
+    say "  ${GREEN}→${RESET} Core stack (all DEs): ${BOLD}idle-daemon idle-cli idle-savers idle-tui idlescreen${RESET}"
+    say "  ${DIM}    idlescreen = product metapackage (install|remove by brand name)${RESET}"
     case "$DE_ID" in
         cosmic)
-            say "  ${GREEN}→${RESET} COSMIC detected — including ${BOLD}idle-cosmic${RESET} panel applet"
-            ;;
-        hyprland)
-            say "  ${GREEN}→${RESET} Hyprland detected — daemon + TUI + full saver set"
-            ;;
-        sway)
-            say "  ${GREEN}→${RESET} Sway detected — daemon + TUI + full saver set"
-            ;;
-        gnome)
-            say "  ${GREEN}→${RESET} GNOME detected — daemon + TUI + full saver set"
-            ;;
-        kde)
-            say "  ${GREEN}→${RESET} KDE Plasma detected — daemon + TUI + full saver set"
+            say "  ${GREEN}→${RESET} COSMIC: also ${BOLD}idle-cosmic${RESET} (panel applet package)"
             ;;
         *)
-            say "  ${GREEN}→${RESET} Generic / other DE — core package set"
+            say "  ${GREEN}→${RESET} ${DE_LABEL}: no extra DE-specific packages"
             ;;
     esac
-    say "  ${GREEN}→${RESET} Always:     idle-daemon  idle-cli  idle-savers  idle-tui"
-    say "  ${GREEN}→${RESET} Product:    idlescreen  ${DIM}(metapackage — dnf/apt install|remove idlescreen)${RESET}"
-    if printf '%s' "$_pkgs" | grep -q idle-cosmic; then
-        say "  ${GREEN}→${RESET} Plus:       idle-cosmic"
-    fi
     say ""
-    story_line "Surveying what is already on this host…"
-    say "  ${DIM}manifest:${RESET} ${BOLD}${_pkgs}${RESET}"
+    story_line "Surveying what is already on this host (installed vs channel)…"
+    say "  ${DIM}plan:${RESET} ${BOLD}${_pkgs}${RESET}"
     say ""
 
     for _pkg in $_pkgs; do
@@ -419,9 +419,9 @@ survey_modules() {
             UPGRADE_COUNT=$((UPGRADE_COUNT + 1))
         else
             if [ -n "$_cand" ]; then
-                say "  ${GREEN}✔${RESET} ${BOLD}${_pkg}${RESET}  ${DIM}${_inst}${RESET}  ${GREEN}current${RESET}"
+                say "  ${GREEN}✔${RESET} ${BOLD}${_pkg}${RESET}  ${DIM}${_inst}${RESET}  ${GREEN}matches channel${RESET}"
             else
-                say "  ${GREEN}✔${RESET} ${BOLD}${_pkg}${RESET}  ${DIM}${_inst}${RESET}  ${DIM}(no channel version yet)${RESET}"
+                say "  ${GREEN}✔${RESET} ${BOLD}${_pkg}${RESET}  ${DIM}${_inst}${RESET}  ${DIM}(installed; channel version unknown)${RESET}"
             fi
             CURRENT_PKGS="${CURRENT_PKGS} ${_pkg}"
             CURRENT_COUNT=$((CURRENT_COUNT + 1))
@@ -435,15 +435,15 @@ survey_modules() {
 
     say ""
     if [ "$UPGRADE_COUNT" -gt 0 ]; then
-        say "  ${ORANGE}${BOLD}Found ${UPGRADE_COUNT} outdated IdleScreen module(s)${RESET} — will raise to channel."
+        say "  ${ORANGE}${BOLD}Survey: ${UPGRADE_COUNT} outdated module(s)${RESET} — will attempt upgrade to channel."
     fi
     if [ "$INSTALL_COUNT" -gt 0 ]; then
-        say "  ${CYAN}${BOLD}Found ${INSTALL_COUNT} missing module(s)${RESET} — will install."
+        say "  ${CYAN}${BOLD}Survey: ${INSTALL_COUNT} missing module(s)${RESET} — will attempt install."
     fi
     if [ "$UPGRADE_COUNT" -eq 0 ] && [ "$INSTALL_COUNT" -eq 0 ]; then
-        say "  ${GREEN}${BOLD}All planned modules already current${RESET} — will still re-sync with the channel."
+        say "  ${GREEN}${BOLD}Survey: planned modules look current${RESET} — will still re-sync (dnf/apt may no-op)."
     fi
-    say "  ${BOLD}Will ensure:${RESET} ${CYAN}${_pkgs}${RESET}"
+    say "  ${BOLD}Will request:${RESET} ${CYAN}${_pkgs}${RESET}"
     pause 0.5
 }
 
@@ -579,64 +579,117 @@ install_packages() {
         sudo update-desktop-database /usr/share/applications 2>/dev/null || true
     fi
 
+    # Post-deploy truth: recount what is actually installed now.
+    PRESENT_COUNT=0
+    MISSING_AFTER=""
+    for _pkg in $_pkgs; do
+        if [ "$PKG_MGR" = "dnf" ]; then
+            if rpm -q "$_pkg" >/dev/null 2>&1; then
+                PRESENT_COUNT=$((PRESENT_COUNT + 1))
+            else
+                MISSING_AFTER="${MISSING_AFTER} ${_pkg}"
+            fi
+        else
+            if dpkg-query -W "$_pkg" >/dev/null 2>&1; then
+                PRESENT_COUNT=$((PRESENT_COUNT + 1))
+            else
+                MISSING_AFTER="${MISSING_AFTER} ${_pkg}"
+            fi
+        fi
+    done
+    MISSING_AFTER=$(printf '%s' "$MISSING_AFTER" | sed 's/^ *//')
+    PLANNED_COUNT=0
+    for _ in $_pkgs; do
+        PLANNED_COUNT=$((PLANNED_COUNT + 1))
+    done
+
     say ""
-    if [ "${UPGRADE_COUNT:-0}" -gt 0 ]; then
-        ok "${BOLD}Payload secured — outdated modules raised.${RESET}"
+    if [ -z "$MISSING_AFTER" ]; then
+        ok "${BOLD}Deploy finished — all ${PRESENT_COUNT} planned package(s) present.${RESET}"
     else
-        ok "${BOLD}Payload secured.${RESET}"
+        warn "Deploy finished — ${PRESENT_COUNT}/${PLANNED_COUNT} planned package(s) present."
+        warn "Missing: ${MISSING_AFTER}"
     fi
 }
 
 awaken_daemon() {
-    step "[5/5]  Awakening the idle daemon"
-    story_line "Creating user config directories…"
+    step "[5/5]  Starting the idle user service"
+    story_line "Ensuring ${HOME}/.config/idle exists (daemon config dir)…"
     mkdir -p "${HOME}/.config/idle"
     story_line "Reloading user systemd units…"
     systemctl --user daemon-reload 2>/dev/null || true
     systemctl --user reset-failed idle-daemon.service 2>/dev/null || true
-    story_line "Enabling idle-daemon.service…"
-    systemctl --user enable --now idle-daemon.service 2>/dev/null || true
+    story_line "systemctl --user enable --now idle-daemon.service…"
+    if systemctl --user enable --now idle-daemon.service 2>/dev/null; then
+        :
+    else
+        warn "enable --now returned non-zero (may need a graphical user session)"
+    fi
     pause 0.4
     if systemctl --user is-active --quiet idle-daemon.service 2>/dev/null; then
-        ok "Daemon ${GREEN}${BOLD}active${RESET}  ·  idle-daemon.service"
+        ok "idle-daemon.service is ${GREEN}${BOLD}active${RESET} (user session)"
     else
-        warn "Daemon unit configured — start later with:"
+        warn "idle-daemon.service is not active right now."
+        dim "   Packages may still be installed. Start later with:"
         dim "   systemctl --user enable --now idle-daemon.service"
+        dim "   (requires a logged-in user session with systemd --user)"
     fi
 }
 
 victory() {
     _pkgs="$1"
     say ""
+    if [ -z "${MISSING_AFTER:-}" ] && systemctl --user is-active --quiet idle-daemon.service 2>/dev/null; then
+        _banner_title="INSTALL FINISHED"
+        _banner_note="packages present · daemon active"
+    elif [ -z "${MISSING_AFTER:-}" ]; then
+        _banner_title="PACKAGES INSTALLED"
+        _banner_note="daemon not active yet — see notes above"
+    else
+        _banner_title="INSTALL PARTIAL"
+        _banner_note="some planned packages missing — see list above"
+    fi
     say "  ${GREEN}${BOLD}"
-    cat <<'DONE'
-        ╔══════════════════════════════════════════════════════╗
-        ║                                                      ║
-        ║             ✦  INSTALLATION COMPLETE  ✦              ║
-        ║                                                      ║
-        ╚══════════════════════════════════════════════════════╝
-DONE
+    say "        ╔══════════════════════════════════════════════════════╗"
+    say "        ║                                                      ║"
+    printf "        ║             ✦  %-20s  ✦              ║\n" "$_banner_title"
+    say "        ║                                                      ║"
+    say "        ╚══════════════════════════════════════════════════════╝"
     say "${RESET}"
+    say "  ${DIM}note${RESET}     ${_banner_note}"
     say "  ${DIM}host${RESET}     ${OS_NAME}  (${ARCH})"
     say "  ${DIM}desktop${RESET}  ${DE_LABEL}"
     say "  ${DIM}channel${RESET}  ${PKG_HOST_LABEL}"
-    say "  ${DIM}modules${RESET}  ${_pkgs}"
+    say "  ${DIM}plan${RESET}     ${_pkgs}"
+    if [ -n "${PRESENT_COUNT:-}" ] && [ -n "${PLANNED_COUNT:-}" ]; then
+        say "  ${DIM}present${RESET}  ${PRESENT_COUNT}/${PLANNED_COUNT} planned package(s) on the system now"
+    fi
     if [ "${UPGRADE_COUNT:-0}" -gt 0 ]; then
-        say "  ${DIM}raised${RESET}   ${GREEN}${UPGRADE_COUNT}${RESET} outdated module(s) upgraded to channel"
+        say "  ${DIM}survey${RESET}   ${UPGRADE_COUNT} were outdated before deploy (upgrade was requested)"
     fi
     if [ "${INSTALL_COUNT:-0}" -gt 0 ]; then
-        say "  ${DIM}seated${RESET}   ${CYAN}${INSTALL_COUNT}${RESET} new module(s) installed"
+        say "  ${DIM}survey${RESET}   ${INSTALL_COUNT} were missing before deploy (install was requested)"
+    fi
+    if [ -n "${MISSING_AFTER:-}" ]; then
+        say "  ${YELLOW}missing${RESET}  ${MISSING_AFTER}"
     fi
     say ""
 
     case "$DE_ID" in
         cosmic)
-            say "  ${ORANGE}${BOLD}COSMIC${RESET}  Panel applet is available — add IdleScreen from"
-            say "           panel settings if it is not already docked."
+            if [ "$PKG_MGR" = "dnf" ] && rpm -q idle-cosmic >/dev/null 2>&1; then
+                say "  ${ORANGE}${BOLD}COSMIC${RESET}  Package ${BOLD}idle-cosmic${RESET} is installed."
+                say "           Add the applet from panel settings if it is not docked yet."
+            elif [ "$PKG_MGR" = "apt" ] && dpkg-query -W idle-cosmic >/dev/null 2>&1; then
+                say "  ${ORANGE}${BOLD}COSMIC${RESET}  Package ${BOLD}idle-cosmic${RESET} is installed."
+                say "           Add the applet from panel settings if it is not docked yet."
+            else
+                say "  ${ORANGE}${BOLD}COSMIC${RESET}  idle-cosmic was planned but is not installed."
+            fi
             say ""
             ;;
         hyprland|sway)
-            say "  ${CYAN}${BOLD}Compositor${RESET}  Control IdleScreen from the terminal TUI:"
+            say "  ${CYAN}${BOLD}Compositor${RESET}  Control IdleScreen from the terminal:"
             say "             ${BOLD}idlescreen tui${RESET}"
             say ""
             ;;

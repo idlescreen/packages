@@ -23,7 +23,7 @@ path = "src/sign.rs"
 
 [[bin]]
 name = "install"
-path = "src/install.rs"
+path = "src/install_bin/main.rs"
 
 [dependencies]
 semver = "1.0"
