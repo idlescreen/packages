@@ -1,5 +1,5 @@
 Package: idlescreen
-Version: 2.4.0-1
+Version: 2.5.0-1
 Architecture: all
 Depends: idle-daemon, idle-cli, idle-savers, idle-tui
 Recommends: idle-cosmic
