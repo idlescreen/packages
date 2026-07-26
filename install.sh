@@ -652,7 +652,8 @@ victory() {
     say "  ${GREEN}${BOLD}"
     say "        ╔══════════════════════════════════════════════════════╗"
     say "        ║                                                      ║"
-    printf "        ║             ✦  %-20s  ✦              ║\n" "$_banner_title"
+    # Inner width 54 (match format_victory_box_title_row / VICTORY_BOX_INNER).
+    printf "        ║             ✦  %-20s  ✦               ║\n" "$_banner_title"
     say "        ║                                                      ║"
     say "        ╚══════════════════════════════════════════════════════╝"
     say "${RESET}"

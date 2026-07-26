@@ -2,18 +2,11 @@
 
 //! Package survey + dnf/apt install helpers.
 
-use idlescreen_packages::compare_versions;
-use std::cmp::Ordering;
+use idlescreen_packages::{SurveyClass, classify_package};
 use std::process::Command;
 
 use super::host::{run_capture, run_status};
 use super::ui::{C_BOLD, C_CYAN, C_DIM, C_GREEN, C_ORANGE, C_RESET, C_YELLOW};
-
-pub fn version_is_older(installed: &str, candidate: &str) -> bool {
-    !installed.is_empty()
-        && !candidate.is_empty()
-        && compare_versions(installed, candidate) == Ordering::Less
-}
 
 pub fn rpm_installed(pkg: &str) -> Option<String> {
     run_capture(Command::new("rpm").args(["-q", "--qf", "%{VERSION}-%{RELEASE}", pkg]))
@@ -84,26 +77,31 @@ pub fn survey(pkgs: &[&str], dnf: bool) -> Survey {
             (apt_installed(pkg), apt_candidate(pkg))
         };
 
-        match (inst.as_deref(), cand.as_deref()) {
-            (None, _) => {
+        match classify_package(inst.as_deref(), cand.as_deref()) {
+            SurveyClass::Install => {
                 println!(
                     "  {C_ORANGE}○{C_RESET} {C_BOLD}{pkg}{C_RESET}  {C_DIM}not installed{C_RESET}  →  {C_CYAN}install{C_RESET}"
                 );
                 s.install.push((*pkg).to_string());
             }
-            (Some(i), Some(c)) if version_is_older(i, c) => {
+            SurveyClass::Upgrade => {
+                let i = inst.as_deref().unwrap_or("?");
+                let c = cand.as_deref().unwrap_or("?");
                 println!(
                     "  {C_YELLOW}↑{C_RESET} {C_BOLD}{pkg}{C_RESET}  {C_DIM}{i}{C_RESET}  →  {C_GREEN}{c}{C_RESET}  {C_ORANGE}upgrade{C_RESET}"
                 );
                 s.upgrade.push((*pkg).to_string());
             }
-            (Some(i), Some(c)) => {
+            SurveyClass::Current => {
+                let i = inst.as_deref().unwrap_or("?");
+                let c = cand.as_deref().unwrap_or("?");
                 println!(
                     "  {C_GREEN}✔{C_RESET} {C_BOLD}{pkg}{C_RESET}  {C_DIM}{i}{C_RESET}  {C_GREEN}matches channel{C_RESET} {C_DIM}(={c}){C_RESET}"
                 );
                 s.current.push((*pkg).to_string());
             }
-            (Some(i), None) => {
+            SurveyClass::CurrentUnknown => {
+                let i = inst.as_deref().unwrap_or("?");
                 println!(
                     "  {C_GREEN}✔{C_RESET} {C_BOLD}{pkg}{C_RESET}  {C_DIM}{i}{C_RESET}  {C_DIM}(installed; channel version unknown){C_RESET}"
                 );

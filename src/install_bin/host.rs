@@ -78,17 +78,7 @@ pub fn desktop_label() -> (&'static str, &'static str) {
 
 /// Same core on every DE; COSMIC only adds idle-cosmic.
 pub fn packages(cosmic: bool) -> Vec<&'static str> {
-    let mut p = vec![
-        "idle-daemon",
-        "idle-cli",
-        "idle-savers",
-        "idle-tui",
-        "idlescreen",
-    ];
-    if cosmic {
-        p.push("idle-cosmic");
-    }
-    p
+    idlescreen_packages::packages_for_profile(cosmic)
 }
 
 pub fn os_pretty() -> String {

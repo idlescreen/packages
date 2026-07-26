@@ -118,16 +118,11 @@ pub fn recount<'a>(pkgs: &[&'a str], dnf: bool) -> (Vec<&'a str>, Vec<&'a str>) 
 
 pub fn print_deploy_result(present: &[&str], missing: &[&str], planned: usize) {
     println!();
+    let line = idlescreen_packages::format_deploy_result(present.len(), planned);
     if missing.is_empty() {
-        ok(&format!(
-            "{C_BOLD}Deploy finished — all {} planned package(s) present.{C_RESET}",
-            present.len()
-        ));
+        ok(&format!("{C_BOLD}{line}{C_RESET}"));
     } else {
-        warn(&format!(
-            "Deploy finished — {}/{planned} planned package(s) present.",
-            present.len()
-        ));
+        warn(&line);
         warn(&format!("Missing: {}", missing.join(" ")));
     }
 }

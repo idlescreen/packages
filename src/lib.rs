@@ -9,6 +9,7 @@
 
 // SPDX-License-Identifier: Apache-2.0
 
+pub mod install_honesty;
 pub mod package_parse;
 pub mod paths;
 pub mod prune_core;
@@ -16,6 +17,12 @@ pub mod sign_macros;
 pub mod sweep;
 pub mod version_cmp;
 
+pub use install_honesty::{
+    CORE_PACKAGES, COSMIC_EXTRA, DNF_GPG_DISCLAIMER, SurveyClass, classify_package,
+    format_cosmic_line, format_deploy_result, format_plan_blurb, format_survey_row_plain,
+    format_survey_summary, format_victory_box_title_row, lines_same_width, packages_for_profile,
+    strip_ansi, version_is_older, victory_banner, victory_box_border_inner_width,
+};
 pub use package_parse::{PackageId, parse_deb_filename, parse_rpm_filename};
 pub use paths::{
     deb_pool_dest, is_rpm_path, is_under_base, package_sweep_dest, rpm_pool_dest, safe_join_under,

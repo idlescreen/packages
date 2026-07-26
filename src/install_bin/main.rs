@@ -89,7 +89,8 @@ fn setup_repo(dnf: bool) {
         }
         ok("/etc/yum.repos.d/idlescreen.repo");
         println!(
-            "  {C_DIM}baseurl {REPO_BASE}/rpm · package gpgcheck=1 · repo_gpgcheck=0{C_RESET}"
+            "  {C_DIM}baseurl {REPO_BASE}/rpm · {}{C_RESET}",
+            idlescreen_packages::DNF_GPG_DISCLAIMER
         );
         story_line("Refreshing IdleScreen channel metadata…");
         let _ = run_status(
@@ -161,15 +162,16 @@ fn setup_repo(dnf: bool) {
 
 fn print_plan(de_label: &str, cosmic: bool, pkgs: &[&str]) {
     story_line(&format!("Desktop profile → {de_label}"));
-    println!(
-        "  {C_GREEN}→{C_RESET} Core stack (all DEs): {C_BOLD}idle-daemon idle-cli idle-savers idle-tui idlescreen{C_RESET}"
-    );
+    // Honest plan: same core on every DE; COSMIC only adds idle-cosmic.
+    let core = idlescreen_packages::CORE_PACKAGES.join(" ");
+    println!("  {C_GREEN}→{C_RESET} Core stack (all DEs): {C_BOLD}{core}{C_RESET}");
     println!(
         "  {C_DIM}    idlescreen = product metapackage (install|remove by brand name){C_RESET}"
     );
     if cosmic {
         println!(
-            "  {C_GREEN}→{C_RESET} COSMIC: also {C_BOLD}idle-cosmic{C_RESET} (panel applet package)"
+            "  {C_GREEN}→{C_RESET} COSMIC: also {C_BOLD}{}{C_RESET} (panel applet package)",
+            idlescreen_packages::COSMIC_EXTRA
         );
     } else {
         println!("  {C_GREEN}→{C_RESET} {de_label}: no extra DE-specific packages");
@@ -185,22 +187,18 @@ fn print_plan(de_label: &str, cosmic: bool, pkgs: &[&str]) {
 
 fn print_survey_summary(survey: &pkg::Survey, pkgs: &[&str]) {
     println!();
-    if !survey.upgrade.is_empty() {
-        say(&format!(
-            "  {C_ORANGE}{C_BOLD}Survey: {} outdated module(s){C_RESET} — will attempt upgrade to channel.",
-            survey.upgrade.len()
-        ));
-    }
-    if !survey.install.is_empty() {
-        say(&format!(
-            "  {C_CYAN}{C_BOLD}Survey: {} missing module(s){C_RESET} — will attempt install.",
-            survey.install.len()
-        ));
-    }
-    if survey.upgrade.is_empty() && survey.install.is_empty() {
-        say(&format!(
-            "  {C_GREEN}{C_BOLD}Survey: planned modules look current{C_RESET} — will still re-sync (may no-op)."
-        ));
+    for line in idlescreen_packages::format_survey_summary(
+        survey.upgrade.len(),
+        survey.install.len(),
+    ) {
+        // Color the "Survey: …" head by outcome type.
+        if line.contains("outdated") {
+            say(&format!("  {C_ORANGE}{C_BOLD}{line}{C_RESET}"));
+        } else if line.contains("missing") {
+            say(&format!("  {C_CYAN}{C_BOLD}{line}{C_RESET}"));
+        } else {
+            say(&format!("  {C_GREEN}{C_BOLD}{line}{C_RESET}"));
+        }
     }
     println!(
         "  {C_BOLD}Will request:{C_RESET} {C_CYAN}{}{C_RESET}",

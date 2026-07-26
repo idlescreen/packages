@@ -21,25 +21,14 @@ pub fn print_victory(
     survey: &Survey,
     active: bool,
 ) {
-    let (banner, note) = if missing.is_empty() && active {
-        ("INSTALL FINISHED", "packages present · daemon active")
-    } else if missing.is_empty() {
-        (
-            "PACKAGES INSTALLED",
-            "daemon not active yet — see notes above",
-        )
-    } else {
-        (
-            "INSTALL PARTIAL",
-            "some planned packages missing — see list above",
-        )
-    };
+    let (banner, note) = idlescreen_packages::victory_banner(missing.is_empty(), active);
+    let title_row = idlescreen_packages::format_victory_box_title_row(banner);
 
     println!();
     println!("  {C_GREEN}{C_BOLD}");
     println!("        ╔══════════════════════════════════════════════════════╗");
     println!("        ║                                                      ║");
-    println!("        ║             ✦  {banner:<20}  ✦              ║");
+    println!("        {title_row}");
     println!("        ║                                                      ║");
     println!("        ╚══════════════════════════════════════════════════════╝");
     println!("  {C_RESET}");
@@ -68,13 +57,14 @@ pub fn print_victory(
     if !missing.is_empty() {
         println!("  {C_YELLOW}missing{C_RESET}  {}", missing.join(" "));
     }
-    if cosmic {
-        if pkg_present("idle-cosmic", dnf) {
-            println!(
-                "  {C_ORANGE}COSMIC{C_RESET}  Package idle-cosmic is installed — add from panel settings if not docked."
-            );
+    if let Some(line) =
+        idlescreen_packages::format_cosmic_line(cosmic, pkg_present("idle-cosmic", dnf))
+    {
+        // format_cosmic_line returns "COSMIC  …" — color the label.
+        if let Some(rest) = line.strip_prefix("COSMIC  ") {
+            println!("  {C_ORANGE}COSMIC{C_RESET}  {rest}");
         } else {
-            println!("  {C_ORANGE}COSMIC{C_RESET}  idle-cosmic was planned but is not installed.");
+            println!("  {C_ORANGE}{line}{C_RESET}");
         }
     }
     println!();
