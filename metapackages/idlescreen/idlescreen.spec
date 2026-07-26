@@ -1,5 +1,5 @@
 Name:           idlescreen
-Version:        2.6.0
+Version:        2.6.1
 Release:        1
 Summary:        IdleScreen product metapackage for Wayland screensavers
 License:        Apache-2.0
@@ -54,6 +54,8 @@ fi
 %{_libexecdir}/idlescreen/schedule-remove-stack
 
 %changelog
+* Sun Jul 26 2026 IdleScreen <jerydleuck@gmail.com> - 2.6.1-1
+- Stop user idle-daemon before stack erase; remove empty leftover dirs
 * Sun Jul 26 2026 IdleScreen <jerydleuck@gmail.com> - 2.6.0-1
 - Erase product stack on dnf remove idlescreen (modules, savers, cosmic, repo drop-in)
 * Sat Jul 25 2026 IdleScreen <jerydleuck@gmail.com> - 2.5.0-1

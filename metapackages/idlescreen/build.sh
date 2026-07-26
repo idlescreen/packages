@@ -5,7 +5,7 @@ set -eu
 
 ROOT=$(CDPATH= cd -- "$(dirname "$0")/../.." && pwd)
 META="$ROOT/metapackages/idlescreen"
-VERSION=2.6.0
+VERSION=2.6.1
 RELEASE=1
 
 echo "==> Building idlescreen ${VERSION}-${RELEASE} (noarch/all)"
