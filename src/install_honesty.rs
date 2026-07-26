@@ -552,7 +552,13 @@ mod tests {
 
     #[test]
     fn product_stack_on_remove_covers_installer_and_savers() {
-        for p in ["idle-daemon", "idle-cli", "idle-savers", "idle-tui", "idle-cosmic"] {
+        for p in [
+            "idle-daemon",
+            "idle-cli",
+            "idle-savers",
+            "idle-tui",
+            "idle-cosmic",
+        ] {
             assert!(
                 PRODUCT_STACK_ON_REMOVE.contains(&p),
                 "missing module {p} from remove list"
@@ -574,10 +580,7 @@ mod tests {
             .join("metapackages/idlescreen/remove-product-stack.sh");
         let s = std::fs::read_to_string(&path).expect("read remove-product-stack.sh");
         for p in PRODUCT_STACK_ON_REMOVE {
-            assert!(
-                s.contains(p),
-                "remove-product-stack.sh must list {p}"
-            );
+            assert!(s.contains(p), "remove-product-stack.sh must list {p}");
         }
         assert!(s.contains("idlescreen.repo"));
         assert!(s.contains("idlescreen.list"));

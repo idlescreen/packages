@@ -80,9 +80,7 @@ pub fn print_victory(
     } else {
         println!("    {C_CYAN}sudo apt remove idlescreen{C_RESET}");
     }
-    println!(
-        "    {C_DIM}# 2.6+ also removes modules, savers, idle-cosmic, repo drop-in{C_RESET}"
-    );
+    println!("    {C_DIM}# 2.6+ also removes modules, savers, idle-cosmic, repo drop-in{C_RESET}");
     println!();
     println!("  {C_DIM}docs  {C_RESET}https://idlescreen.github.io");
     println!("  {C_DIM}pkgs  {C_RESET}{REPO_BASE}/");
