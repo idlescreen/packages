@@ -17,8 +17,7 @@ pub const CORE_PACKAGES: &[&str] = &[
 pub const COSMIC_EXTRA: &str = "idle-cosmic";
 
 /// Truthful DNF channel disclaimer (packages GPG-checked; repo metadata not).
-pub const DNF_GPG_DISCLAIMER: &str =
-    "package gpgcheck=1 · repo_gpgcheck=0";
+pub const DNF_GPG_DISCLAIMER: &str = "package gpgcheck=1 · repo_gpgcheck=0";
 
 /// Survey classification for one package (no I/O).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -112,9 +111,7 @@ pub fn format_survey_summary(upgrade_n: usize, install_n: usize) -> Vec<String> 
         ));
     }
     if upgrade_n == 0 && install_n == 0 {
-        lines.push(
-            "Survey: planned modules look current — will still re-sync (may no-op).".into(),
-        );
+        lines.push("Survey: planned modules look current — will still re-sync (may no-op).".into());
     }
     lines
 }
@@ -302,10 +299,7 @@ mod tests {
 
     #[test]
     fn victory_banner_three_truths() {
-        assert_eq!(
-            victory_banner(true, true).0,
-            "INSTALL FINISHED"
-        );
+        assert_eq!(victory_banner(true, true).0, "INSTALL FINISHED");
         assert_eq!(victory_banner(true, false).0, "PACKAGES INSTALLED");
         assert_eq!(victory_banner(false, true).0, "INSTALL PARTIAL");
         assert_eq!(victory_banner(false, false).0, "INSTALL PARTIAL");
@@ -313,16 +307,10 @@ mod tests {
 
     #[test]
     fn victory_box_rows_same_width() {
-        let top = format!(
-            "╔{}╗",
-            "═".repeat(victory_box_border_inner_width())
-        );
+        let top = format!("╔{}╗", "═".repeat(victory_box_border_inner_width()));
         let mid = format!("║{}║", " ".repeat(victory_box_border_inner_width()));
         let title = format_victory_box_title_row("INSTALL FINISHED");
-        let bot = format!(
-            "╚{}╝",
-            "═".repeat(victory_box_border_inner_width())
-        );
+        let bot = format!("╚{}╝", "═".repeat(victory_box_border_inner_width()));
         let w = |s: &str| s.chars().count();
         assert_eq!(w(&top), w(&mid));
         assert_eq!(w(&mid), w(&title));
@@ -420,15 +408,15 @@ mod tests {
             s.contains("will attempt install"),
             "survey must say attempt install"
         );
-        assert!(
-            s.contains("look current"),
-            "all-current survey wording"
-        );
+        assert!(s.contains("look current"), "all-current survey wording");
         assert!(
             s.contains("package gpgcheck=1") && s.contains("repo_gpgcheck=0"),
             "DNF disclaimer must not overclaim repo signing"
         );
-        assert!(!s.contains("repo signed"), "must not claim repo metadata signed");
+        assert!(
+            !s.contains("repo signed"),
+            "must not claim repo metadata signed"
+        );
         for title in ["INSTALL FINISHED", "PACKAGES INSTALLED", "INSTALL PARTIAL"] {
             assert!(s.contains(title), "victory banner {title}");
         }

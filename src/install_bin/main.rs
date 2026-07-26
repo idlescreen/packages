@@ -187,10 +187,9 @@ fn print_plan(de_label: &str, cosmic: bool, pkgs: &[&str]) {
 
 fn print_survey_summary(survey: &pkg::Survey, pkgs: &[&str]) {
     println!();
-    for line in idlescreen_packages::format_survey_summary(
-        survey.upgrade.len(),
-        survey.install.len(),
-    ) {
+    for line in
+        idlescreen_packages::format_survey_summary(survey.upgrade.len(), survey.install.len())
+    {
         // Color the "Survey: …" head by outcome type.
         if line.contains("outdated") {
             say(&format!("  {C_ORANGE}{C_BOLD}{line}{C_RESET}"));
