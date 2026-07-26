@@ -20,10 +20,7 @@ fn run_cmd(cmd: &mut Command) -> Result<(), String> {
 fn dearmor_key() -> Result<(), String> {
     println!("Regenerating binary GPG keyring...");
     let gpg_file = fs::File::create("apt/idlescreen-keyring.gpg").map_err(|e| e.to_string())?;
-    let key_file = match fs::File::open("apt/idlescreen-key.gpg") {
-        Ok(f) => f,
-        Err(_) => fs::File::open("apt/crateria-key.gpg").map_err(|e| e.to_string())?,
-    };
+    let key_file = fs::File::open("apt/idlescreen-key.gpg").map_err(|e| e.to_string())?;
 
     let status = Command::new("gpg")
         .arg("--dearmor")
@@ -35,9 +32,7 @@ fn dearmor_key() -> Result<(), String> {
     if !status.success() {
         return Err(format!("gpg --dearmor failed with status: {status}"));
     }
-    // Legacy filename for bookmarks still using crateria-keyring.gpg
-    let _ = fs::copy("apt/idlescreen-keyring.gpg", "apt/crateria-keyring.gpg");
-    // Canonical path for installers that fetch from repo root (historical URL).
+    // Root copy for any installers still using the historical root URL.
     let _ = fs::copy("apt/idlescreen-keyring.gpg", "idlescreen-keyring.gpg");
     Ok(())
 }

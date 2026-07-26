@@ -1,9 +1,0 @@
-Package: idlescreen-cosmic
-Version: 2.0.1
-Section: utils
-Priority: optional
-Architecture: all
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Depends: app-cosmic
-Description: transitional package
- Dummy package depending on app-cosmic. Prefer: apt/dnf install app-cosmic.

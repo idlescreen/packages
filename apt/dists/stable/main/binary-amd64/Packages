@@ -1,23 +1,4 @@
 Package: idle-cli
-Version: 2.3.5-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 5722
-Depends: idle-daemon, libc6
-Conflicts: idlescreen-cli (<< 2.1.0), idle-cli (<< 2.0.0)
-Replaces: idlescreen-cli, idle-cli
-Provides: idlescreen-cli, idle-cli
-Filename: pool/main/idle-cli_2.3.5-1_amd64.deb
-Size: 867000
-MD5sum: 03cd717158cb2eae27de17e87d58f825
-SHA1: 19f644c321f8e938b6016366f1c9dd1c2aeef671
-SHA256: fad2db52c41e2d6be8bd25be84393b9368e2165d00a8370a3dca41da639ee38c
-Section: utils
-Priority: optional
-Description: Command-line interface for the IdleScreen daemon
- CLI for controlling the Idle daemon over D-Bus (command: idle).
-
-Package: idle-cli
 Version: 2.4.0-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -37,50 +18,28 @@ Description: Command-line interface for the IdleScreen daemon
  CLI for controlling the Idle daemon over D-Bus (command: idle).
 
 Package: idle-cosmic
-Version: 2.1.2-1
+Version: 2.2.0-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 48885
-Depends: idle-daemon, idle-savers, libc6
-Recommends: idle-cli, idle-tui
+Installed-Size: 23317
+Depends: idle-daemon, idle-tui, libc6
+Recommends: idle-cli, idle-tui, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
 Enhances: cosmic-session, cosmic-panel
 Conflicts: app-cosmic (<< 2.1.0), idlescreen-applet (<< 2.1.0), trance-applet (<< 2.0.0)
 Replaces: app-cosmic, idlescreen-applet, trance-applet, idlescreen-cosmic
 Provides: app-cosmic, idlescreen-applet, trance-applet, idlescreen-cosmic
-Filename: pool/main/idle-cosmic_2.1.2-1_amd64.deb
-Size: 12728044
-MD5sum: a8d9eb1ff7306f38edb4388d0294b1b5
-SHA1: e2562a0b44b0d28e067a0be8bb05cc4884b1a3c4
-SHA256: 952429e1178a88aa46a5c40eb9ec4057e369d327f0459c15ef2c265270c47d8b
+Filename: pool/main/idle-cosmic_2.2.0-1_amd64.deb
+Size: 6136272
+MD5sum: b9c2076315fc43f7a7872b1a969cd715
+SHA1: 6d64870d0d9b64b57239f77192aa773e9f6ffe8f
+SHA256: 9c4fa362a6a51c07d01838b6a4039e5427f17eb0beca79021f5056379debfbc1
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idle-cosmic
-Description: IdleScreen for COSMIC — product package (applet + pulls daemon and all
- savers)
+Description: IdleScreen for COSMIC — product package (applet + pulls daemon and
+ recommended savers)
  IdleScreen product for COSMIC Desktop.
- Installs the COSMIC panel applet and depends on the idle daemon and all
- official savers.
-
-Package: idle-daemon
-Version: 2.3.10-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 16432
-Depends: dbus, fonts-dejavu-core, idle-cli, libc6
-Recommends: idle-cli, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
-Suggests: idle-cosmic
-Conflicts: idlescreen (<< 2.1.0), trance (<< 2.0.0)
-Replaces: idlescreen, trance
-Provides: idle, idlescreen, trance
-Filename: pool/main/idle-daemon_2.3.10-1_amd64.deb
-Size: 2354316
-MD5sum: 30537bd572ead9025c353bd5f6d1fe49
-SHA1: 6a73d41a3d81799b822da1466f2d0147c1c9b136
-SHA256: 3e3df82f35302ae1d34e9081ddd98aaa2a50d7bb81133cf0b2ac199d0fbae9de
-Section: utils
-Priority: optional
-Description: IdleScreen background idle daemon (Wayland screensaver host)
- IdleScreen background idle monitoring and screensaver host for Wayland.
+ Installs the COSMIC panel applet and depends on idle-daemon.
 
 Package: idle-daemon
 Version: 2.4.0-1
@@ -323,19 +282,19 @@ Description: Meta package that hard-depends on all official IdleScreen saver plu
  idle-cosmic (not installed alone by end users).
 
 Package: idle-tui
-Version: 2.2.1-1
+Version: 2.3.0-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 14012
+Installed-Size: 3510
 Depends: idle-daemon, libc6
 Conflicts: app-tui (<< 2.1.0), idlescreen-tui (<< 2.1.0), trance-tui (<< 2.0.0)
 Replaces: app-tui, idlescreen-tui, trance-tui
 Provides: app-tui, idlescreen-tui, trance-tui
-Filename: pool/main/idle-tui_2.2.1-1_amd64.deb
-Size: 1016848
-MD5sum: aaa8b1f1481a8820d22e9c52c3387758
-SHA1: 2b97b729b45f7196e464aa38646ab82c216f8980
-SHA256: e7361a607840e98210bfd312f325e9769cda2f44670978f2113c25a5592a14d2
+Filename: pool/main/idle-tui_2.3.0-1_amd64.deb
+Size: 1016016
+MD5sum: 6067af235db2fcc387f604ee34abda23
+SHA1: 80f193c4801ebcd75e9e2d0510dca055e6a51c00
+SHA256: 82819ba4b4113282ebb2c39a296b63c6de58d6fd869820db45478c6f3aa9583d
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idle-tui

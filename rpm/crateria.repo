@@ -1,8 +1,0 @@
-[idlescreen]
-name=IdleScreen RPM Repository
-baseurl=https://idlescreen.github.io/packages/rpm
-enabled=1
-gpgcheck=1
-repo_gpgcheck=0
-gpgkey=https://idlescreen.github.io/packages/rpm/idlescreen-key.gpg
-metadata_expire=1h
