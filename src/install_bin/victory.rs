@@ -74,6 +74,16 @@ pub fn print_victory(
     println!("    {C_CYAN}idlescreen preview beams{C_RESET}  try an effect");
     println!("    {C_CYAN}idlescreen doctor{C_RESET}     system diagnostics");
     println!();
+    println!("  {C_BOLD}Remove{C_RESET}");
+    if dnf {
+        println!("    {C_CYAN}sudo dnf remove idlescreen{C_RESET}");
+    } else {
+        println!("    {C_CYAN}sudo apt remove idlescreen{C_RESET}");
+    }
+    println!(
+        "    {C_DIM}# 2.6+ also removes modules, savers, idle-cosmic, repo drop-in{C_RESET}"
+    );
+    println!();
     println!("  {C_DIM}docs  {C_RESET}https://idlescreen.github.io");
     println!("  {C_DIM}pkgs  {C_RESET}{REPO_BASE}/");
     println!("  {C_DIM}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━{C_RESET}");

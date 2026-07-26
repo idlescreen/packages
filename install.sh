@@ -501,7 +501,7 @@ install_packages() {
         fi
         if ! rpm -q idlescreen >/dev/null 2>&1; then
             warn "idlescreen metapackage not on channel yet; modular idle-* packages are installed."
-            warn "Remove with:  sudo dnf remove idle-daemon idle-cli idle-savers idle-tui idle-cosmic"
+            warn "Remove with:  sudo dnf remove idlescreen   # 2.6+ wipes the full product stack"
         fi
         say ""
         _missing=0
@@ -719,12 +719,10 @@ victory() {
     say "  ${BOLD}Remove${RESET}"
     if [ "$PKG_MGR" = "dnf" ]; then
         say "    ${CYAN}sudo dnf remove idlescreen${RESET}"
-        say "    ${DIM}# full wipe of modular packages if needed:${RESET}"
-        say "    ${DIM}sudo dnf remove idle-daemon idle-cli idle-savers idle-tui idle-cosmic${RESET}"
+        say "    ${DIM}# idlescreen 2.6+ also removes modules, savers, idle-cosmic, repo drop-in${RESET}"
     else
         say "    ${CYAN}sudo apt remove idlescreen${RESET}"
-        say "    ${DIM}# full wipe if needed:${RESET}"
-        say "    ${DIM}sudo apt remove idle-daemon idle-cli idle-savers idle-tui idle-cosmic${RESET}"
+        say "    ${DIM}# idlescreen 2.6+ also removes modules, savers, idle-cosmic, APT list drop-in${RESET}"
     fi
     say ""
     say "  ${DIM}docs  ${RESET}https://idlescreen.github.io"

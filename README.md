@@ -27,13 +27,16 @@ sudo apt install idlescreen    # Debian / Ubuntu family
 
 The installer seats the product metapackage **`idlescreen`** (depends on `idle-daemon`, `idle-cli`, `idle-savers`, `idle-tui`) and on COSMIC also **`idle-cosmic`**.
 
-**Remove:**
+**Remove** (idlescreen **2.6+** wipes the whole product stack the installer seated):
 
 ```bash
 sudo dnf remove idlescreen
 # or: sudo apt remove idlescreen
-# full wipe of modules if needed:
-# sudo dnf remove idle-daemon idle-cli idle-savers idle-tui idle-cosmic
+# Removes: idle-daemon idle-cli idle-savers idle-tui idle-saver-* idle-cosmic
+#          + the idlescreen.repo / APT list drop-in
+# Leaves:  ~/.config/idle (user config)
+# Need 2.6+ first if an older metapackage is installed:
+#   sudo dnf upgrade idlescreen && sudo dnf remove idlescreen
 ```
 
 ---

@@ -23,8 +23,10 @@ sudo dnf install idlescreen
 
 ```bash
 sudo dnf remove idlescreen
-# full wipe of modules if needed:
-# sudo dnf remove idle-daemon idle-cli idle-savers idle-tui idle-cosmic
+# idlescreen 2.6+ also removes: idle-daemon idle-cli idle-savers idle-tui
+#   idle-saver-* idle-cosmic and the repo/APT list drop-in.
+# Leaves ~/.config/idle. Upgrade the metapackage first if still on 2.5.x:
+#   sudo dnf upgrade idlescreen && sudo dnf remove idlescreen
 ```
 
 ## Config

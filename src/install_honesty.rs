@@ -16,6 +16,44 @@ pub const CORE_PACKAGES: &[&str] = &[
 /// Extra package only when COSMIC is detected.
 pub const COSMIC_EXTRA: &str = "idle-cosmic";
 
+/// Official saver plugins pulled by `idle-savers` (and wiped when idlescreen is removed).
+pub const OFFICIAL_SAVERS: &[&str] = &[
+    "idle-saver-beams",
+    "idle-saver-bursts",
+    "idle-saver-chaos",
+    "idle-saver-cosmos",
+    "idle-saver-glyphs",
+    "idle-saver-gnats",
+    "idle-saver-hearth",
+    "idle-saver-radar",
+    "idle-saver-ripple",
+    "idle-saver-storm",
+];
+
+/// Full product stack erased by `dnf/apt remove idlescreen` (idlescreen 2.6+).
+/// Does not include `idlescreen` itself (already being removed) or user config.
+pub const PRODUCT_STACK_ON_REMOVE: &[&str] = &[
+    "idle-cosmic",
+    "idle-tui",
+    "idle-cli",
+    "idle-savers",
+    "idle-saver-beams",
+    "idle-saver-bursts",
+    "idle-saver-chaos",
+    "idle-saver-cosmos",
+    "idle-saver-glyphs",
+    "idle-saver-gnats",
+    "idle-saver-hearth",
+    "idle-saver-radar",
+    "idle-saver-ripple",
+    "idle-saver-storm",
+    "idle-daemon",
+];
+
+/// Honest one-liner for uninstall docs / victory footer.
+pub const REMOVE_BLURB: &str =
+    "sudo dnf remove idlescreen   # also removes modules, savers, idle-cosmic, repo drop-in";
+
 /// Truthful DNF channel disclaimer (packages GPG-checked; repo metadata not).
 pub const DNF_GPG_DISCLAIMER: &str = "package gpgcheck=1 · repo_gpgcheck=0";
 
@@ -510,5 +548,44 @@ mod tests {
             );
         }
         assert!(s.contains(COSMIC_EXTRA));
+    }
+
+    #[test]
+    fn product_stack_on_remove_covers_installer_and_savers() {
+        for p in ["idle-daemon", "idle-cli", "idle-savers", "idle-tui", "idle-cosmic"] {
+            assert!(
+                PRODUCT_STACK_ON_REMOVE.contains(&p),
+                "missing module {p} from remove list"
+            );
+        }
+        for s in OFFICIAL_SAVERS {
+            assert!(
+                PRODUCT_STACK_ON_REMOVE.contains(s),
+                "missing saver {s} from remove list"
+            );
+        }
+        // Brand package is removed by the package manager itself, not the scriptlet list.
+        assert!(!PRODUCT_STACK_ON_REMOVE.contains(&"idlescreen"));
+    }
+
+    #[test]
+    fn remove_product_stack_sh_lists_match_const() {
+        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("metapackages/idlescreen/remove-product-stack.sh");
+        let s = std::fs::read_to_string(&path).expect("read remove-product-stack.sh");
+        for p in PRODUCT_STACK_ON_REMOVE {
+            assert!(
+                s.contains(p),
+                "remove-product-stack.sh must list {p}"
+            );
+        }
+        assert!(s.contains("idlescreen.repo"));
+        assert!(s.contains("idlescreen.list"));
+    }
+
+    #[test]
+    fn remove_blurb_documents_stack_wipe() {
+        assert!(REMOVE_BLURB.contains("dnf remove idlescreen"));
+        assert!(REMOVE_BLURB.contains("modules") || REMOVE_BLURB.contains("savers"));
     }
 }
