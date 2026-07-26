@@ -30,6 +30,22 @@ Priority: optional
 Description: Command-line interface for the IdleScreen daemon
  CLI for controlling the Idle daemon over D-Bus (command: idlescreen).
 
+Package: idle-cli
+Version: 2.5.3-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 1926
+Depends: idle-daemon, libc6
+Filename: pool/main/idle-cli_2.5.3-1_amd64.deb
+Size: 709856
+MD5sum: e1d4d105d76a4e2b1ec1a56ffbd466ec
+SHA1: 1a7ba235b8b5e43fc0f7332612f48a4c2c18f1ca
+SHA256: 38b333f58f9eae66347f28335dcc126ff77a128ccbf58a0ac8f65896f80ec447
+Section: utils
+Priority: optional
+Description: Command-line interface for the IdleScreen daemon
+ CLI for controlling the Idle daemon over D-Bus (command: idlescreen).
+
 Package: idle-cosmic
 Version: 2.2.1-1
 Architecture: amd64
