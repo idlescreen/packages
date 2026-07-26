@@ -649,11 +649,25 @@ victory() {
         _banner_title="INSTALL PARTIAL"
         _banner_note="some planned packages missing — see list above"
     fi
+    # Victory box: 54-col inner, title centered (not left-padded %-20s — that
+    # left the right ✦ floating and looked broken). Match format_victory_box.
+    _v_inner=54
+    _v_label="✦  ${_banner_title}  ✦"
+    # bash ${#} counts characters under a UTF-8 locale (✦ is one char each).
+    _v_llen=${#_v_label}
+    _v_pad=$((_v_inner - _v_llen))
+    if [ "$_v_pad" -lt 0 ]; then
+        _v_body=$(printf '%s' "$_v_label" | cut -c1-"$_v_inner")
+    else
+        _v_left=$((_v_pad / 2))
+        _v_right=$((_v_pad - _v_left))
+        _v_body=$(printf '%*s%s%*s' "$_v_left" '' "$_v_label" "$_v_right" '')
+    fi
     say "  ${GREEN}${BOLD}"
+    # Hardcoded borders (54 ═) — avoid tr with multi-byte box chars.
     say "        ╔══════════════════════════════════════════════════════╗"
     say "        ║                                                      ║"
-    # Inner width 54 (match format_victory_box_title_row / VICTORY_BOX_INNER).
-    printf "        ║             ✦  %-20s  ✦               ║\n" "$_banner_title"
+    printf '        ║%s║\n' "$_v_body"
     say "        ║                                                      ║"
     say "        ╚══════════════════════════════════════════════════════╝"
     say "${RESET}"

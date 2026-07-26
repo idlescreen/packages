@@ -18,10 +18,11 @@ pub mod sweep;
 pub mod version_cmp;
 
 pub use install_honesty::{
-    CORE_PACKAGES, COSMIC_EXTRA, DNF_GPG_DISCLAIMER, SurveyClass, classify_package,
-    format_cosmic_line, format_deploy_result, format_plan_blurb, format_survey_row_plain,
-    format_survey_summary, format_victory_box_title_row, lines_same_width, packages_for_profile,
-    strip_ansi, version_is_older, victory_banner, victory_box_border_inner_width,
+    CORE_PACKAGES, COSMIC_EXTRA, DNF_GPG_DISCLAIMER, SurveyClass, VICTORY_BOX_INNER, VICTORY_ORNAMENT,
+    center_in_width, classify_package, format_cosmic_line, format_deploy_result, format_plan_blurb,
+    format_survey_row_plain, format_survey_summary, format_victory_box, format_victory_box_title_row,
+    format_victory_title_body, lines_same_width, packages_for_profile, strip_ansi, version_is_older,
+    victory_banner, victory_box_border_inner_width,
 };
 pub use package_parse::{PackageId, parse_deb_filename, parse_rpm_filename};
 pub use paths::{

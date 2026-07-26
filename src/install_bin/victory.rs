@@ -22,15 +22,15 @@ pub fn print_victory(
     active: bool,
 ) {
     let (banner, note) = idlescreen_packages::victory_banner(missing.is_empty(), active);
-    let title_row = idlescreen_packages::format_victory_box_title_row(banner);
+    // One pure helper builds every row so left/right borders stay flush and the
+    // title is truly centered (not left-padded in a fixed 20-col field).
+    let box_lines = idlescreen_packages::format_victory_box(banner);
 
     println!();
     println!("  {C_GREEN}{C_BOLD}");
-    println!("        ╔══════════════════════════════════════════════════════╗");
-    println!("        ║                                                      ║");
-    println!("        {title_row}");
-    println!("        ║                                                      ║");
-    println!("        ╚══════════════════════════════════════════════════════╝");
+    for line in &box_lines {
+        println!("        {line}");
+    }
     println!("  {C_RESET}");
     println!("  {C_DIM}note{C_RESET}     {note}");
     println!("  {C_DIM}host{C_RESET}     {os_name}  ({arch})");

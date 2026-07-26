@@ -133,28 +133,54 @@ pub fn victory_banner(all_present: bool, daemon_active: bool) -> (&'static str, 
     }
 }
 
-/// Fixed-width box content line: `║` + spaces + title + spaces + `║` with total inner width.
-pub const VICTORY_BOX_INNER: usize = 54; // between the two ║ on banner rows
+/// Fixed-width box content: character columns between the two `║` borders.
+/// All victory box rows must share the same total char length so the right
+/// edge stays flush in a monospace terminal.
+pub const VICTORY_BOX_INNER: usize = 54;
 
-/// Build one content row of the victory box with centered title (no ANSI).
-/// Returns a full line including outer `║` characters.
-pub fn format_victory_box_title_row(title: &str) -> String {
-    // Match production: "             ✦  {title:<20}  ✦              "
-    let mut body = format!("             ✦  {title:<20}  ✦              ");
-    // Normalize to exact inner width by pad/truncate on char count (ASCII-heavy).
-    let chars: Vec<char> = body.chars().collect();
-    if chars.len() < VICTORY_BOX_INNER {
-        body.push_str(&" ".repeat(VICTORY_BOX_INNER - chars.len()));
-    } else if chars.len() > VICTORY_BOX_INNER {
-        body = chars.into_iter().take(VICTORY_BOX_INNER).collect();
+/// Ornament used around the title. Prefer a single-cell glyph; `✦` is
+/// East-Asian-width Neutral and renders as 1 cell on typical Linux TTYs.
+pub const VICTORY_ORNAMENT: char = '✦';
+
+/// Center `text` in exactly `width` character columns (pad/truncate by char count).
+pub fn center_in_width(text: &str, width: usize) -> String {
+    let chars: Vec<char> = text.chars().collect();
+    if chars.len() >= width {
+        return chars.into_iter().take(width).collect();
     }
-    format!("║{body}║")
+    let pad = width - chars.len();
+    let left = pad / 2;
+    let right = pad - left;
+    format!("{}{}{}", " ".repeat(left), text, " ".repeat(right))
+}
+
+/// Inner body only (no borders): ornament + title + ornament, centered.
+pub fn format_victory_title_body(title: &str) -> String {
+    let label = format!("{VICTORY_ORNAMENT}  {title}  {VICTORY_ORNAMENT}");
+    center_in_width(&label, VICTORY_BOX_INNER)
+}
+
+/// One content row: `║` + centered title body + `║`.
+pub fn format_victory_box_title_row(title: &str) -> String {
+    format!("║{}║", format_victory_title_body(title))
+}
+
+/// Full victory box (5 lines, no leading indent, no ANSI). All lines equal width.
+pub fn format_victory_box(title: &str) -> [String; 5] {
+    let bar = "═".repeat(VICTORY_BOX_INNER);
+    let blank = " ".repeat(VICTORY_BOX_INNER);
+    [
+        format!("╔{bar}╗"),
+        format!("║{blank}║"),
+        format_victory_box_title_row(title),
+        format!("║{blank}║"),
+        format!("╚{bar}╝"),
+    ]
 }
 
 /// Border line for the victory box (top/bottom style without corners for width check).
 pub fn victory_box_border_inner_width() -> usize {
-    // "══════════════════════════════════════════════════════" between corners
-    54
+    VICTORY_BOX_INNER
 }
 
 /// Strip simple CSI ANSI sequences for width measurement.
@@ -307,15 +333,22 @@ mod tests {
 
     #[test]
     fn victory_box_rows_same_width() {
-        let top = format!("╔{}╗", "═".repeat(victory_box_border_inner_width()));
-        let mid = format!("║{}║", " ".repeat(victory_box_border_inner_width()));
-        let title = format_victory_box_title_row("INSTALL FINISHED");
-        let bot = format!("╚{}╝", "═".repeat(victory_box_border_inner_width()));
-        let w = |s: &str| s.chars().count();
-        assert_eq!(w(&top), w(&mid));
-        assert_eq!(w(&mid), w(&title));
-        assert_eq!(w(&title), w(&bot));
-        assert!(lines_same_width(&[&top, &mid, &title, &bot]));
+        for t in ["INSTALL FINISHED", "PACKAGES INSTALLED", "INSTALL PARTIAL"] {
+            let box_lines = format_victory_box(t);
+            let refs: Vec<&str> = box_lines.iter().map(|s| s.as_str()).collect();
+            assert!(
+                lines_same_width(&refs),
+                "mismatched widths for {t:?}: {:?}",
+                box_lines
+                    .iter()
+                    .map(|s| s.chars().count())
+                    .collect::<Vec<_>>()
+            );
+            let w = box_lines[0].chars().count();
+            for line in &box_lines {
+                assert_eq!(line.chars().count(), w, "line={line:?}");
+            }
+        }
     }
 
     #[test]
@@ -330,6 +363,38 @@ mod tests {
                 "title={t:?} inner={inner:?}"
             );
         }
+    }
+
+    #[test]
+    fn victory_title_is_centered_not_left_padded_field() {
+        // Regression: old code used {title:<20} so "INSTALL FINISHED" left a
+        // lopsided gap before the right ornament (looked broken in the TTY).
+        let body = format_victory_title_body("INSTALL FINISHED");
+        assert_eq!(body.chars().count(), VICTORY_BOX_INNER);
+        let trimmed = body.trim();
+        assert!(
+            trimmed.starts_with(VICTORY_ORNAMENT) && trimmed.ends_with(VICTORY_ORNAMENT),
+            "body={body:?}"
+        );
+        // Leading and trailing pad should be nearly equal (off-by-one ok).
+        let lead = body.chars().take_while(|c| *c == ' ').count();
+        let trail = body.chars().rev().take_while(|c| *c == ' ').count();
+        assert!(
+            lead.abs_diff(trail) <= 1,
+            "not centered: lead={lead} trail={trail} body={body:?}"
+        );
+        // Must not look like left-field pad: "INSTALL FINISHED      ✦"
+        assert!(
+            !body.contains("FINISHED      "),
+            "left-aligned 20-col field still present: {body:?}"
+        );
+    }
+
+    #[test]
+    fn center_in_width_basic() {
+        assert_eq!(center_in_width("ab", 6), "  ab  ");
+        assert_eq!(center_in_width("abc", 6), " abc  ");
+        assert_eq!(center_in_width("abcdef", 4), "abcd");
     }
 
     #[test]
