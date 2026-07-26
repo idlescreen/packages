@@ -563,6 +563,22 @@ install_packages() {
             fi
         done
     fi
+    # Legacy dual-icon cleanup (pre-rename CosmicAppletIdle + idle-cli desktop).
+    # Safe no-ops when files already gone; package post scripts do the same.
+    story_line "Scrubbing legacy dual-icon desktop leftovers…"
+    sudo rm -f \
+        /usr/share/applications/com.system76.CosmicAppletIdle.desktop \
+        /usr/share/icons/hicolor/scalable/apps/com.system76.CosmicAppletIdle-symbolic.svg \
+        /usr/share/icons/hicolor/scalable/status/com.system76.CosmicAppletIdle-symbolic.svg \
+        /usr/share/applications/idlescreen.desktop \
+        2>/dev/null || true
+    if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+        sudo gtk-update-icon-cache -f /usr/share/icons/hicolor 2>/dev/null || true
+    fi
+    if command -v update-desktop-database >/dev/null 2>&1; then
+        sudo update-desktop-database /usr/share/applications 2>/dev/null || true
+    fi
+
     say ""
     if [ "${UPGRADE_COUNT:-0}" -gt 0 ]; then
         ok "${BOLD}Payload secured — outdated modules raised.${RESET}"
