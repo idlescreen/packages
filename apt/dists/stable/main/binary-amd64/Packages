@@ -626,3 +626,21 @@ Homepage: https://github.com/idlescreen/render
 Description: IdleScreen offline export capability — simulation to AV1 video
  Offline IdleScreen effect renderer (saver math → AV1 via ffmpeg).
 
+Package: render
+Version: 0.3.3-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 20413
+Depends: ffmpeg | ffmpeg-free | ffmpeg-full, libc6
+Recommends: idle-savers
+Filename: pool/main/render_0.3.3-1_amd64.deb
+Size: 5031532
+MD5sum: 1b22b1347c7cad3d4a35f53a888fbf56
+SHA1: 534be2abe3e1db170e5bd203f27074f332f4ecca
+SHA256: 05a3f1721f1da97f71cedbd8d817baeb49835fa22ac13036e18b02c0bd32480d
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/render
+Description: IdleScreen offline export capability — simulation to AV1 video
+ Offline IdleScreen effect renderer (saver math → AV1 via ffmpeg).
+

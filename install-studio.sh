@@ -1,9 +1,11 @@
 #!/bin/sh
-# IdleScreen Studio installer — offline render Director (TUI) + render capability.
+# IdleScreen Studio installer
 # Usage: curl -fsSL https://idlescreen.github.io/packages/install-studio.sh | sh
 #
-# Installs: idle-studio (Requires: render; recommends idle-savers + ffmpeg).
-# Does NOT install the desktop screensaver stack (use install.sh for that).
+# Install story:
+#   1. Write the IdleScreen package channel (DNF or APT).
+#   2. Install packages: render, idle-studio (and idle-savers when available).
+#   3. Confirm render, idle-studio, /usr/bin/ffmpeg, and saver plugins.
 # SPDX-License-Identifier: Apache-2.0
 
 set -eu
@@ -27,10 +29,10 @@ err()  { say " ${YELLOW}ERROR:${RESET} $*"; }
 step() { say ""; say " ${CYAN}${BOLD}$*${RESET}"; }
 
 REPO_BASE="https://idlescreen.github.io/packages"
-# Product packages (order: capability then UI).
+# Core product packages from the IdleScreen channel.
 PKGS="render idle-studio"
-# Strongly recommended for real encodes (plugins + ffmpeg encoder stack).
-RECOMMENDS="idle-savers"
+# Plugins for effect names (beams, ripple, …).
+SAVERS="idle-savers"
 
 need_cmd() {
     command -v "$1" >/dev/null 2>&1 || {
@@ -42,10 +44,42 @@ need_cmd() {
 is_dnf() { command -v dnf >/dev/null 2>&1 || [ -x /usr/bin/dnf ]; }
 is_apt() { command -v apt-get >/dev/null 2>&1 || [ -x /usr/bin/apt-get ]; }
 
+have_ffmpeg() {
+    [ -x /usr/bin/ffmpeg ] || command -v ffmpeg >/dev/null 2>&1
+}
+
+# Fedora: ffmpeg-free; Debian/Ubuntu: ffmpeg; RPM Fusion: ffmpeg.
+# Never force-replace the host's choice (avoids ffmpeg vs ffmpeg-free erase fights).
+ensure_ffmpeg() {
+    if have_ffmpeg; then
+        ok "ffmpeg → $(command -v ffmpeg 2>/dev/null || echo /usr/bin/ffmpeg)"
+        return 0
+    fi
+    step "  Installing an ffmpeg package"
+    if [ "$PKG" = "dnf" ]; then
+        if sudo dnf install -y ffmpeg-free 2>/dev/null; then
+            ok "installed ffmpeg-free"
+        elif sudo dnf install -y ffmpeg 2>/dev/null; then
+            ok "installed ffmpeg"
+        else
+            warn "could not install ffmpeg-free or ffmpeg — real encodes need /usr/bin/ffmpeg"
+            return 1
+        fi
+    else
+        if sudo apt-get install -y ffmpeg 2>/dev/null; then
+            ok "installed ffmpeg"
+        else
+            warn "could not install ffmpeg — real encodes need the ffmpeg package"
+            return 1
+        fi
+    fi
+    have_ffmpeg
+}
+
 main() {
     say ""
     say "${ORANGE}${BOLD}IdleScreen Studio installer${RESET}"
-    say "${DIM}  offline render · TUI Director · not the desktop screensaver stack${RESET}"
+    say "${DIM}  installs render + idle-studio from the IdleScreen package channel${RESET}"
     say "${DIM}  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
     step "[1/4]  Package manager"
@@ -56,98 +90,104 @@ main() {
         PKG=apt
         ok "APT · Debian family"
     else
-        err "need DNF or APT — see ${REPO_BASE}/"
+        err "need DNF or APT — ${REPO_BASE}/"
         exit 1
     fi
 
-    step "[2/4]  Opening the IdleScreen package channel"
+    step "[2/4]  IdleScreen package channel"
     if [ "$PKG" = "dnf" ]; then
         need_cmd curl
         need_cmd sudo
         sudo curl -fsSL "${REPO_BASE}/rpm/idlescreen.repo" \
             -o /etc/yum.repos.d/idlescreen.repo
-        ok "/etc/yum.repos.d/idlescreen.repo"
-        say "  ${DIM}package gpgcheck=1 · repo_gpgcheck=0${RESET}"
+        ok "repo → /etc/yum.repos.d/idlescreen.repo"
+        say "  ${DIM}baseurl ${REPO_BASE}/rpm · package gpgcheck=1 · repo_gpgcheck=0${RESET}"
         sudo dnf clean metadata --repo=idlescreen >/dev/null 2>&1 || true
         sudo dnf makecache --refresh --repo=idlescreen >/dev/null 2>&1 \
             || sudo dnf makecache --refresh >/dev/null 2>&1 \
-            || warn "metadata refresh soft-failed — install will still try"
+            || warn "metadata refresh soft-failed — install will still try the channel"
     else
         need_cmd curl
         need_cmd sudo
         sudo mkdir -p /etc/apt/keyrings
         curl -fsSL "${REPO_BASE}/apt/idlescreen-keyring.gpg" \
             | sudo tee /etc/apt/keyrings/idlescreen-keyring.gpg >/dev/null
-        ok "APT keyring"
+        ok "keyring → /etc/apt/keyrings/idlescreen-keyring.gpg"
         echo "deb [signed-by=/etc/apt/keyrings/idlescreen-keyring.gpg] ${REPO_BASE}/apt/ stable main" \
             | sudo tee /etc/apt/sources.list.d/idlescreen.list >/dev/null
+        ok "source → /etc/apt/sources.list.d/idlescreen.list"
         sudo apt-get update -qq
         ok "APT index updated"
     fi
 
-    step "[3/4]  Installing Studio + render"
-    say "  ${DIM}plan:${RESET} ${BOLD}${PKGS}${RESET}"
-    say "  ${DIM}also:${RESET} ${RECOMMENDS} (plugins for effect discovery)"
+    step "[3/4]  Packages"
+    say "  ${DIM}installing:${RESET} ${BOLD}${PKGS}${RESET}"
+    say "  ${DIM}plugins:${RESET}   ${SAVERS} (effect .so files)"
     if [ "$PKG" = "dnf" ]; then
         # shellcheck disable=SC2086
-        if ! sudo dnf install -y --refresh $PKGS $RECOMMENDS; then
-            warn "install with savers failed — trying core only ($PKGS)"
+        if ! sudo dnf install -y --refresh $PKGS $SAVERS; then
             # shellcheck disable=SC2086
-            sudo dnf install -y --refresh $PKGS || {
-                err "dnf install failed for: $PKGS"
+            if ! sudo dnf install -y --refresh $PKGS; then
+                err "dnf could not install: $PKGS"
                 exit 1
-            }
+            fi
+            warn "idle-savers not installed this run — effect names need plugins on disk"
         fi
     else
         # shellcheck disable=SC2086
-        if ! sudo apt-get install -y $PKGS $RECOMMENDS; then
-            warn "install with savers failed — trying core only ($PKGS)"
+        if ! sudo apt-get install -y $PKGS $SAVERS; then
             # shellcheck disable=SC2086
-            sudo apt-get install -y $PKGS || {
-                err "apt-get install failed for: $PKGS"
+            if ! sudo apt-get install -y $PKGS; then
+                err "apt-get could not install: $PKGS"
                 exit 1
-            }
+            fi
+            warn "idle-savers not installed this run — effect names need plugins on disk"
         fi
     fi
+    ensure_ffmpeg || true
 
-    step "[4/4]  Verifying"
+    step "[4/4]  Check"
     if command -v render >/dev/null 2>&1; then
         ok "render → $(command -v render)"
     else
-        err "render not on PATH after install"
+        err "render missing after install"
         exit 1
     fi
     if command -v idle-studio >/dev/null 2>&1; then
         ok "idle-studio → $(command -v idle-studio)"
     else
-        err "idle-studio not on PATH after install"
+        err "idle-studio missing after install"
         exit 1
     fi
-    if command -v ffmpeg >/dev/null 2>&1; then
-        ok "ffmpeg available (needed for real encodes)"
+    if have_ffmpeg; then
+        ok "ffmpeg on PATH"
     else
-        warn "ffmpeg not found — install ffmpeg for AV1 export"
+        warn "no ffmpeg yet — install ffmpeg-free (Fedora) or ffmpeg before encoding"
     fi
     if [ -d /usr/libexec/idle/screensavers ] \
         && ls /usr/libexec/idle/screensavers/*.so >/dev/null 2>&1; then
         _n=$(ls /usr/libexec/idle/screensavers/*.so 2>/dev/null | wc -l)
-        ok "saver plugins: ${_n} under /usr/libexec/idle/screensavers"
+        ok "plugins: ${_n} under /usr/libexec/idle/screensavers"
     else
-        warn "no saver plugins found — install idle-savers for effect names"
+        warn "no plugins under /usr/libexec/idle/screensavers — install idle-savers"
     fi
-    if render -e beams --duration 1s --dry-run >/dev/null 2>&1; then
-        ok "render dry-run (beams 1s) ok"
+    if have_ffmpeg && render -e beams --duration 1s --dry-run >/dev/null 2>&1; then
+        ok "render dry-run: beams · 1s"
+    elif render -e beams --duration 1s --dry-run >/dev/null 2>&1; then
+        ok "render dry-run: beams · 1s"
     else
-        warn "render dry-run failed (plugins missing?)"
+        warn "render dry-run did not complete (plugins or runtime)"
     fi
 
     say ""
-    say "  ${GREEN}${BOLD}Studio ready${RESET}"
-    say "  ${DIM}note${RESET}     desktop screensaver is separate: install.sh / idlescreen"
-    say "  ${DIM}open${RESET}     ${CYAN}idle-studio${RESET}     (TUI Director — no args)"
+    say "  ${GREEN}${BOLD}Install finished${RESET}"
+    say "  ${DIM}open${RESET}     ${CYAN}idle-studio${RESET}"
     say "  ${DIM}export${RESET}   ${CYAN}render -e beams --duration 10s -o ~/Videos/beams.mkv${RESET}"
-    say "  ${DIM}remove${RESET}   ${CYAN}sudo dnf remove idle-studio render${RESET}"
-    say "            ${DIM}# or: sudo apt remove idle-studio render${RESET}"
+    if [ "$PKG" = "dnf" ]; then
+        say "  ${DIM}remove${RESET}   ${CYAN}sudo dnf remove idle-studio render${RESET}"
+    else
+        say "  ${DIM}remove${RESET}   ${CYAN}sudo apt remove idle-studio render${RESET}"
+    fi
     say "  ${DIM}docs${RESET}     https://idlescreen.github.io/#studio"
     say "  ${DIM}pkgs${RESET}     ${REPO_BASE}/"
     say ""
