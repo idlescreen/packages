@@ -102,9 +102,11 @@ main() {
             -o /etc/yum.repos.d/idlescreen.repo
         ok "repo → /etc/yum.repos.d/idlescreen.repo"
         say "  ${DIM}baseurl ${REPO_BASE}/rpm · package gpgcheck=1 · repo_gpgcheck=0${RESET}"
-        sudo dnf clean metadata --repo=idlescreen >/dev/null 2>&1 || true
+        # Bust stale libdnf5 solv cache (checksum mismatches after re-signed pool RPMs).
+        sudo dnf clean all --repo=idlescreen >/dev/null 2>&1 || true
+        sudo rm -rf /var/cache/libdnf5/idlescreen-* 2>/dev/null || true
         sudo dnf makecache --refresh --repo=idlescreen >/dev/null 2>&1 \
-            || sudo dnf makecache --refresh >/dev/null 2>&1 \
+            || sudo dnf --setopt=idlescreen.metadata_expire=0 makecache --repo=idlescreen >/dev/null 2>&1 \
             || warn "metadata refresh soft-failed — install will still try the channel"
     else
         need_cmd curl
@@ -125,10 +127,11 @@ main() {
     say "  ${DIM}plugins:${RESET}   ${SAVERS} (effect .so files)"
     if [ "$PKG" = "dnf" ]; then
         # shellcheck disable=SC2086
-        if ! sudo dnf install -y --refresh $PKGS $SAVERS; then
+        if ! sudo dnf install -y --refresh --setopt=idlescreen.metadata_expire=0 $PKGS $SAVERS; then
             # shellcheck disable=SC2086
-            if ! sudo dnf install -y --refresh $PKGS; then
+            if ! sudo dnf install -y --refresh --setopt=idlescreen.metadata_expire=0 $PKGS; then
                 err "dnf could not install: $PKGS"
+                say "  ${DIM}If you see checksum errors: sudo dnf clean all && sudo rm -rf /var/cache/libdnf5/idlescreen-*${RESET}"
                 exit 1
             fi
             warn "idle-savers not installed this run — effect names need plugins on disk"
