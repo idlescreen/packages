@@ -1,0 +1,13 @@
+Package: idlescreen-studio
+Version: 1.0.0-1
+Architecture: all
+Depends: idle-studio (>= 0.3.3), render (>= 0.3.3)
+Recommends: idle-savers
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Description: IdleScreen Studio product metapackage (offline render Director)
+ Pulls in idle-studio (TUI Director) and render (export binary).
+ .
+ Install:  sudo apt install idlescreen-studio
+ Remove:   sudo apt remove idlescreen-studio
+ .
+ Removing this package also removes idle-studio and render.

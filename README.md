@@ -21,8 +21,10 @@ curl -fsSL https://idlescreen.github.io/packages/install.sh | sh
 
 ```bash
 curl -fsSL https://idlescreen.github.io/packages/install-studio.sh | sh
-# installs idle-studio + render (+ recommends idle-savers, needs ffmpeg)
+# installs metapackage idlescreen-studio → idle-studio + render
+# (+ idle-savers when available; needs /usr/bin/ffmpeg)
 # open: idle-studio
+# remove: sudo dnf remove idlescreen-studio
 ```
 
 Or, after the repo is configured:
@@ -31,7 +33,7 @@ Or, after the repo is configured:
 sudo dnf install idlescreen    # Fedora / RHEL family
 sudo apt install idlescreen    # Debian / Ubuntu family
 # COSMIC: also  sudo dnf install idle-cosmic   /   sudo apt install idle-cosmic
-sudo dnf install idle-studio   # offline TUI Director (+ render)
+sudo dnf install idlescreen-studio   # Studio meta (idle-studio + render)
 ```
 
 The desktop installer seats the product metapackage **`idlescreen`** (depends on `idle-daemon`, `idle-cli`, `idle-savers`, `idle-tui`) and on COSMIC also **`idle-cosmic`**.
@@ -61,8 +63,9 @@ sudo dnf remove idlescreen
 | `idle-saver-*` | Individual plugins (beams, cosmos, …) |
 | `idle-tui` | Terminal dashboard (`idle-tui`; also `idlescreen tui`) |
 | `idle-cosmic` | Optional COSMIC panel applet |
-| `idle-studio` | Offline TUI Director (`install-studio.sh`; Requires `render`) |
-| `render` | Offline export binary (`render`; used by Studio) |
+| **`idlescreen-studio`** | **Studio product metapackage** (Requires `idle-studio` + `render`; remove wipes both) |
+| `idle-studio` | Offline TUI Director |
+| `render` | Offline export binary |
 
 ---
 

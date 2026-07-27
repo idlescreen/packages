@@ -4,8 +4,10 @@
 #
 # Install story:
 #   1. Write the IdleScreen package channel (DNF or APT).
-#   2. Install packages: render, idle-studio (and idle-savers when available).
-#   3. Confirm render, idle-studio, /usr/bin/ffmpeg, and saver plugins.
+#   2. Install metapackage idlescreen-studio (pulls idle-studio + render).
+#   3. Install idle-savers when available (plugins).
+#   4. Confirm render, idle-studio, ffmpeg, plugins.
+# Remove: sudo dnf remove idlescreen-studio  (also removes idle-studio + render)
 # SPDX-License-Identifier: Apache-2.0
 
 set -eu
@@ -29,9 +31,9 @@ err()  { say " ${YELLOW}ERROR:${RESET} $*"; }
 step() { say ""; say " ${CYAN}${BOLD}$*${RESET}"; }
 
 REPO_BASE="https://idlescreen.github.io/packages"
-# Core product packages from the IdleScreen channel.
-PKGS="render idle-studio"
-# Plugins for effect names (beams, ripple, …).
+# Product metapackage (Requires idle-studio + render).
+META="idlescreen-studio"
+# Plugins for effect names.
 SAVERS="idle-savers"
 
 need_cmd() {
@@ -48,8 +50,6 @@ have_ffmpeg() {
     [ -x /usr/bin/ffmpeg ] || command -v ffmpeg >/dev/null 2>&1
 }
 
-# Fedora: ffmpeg-free; Debian/Ubuntu: ffmpeg; RPM Fusion: ffmpeg.
-# Never force-replace the host's choice (avoids ffmpeg vs ffmpeg-free erase fights).
 ensure_ffmpeg() {
     if have_ffmpeg; then
         ok "ffmpeg → $(command -v ffmpeg 2>/dev/null || echo /usr/bin/ffmpeg)"
@@ -62,14 +62,14 @@ ensure_ffmpeg() {
         elif sudo dnf install -y ffmpeg 2>/dev/null; then
             ok "installed ffmpeg"
         else
-            warn "could not install ffmpeg-free or ffmpeg — real encodes need /usr/bin/ffmpeg"
+            warn "could not install ffmpeg-free or ffmpeg — encodes need /usr/bin/ffmpeg"
             return 1
         fi
     else
         if sudo apt-get install -y ffmpeg 2>/dev/null; then
             ok "installed ffmpeg"
         else
-            warn "could not install ffmpeg — real encodes need the ffmpeg package"
+            warn "could not install ffmpeg — encodes need the ffmpeg package"
             return 1
         fi
     fi
@@ -79,7 +79,7 @@ ensure_ffmpeg() {
 main() {
     say ""
     say "${ORANGE}${BOLD}IdleScreen Studio installer${RESET}"
-    say "${DIM}  installs render + idle-studio from the IdleScreen package channel${RESET}"
+    say "${DIM}  installs metapackage ${META} (idle-studio + render)${RESET}"
     say "${DIM}  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
     step "[1/4]  Package manager"
@@ -102,7 +102,6 @@ main() {
             -o /etc/yum.repos.d/idlescreen.repo
         ok "repo → /etc/yum.repos.d/idlescreen.repo"
         say "  ${DIM}baseurl ${REPO_BASE}/rpm · package gpgcheck=1 · repo_gpgcheck=0${RESET}"
-        # Bust stale libdnf5 solv cache (checksum mismatches after re-signed pool RPMs).
         sudo dnf clean all --repo=idlescreen >/dev/null 2>&1 || true
         sudo rm -rf /var/cache/libdnf5/idlescreen-* 2>/dev/null || true
         sudo dnf makecache --refresh --repo=idlescreen >/dev/null 2>&1 \
@@ -123,25 +122,21 @@ main() {
     fi
 
     step "[3/4]  Packages"
-    say "  ${DIM}installing:${RESET} ${BOLD}${PKGS}${RESET}"
-    say "  ${DIM}plugins:${RESET}   ${SAVERS} (effect .so files)"
+    say "  ${DIM}installing:${RESET} ${BOLD}${META}${RESET}  (pulls idle-studio + render)"
+    say "  ${DIM}plugins:${RESET}   ${SAVERS}"
     if [ "$PKG" = "dnf" ]; then
-        # shellcheck disable=SC2086
-        if ! sudo dnf install -y --refresh --setopt=idlescreen.metadata_expire=0 $PKGS $SAVERS; then
-            # shellcheck disable=SC2086
-            if ! sudo dnf install -y --refresh --setopt=idlescreen.metadata_expire=0 $PKGS; then
-                err "dnf could not install: $PKGS"
-                say "  ${DIM}If you see checksum errors: sudo dnf clean all && sudo rm -rf /var/cache/libdnf5/idlescreen-*${RESET}"
+        if ! sudo dnf install -y --refresh --setopt=idlescreen.metadata_expire=0 "$META" $SAVERS; then
+            if ! sudo dnf install -y --refresh --setopt=idlescreen.metadata_expire=0 "$META"; then
+                err "dnf could not install: $META"
+                say "  ${DIM}If checksum errors: sudo dnf clean all && sudo rm -rf /var/cache/libdnf5/idlescreen-*${RESET}"
                 exit 1
             fi
             warn "idle-savers not installed this run — effect names need plugins on disk"
         fi
     else
-        # shellcheck disable=SC2086
-        if ! sudo apt-get install -y $PKGS $SAVERS; then
-            # shellcheck disable=SC2086
-            if ! sudo apt-get install -y $PKGS; then
-                err "apt-get could not install: $PKGS"
+        if ! sudo apt-get install -y "$META" $SAVERS; then
+            if ! sudo apt-get install -y "$META"; then
+                err "apt-get could not install: $META"
                 exit 1
             fi
             warn "idle-savers not installed this run — effect names need plugins on disk"
@@ -150,6 +145,11 @@ main() {
     ensure_ffmpeg || true
 
     step "[4/4]  Check"
+    if rpm -q idlescreen-studio >/dev/null 2>&1 || dpkg-query -W idlescreen-studio >/dev/null 2>&1; then
+        ok "metapackage idlescreen-studio present"
+    else
+        warn "metapackage idlescreen-studio not queried (ok if check tools differ)"
+    fi
     if command -v render >/dev/null 2>&1; then
         ok "render → $(command -v render)"
     else
@@ -174,9 +174,7 @@ main() {
     else
         warn "no plugins under /usr/libexec/idle/screensavers — install idle-savers"
     fi
-    if have_ffmpeg && render -e beams --duration 1s --dry-run >/dev/null 2>&1; then
-        ok "render dry-run: beams · 1s"
-    elif render -e beams --duration 1s --dry-run >/dev/null 2>&1; then
+    if render -e beams --duration 1s --dry-run >/dev/null 2>&1; then
         ok "render dry-run: beams · 1s"
     else
         warn "render dry-run did not complete (plugins or runtime)"
@@ -187,9 +185,11 @@ main() {
     say "  ${DIM}open${RESET}     ${CYAN}idle-studio${RESET}"
     say "  ${DIM}export${RESET}   ${CYAN}render -e beams --duration 10s -o ~/Videos/beams.mkv${RESET}"
     if [ "$PKG" = "dnf" ]; then
-        say "  ${DIM}remove${RESET}   ${CYAN}sudo dnf remove idle-studio render${RESET}"
+        say "  ${DIM}remove${RESET}   ${CYAN}sudo dnf remove idlescreen-studio${RESET}"
+        say "            ${DIM}# also removes idle-studio + render${RESET}"
     else
-        say "  ${DIM}remove${RESET}   ${CYAN}sudo apt remove idle-studio render${RESET}"
+        say "  ${DIM}remove${RESET}   ${CYAN}sudo apt remove idlescreen-studio${RESET}"
+        say "            ${DIM}# also removes idle-studio + render${RESET}"
     fi
     say "  ${DIM}docs${RESET}     https://idlescreen.github.io/#studio"
     say "  ${DIM}pkgs${RESET}     ${REPO_BASE}/"

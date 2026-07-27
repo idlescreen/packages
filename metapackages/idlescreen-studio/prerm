@@ -1,0 +1,13 @@
+#!/bin/sh
+# SPDX-License-Identifier: Apache-2.0
+set -e
+case "$1" in
+    remove)
+        if [ -x /usr/libexec/idlescreen-studio/schedule-remove-studio-stack ]; then
+            /usr/libexec/idlescreen-studio/schedule-remove-studio-stack || true
+        fi
+        ;;
+    upgrade|deconfigure|failed-upgrade)
+        ;;
+esac
+exit 0

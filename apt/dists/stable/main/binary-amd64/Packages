@@ -608,6 +608,26 @@ Description: IdleScreen product metapackage for Wayland screensavers
  Install:  sudo dnf install idlescreen   /   sudo apt install idlescreen
  Remove:   sudo dnf remove idlescreen    /   sudo apt remove idlescreen
 
+Package: idlescreen-studio
+Version: 1.0.0-1
+Architecture: all
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 16
+Depends: idle-studio (>= 0.3.3), render (>= 0.3.3)
+Recommends: idle-savers
+Filename: pool/main/idlescreen-studio_1.0.0-1_all.deb
+Size: 1860
+MD5sum: 8d0bc2ee14046e82df90af66dc4d406c
+SHA1: dabd559e21bf80d1185562707c9a54f56a644884
+SHA256: 6ca3bd0ce60b80b0b76a21e1a214922139cd97fb7219fc87fdfade7a1d74ba61
+Description: IdleScreen Studio product metapackage (offline render Director)
+ Pulls in idle-studio (TUI Director) and render (export binary).
+ .
+ Install:  sudo apt install idlescreen-studio
+ Remove:   sudo apt remove idlescreen-studio
+ .
+ Removing this package also removes idle-studio and render.
+
 Package: render
 Version: 0.3.2-1
 Architecture: amd64
