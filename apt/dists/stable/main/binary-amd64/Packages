@@ -507,6 +507,25 @@ Description: Meta package that hard-depends on all official IdleScreen saver plu
  Installs every official IdleScreen screensaver plugin (saver-*). Pulled in by
  idle-cosmic (not installed alone by end users).
 
+Package: idle-studio
+Version: 0.3.3-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 1844
+Depends: libc6, render
+Recommends: idle-savers, ffmpeg
+Filename: pool/main/idle-studio_0.3.3-1_amd64.deb
+Size: 568792
+MD5sum: bbfca463bd4bf355e3ba4188867b22c4
+SHA1: 7d05c94dde910056bf52689d1545e3cd33266b5a
+SHA256: 4086412fecba9b5b1dcbfb2fd05d16ff5695f18e090adc8b3f5ad03485592577
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/render
+Description: IdleScreen Studio — UI that drives the render capability
+ IdleScreen Studio (TUI Director) — queues offline jobs for the render
+ capability.
+
 Package: idle-tui
 Version: 2.3.1-1
 Architecture: amd64
@@ -588,4 +607,22 @@ Description: IdleScreen product metapackage for Wayland screensavers
  .
  Install:  sudo dnf install idlescreen   /   sudo apt install idlescreen
  Remove:   sudo dnf remove idlescreen    /   sudo apt remove idlescreen
+
+Package: render
+Version: 0.3.2-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 20413
+Depends: ffmpeg, libc6
+Recommends: idle-savers
+Filename: pool/main/render_0.3.2-1_amd64.deb
+Size: 5031520
+MD5sum: bca2566f0e87eca0d7eaca0cfa6a35ea
+SHA1: 3168fc79aa0707f969a8a4c50faafc60fde50306
+SHA256: 9a95c323d046f7d679d1f91c3bcedfb1c31a3d2b290ff843bf4353de30c3ff46
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/render
+Description: IdleScreen offline export capability — simulation to AV1 video
+ Offline IdleScreen effect renderer (saver math → AV1 via ffmpeg).
 

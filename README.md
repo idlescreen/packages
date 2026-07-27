@@ -17,15 +17,24 @@ Website: [https://idlescreen.github.io](https://idlescreen.github.io)
 curl -fsSL https://idlescreen.github.io/packages/install.sh | sh
 ```
 
+**Studio** (offline Director — separate from the screensaver stack):
+
+```bash
+curl -fsSL https://idlescreen.github.io/packages/install-studio.sh | sh
+# installs idle-studio + render (+ recommends idle-savers, needs ffmpeg)
+# open: idle-studio
+```
+
 Or, after the repo is configured:
 
 ```bash
 sudo dnf install idlescreen    # Fedora / RHEL family
 sudo apt install idlescreen    # Debian / Ubuntu family
 # COSMIC: also  sudo dnf install idle-cosmic   /   sudo apt install idle-cosmic
+sudo dnf install idle-studio   # offline TUI Director (+ render)
 ```
 
-The installer seats the product metapackage **`idlescreen`** (depends on `idle-daemon`, `idle-cli`, `idle-savers`, `idle-tui`) and on COSMIC also **`idle-cosmic`**.
+The desktop installer seats the product metapackage **`idlescreen`** (depends on `idle-daemon`, `idle-cli`, `idle-savers`, `idle-tui`) and on COSMIC also **`idle-cosmic`**.
 
 **Remove** (idlescreen **2.6+** wipes the whole product stack the installer seated):
 
@@ -52,7 +61,8 @@ sudo dnf remove idlescreen
 | `idle-saver-*` | Individual plugins (beams, cosmos, …) |
 | `idle-tui` | Terminal dashboard (`idle-tui`; also `idlescreen tui`) |
 | `idle-cosmic` | Optional COSMIC panel applet |
-| `idle-studio` | Optional offline render queue (not installed by `install.sh`) |
+| `idle-studio` | Offline TUI Director (`install-studio.sh`; Requires `render`) |
+| `render` | Offline export binary (`render`; used by Studio) |
 
 ---
 
