@@ -4,31 +4,31 @@ Hash: SHA512
 Architectures: amd64
 Codename: stable
 Components: main
-Date: Mon, 27 Jul 2026 14:32:12 +0000
+Date: Mon, 27 Jul 2026 14:36:56 +0000
 Description: IdleScreen APT Repository (stable/main)
 Label: IdleScreen
 Origin: IdleScreen
 Suite: stable
 MD5Sum:
- 3650ad671f797d5f4a75513d92103ee3              197 Release
+ 1e7790eca973342138feb21dcd29b519              197 Release
  f2cb38919243596c7d62d9daaf1b1a8f            25224 main/binary-amd64/Packages
- e6f1556d43133d15488d82bbdf4f917f             5825 main/binary-amd64/Packages.gz
+ fb8eedec55b297e8715ec393428e997b             5825 main/binary-amd64/Packages.gz
 SHA1:
- fdc6c355fb3bc80b13ffc3f4ce92ccb3d7560ff8              197 Release
+ 6c9a7535e4700d5c13eeb9fc3a8e337e5087f44b              197 Release
  d510de7c7deb285345c37fa5f08d1cb064d770b6            25224 main/binary-amd64/Packages
- fffbc1854e682cec8b26d8445a1bb6b37f7ba0fc             5825 main/binary-amd64/Packages.gz
+ 70f94c840039f248a2c0246a056e9e1502046772             5825 main/binary-amd64/Packages.gz
 SHA256:
- 8ba7b144065001bd105df6fabea9bca81bf0f4de9acf8695abb0ad13935ea478              197 Release
+ 579c87553607a0fbb90709583e25affaeb752c4efcb39faa7f2b543ae4bfc973              197 Release
  d297d283815526f55c51c581ed9119c18f8e2e535bed9599fde0adbe3a4c2786            25224 main/binary-amd64/Packages
- 1a1fd27292faacf17efd270284e83b1341cbabedf6e785ee897fb627c16cf833             5825 main/binary-amd64/Packages.gz
+ 27762c9325b228bc0b4972ac6c59489121a2701ef514f540f8426b77ade8868e             5825 main/binary-amd64/Packages.gz
 SHA512:
- b1dae0251bdc382f2344b97d8369b37803dd96375a46007efa959250de1ed5d814247c2463bc0aad65f8818de5b56be973557df652a2f00d2bf1cb0118e2cee0              197 Release
+ ea7bdb53822f086162a7c97015b40cd667f5dbdc31e801121f95914a76b1c93c3a41e4b2eedb257f4d7ed500e3816be3a821cf3eb6528fc00a672612f7a8c1e2              197 Release
  34c5703cda38b081976575bf511639d87e3f0ff46d1bbcdfaccbd39cb86c28f66fab245a8f775d18db12c107b0ecb4fc8796a1a4ab693d7c7965f02afa7fb52e            25224 main/binary-amd64/Packages
- deff9a05adb9b2cc3a66b31b69be2a9f4f7045224ed2c7476863eaf29c57de141793378ae8b19b3ec85046633cd7652851dcdac8e4ede1d55cb8f4384bd91957             5825 main/binary-amd64/Packages.gz
+ 84650a28a8c6ba1c4d405349f202f5fa2a4d863e1b6511f23a03dbc641dac71bb73e654ee2334f04d889ab3314b2094101a2349a2fa9ae48d423c9047d42840b             5825 main/binary-amd64/Packages.gz
 -----BEGIN PGP SIGNATURE-----
 
-iHUEARYKAB0WIQQ9LWcNvZvZTXstI9NW7ZnowCQxYAUCamdr7AAKCRBW7ZnowCQx
-YF5OAQDNsFfng3V/ZZH6SLbO2GzICPz2YFUHakQYBcWyaqAeawD9HpV3zJLIoCDJ
-i2j35g+T17xEii6ZkVxKZg69vk+pnQ0=
-=ANoH
+iHUEARYKAB0WIQQ9LWcNvZvZTXstI9NW7ZnowCQxYAUCamdtCQAKCRBW7ZnowCQx
+YJ1yAP0WYZVYqbXL/9IOV4khTuTryyN7xVmUzb1a8q/Ncc3+ygD/dekWw2O9VKDU
+GRwC9+M8HsGh1K3vWfHzlCQ/z/h8OQo=
+=6Ndq
 -----END PGP SIGNATURE-----
