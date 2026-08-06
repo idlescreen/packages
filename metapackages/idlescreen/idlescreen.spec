@@ -1,14 +1,14 @@
 Name:           idlescreen
-Version:        2.6.1
+Version:        2.6.2
 Release:        1
 Summary:        IdleScreen product metapackage for Wayland screensavers
 License:        Apache-2.0
 URL:            https://idlescreen.github.io
 BuildArch:      noarch
-Requires:       idle-daemon >= 2.5.0
+Requires:       idle-daemon >= 2.5.13
 Requires:       idle-cli >= 2.5.0
 Requires:       idle-savers
-Requires:       idle-tui >= 2.3.0
+Requires:       idle-tui >= 2.3.2
 Recommends:      idle-cosmic >= 2.2.0
 Requires(preun): /bin/sh
 
@@ -54,6 +54,9 @@ fi
 %{_libexecdir}/idlescreen/schedule-remove-stack
 
 %changelog
+* Thu Aug 06 2026 IdleScreen <jerydleuck@gmail.com> - 2.6.2-1
+- Fix TUI panic when navigating out of bounds in screensaver list
+- Fix random screensaver failure when active saver is None
 * Sun Jul 26 2026 IdleScreen <jerydleuck@gmail.com> - 2.6.1-1
 - Stop user idle-daemon before stack erase; remove empty leftover dirs
 * Sun Jul 26 2026 IdleScreen <jerydleuck@gmail.com> - 2.6.0-1
