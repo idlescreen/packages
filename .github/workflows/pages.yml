@@ -27,7 +27,10 @@ jobs:
 
       - name: Setup Pages
         uses: actions/configure-pages@v5
+        with:
+          enablement: true
 
+      # Full tree: install scripts, apt/, rpm/ (pool + repodata), index.html
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v3
         with:
