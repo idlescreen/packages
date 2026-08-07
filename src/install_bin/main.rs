@@ -12,9 +12,9 @@ mod victory;
 use std::process::{Command, Stdio, exit};
 
 use deploy::{deploy, print_deploy_result, recount};
-use start_daemon::start_daemon;
 use host::{desktop_label, is_apt, is_cosmic, is_dnf, os_pretty, packages, run_status};
 use pkg::survey;
+use start_daemon::start_daemon;
 use ui::{
     C_BOLD, C_CYAN, C_DIM, C_GREEN, C_ORANGE, C_RESET, err, ok, pause, say, step, story_line, warn,
 };

@@ -15,10 +15,12 @@ fn unit_active() -> bool {
 }
 
 fn bus_name_up() -> bool {
-    run_status(
-        Command::new("busctl")
-            .args(["--user", "--timeout=1", "status", "io.github.idlescreen.Idle"]),
-    )
+    run_status(Command::new("busctl").args([
+        "--user",
+        "--timeout=1",
+        "status",
+        "io.github.idlescreen.Idle",
+    ]))
 }
 
 fn daemon_ready() -> bool {
@@ -76,27 +78,21 @@ pub fn start_daemon() -> bool {
         "idle-daemon.service",
     ]));
     story_line("systemctl --user enable idle-daemon.service…");
-    let _ = run_status(Command::new("systemctl").args([
-        "--user",
-        "enable",
-        "idle-daemon.service",
-    ]));
+    let _ = run_status(Command::new("systemctl").args(["--user", "enable", "idle-daemon.service"]));
     // Clean restart so a dying upgrade process releases the bus name.
     story_line("systemctl --user restart idle-daemon.service…");
-    if !run_status(Command::new("systemctl").args([
-        "--user",
-        "restart",
-        "idle-daemon.service",
-    ])) {
+    if !run_status(Command::new("systemctl").args(["--user", "restart", "idle-daemon.service"])) {
         warn("restart not active yet — stop + start…");
-        let _ = run_status(Command::new("systemctl").args(["--user", "stop", "idle-daemon.service"]));
+        let _ =
+            run_status(Command::new("systemctl").args(["--user", "stop", "idle-daemon.service"]));
         std::thread::sleep(std::time::Duration::from_millis(400));
         let _ = run_status(Command::new("systemctl").args([
             "--user",
             "reset-failed",
             "idle-daemon.service",
         ]));
-        let _ = run_status(Command::new("systemctl").args(["--user", "start", "idle-daemon.service"]));
+        let _ =
+            run_status(Command::new("systemctl").args(["--user", "start", "idle-daemon.service"]));
     }
     for _ in 0..30 {
         if daemon_ready() {
@@ -119,7 +115,8 @@ pub fn start_daemon() -> bool {
             "reset-failed",
             "idle-daemon.service",
         ]));
-        let _ = run_status(Command::new("systemctl").args(["--user", "start", "idle-daemon.service"]));
+        let _ =
+            run_status(Command::new("systemctl").args(["--user", "start", "idle-daemon.service"]));
         std::thread::sleep(std::time::Duration::from_millis(500));
     }
     if daemon_ready() || bus_name_up() {

@@ -9,7 +9,7 @@ use super::pkg::{
     Survey, apt_install, apt_installed, apt_only_upgrade, dnf_install, dnf_upgrade, pkg_present,
     rpm_installed,
 };
-use super::ui::{C_BOLD, C_GREEN, C_RESET, err, ok, story_line, warn};
+use super::ui::{C_BOLD, C_RESET, err, ok, story_line, warn};
 
 pub fn deploy(dnf: bool, pkgs: &[&str], survey: &Survey) {
     let all: Vec<String> = pkgs.iter().map(|s| (*s).to_string()).collect();
