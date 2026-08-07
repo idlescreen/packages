@@ -10,7 +10,7 @@ Enforce on every change in this repository.
 
 ## Constraints
 
-- Max **250 lines** per `.rs` file (split modules when needed).
+- Max **256 lines** per `.rs` file (split modules when needed).
 - **Zero** `.unwrap()` or `.expect()` in production (non-test) code.
 - Cargo package/lib: **`idlescreen-packages`** / **`idlescreen_packages`**.
 

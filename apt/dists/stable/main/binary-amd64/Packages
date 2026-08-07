@@ -608,6 +608,29 @@ Description: IdleScreen product metapackage for Wayland screensavers
  Install:  sudo dnf install idlescreen   /   sudo apt install idlescreen
  Remove:   sudo dnf remove idlescreen    /   sudo apt remove idlescreen
 
+Package: idlescreen
+Version: 2.6.1-1
+Architecture: all
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 16
+Depends: idle-daemon (>= 2.5.0), idle-cli (>= 2.5.0), idle-savers, idle-tui (>= 2.3.0)
+Recommends: idle-cosmic (>= 2.2.0)
+Filename: pool/main/idlescreen_2.6.2-1_all.deb
+Size: 3012
+MD5sum: c805d496700ce9ea8a1e196e8965bb00
+SHA1: e4d7a8c8483f4b4614edd7a29a77db76953659c6
+SHA256: 9e3acf6982009854ba137ffd0367dc0dac98c2d2868a6c404ff2a9d68d0ee7d2
+Description: IdleScreen product metapackage for Wayland screensavers
+ Installs the modular host stack: idle-daemon, idle-cli, idle-savers, idle-tui.
+ On COSMIC Desktop, install idle-cosmic as well (or use install.sh which detects DE).
+ .
+ Removing this package also removes the product stack the installer seated
+ (modules, official savers, idle-cosmic) and the APT source list drop-in.
+ User config under ~/.config/idle is left in place.
+ .
+ Install:  sudo dnf install idlescreen   /   sudo apt install idlescreen
+ Remove:   sudo dnf remove idlescreen    /   sudo apt remove idlescreen
+
 Package: idlescreen-studio
 Version: 1.0.0-1
 Architecture: all
