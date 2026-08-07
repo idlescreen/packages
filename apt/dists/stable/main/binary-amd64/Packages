@@ -182,6 +182,30 @@ Description: IdleScreen for COSMIC — product package (applet + pulls daemon an
  IdleScreen product for COSMIC Desktop.
  Installs the COSMIC panel applet and depends on idle-daemon.
 
+Package: idle-cosmic
+Version: 3.0.2-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 24344
+Depends: idle-daemon, idle-tui, libc6
+Recommends: idle-cli, idle-tui, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
+Enhances: cosmic-session, cosmic-panel
+Conflicts: app-cosmic (<< 2.1.0), idlescreen-applet (<< 2.1.0), trance-applet (<< 2.0.0)
+Replaces: app-cosmic, idlescreen-applet, trance-applet, idlescreen-cosmic
+Provides: app-cosmic, idlescreen-applet, trance-applet, idlescreen-cosmic
+Filename: pool/main/idle-cosmic_3.0.2-1_amd64.deb
+Size: 6332768
+MD5sum: 9522c4b0d315264a97ca9379b007d601
+SHA1: a245145b6f247704483881737e9d5ab22029f523
+SHA256: c7c98a849faf9327d69eb24f7224981cf1093c2ebaf5c6e24599683c43ccf2c4
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idle-cosmic
+Description: IdleScreen for COSMIC — product package (applet + pulls daemon and
+ recommended savers)
+ IdleScreen product for COSMIC Desktop.
+ Installs the COSMIC panel applet and depends on idle-daemon.
+
 Package: idle-daemon
 Version: 2.5.1-1
 Architecture: amd64
@@ -953,6 +977,29 @@ Size: 3000
 MD5sum: 3cd03b91ec2edc65fc1e840694f4762f
 SHA1: c645ba0655a2608bc4ffa334f41570ce989ffd2d
 SHA256: 5a9261652a1038932e8a6e75185d04a529c9d9380e39f619da30b42f899f1803
+Description: IdleScreen product metapackage for Wayland screensavers
+ Installs the modular host stack: idle-daemon, idle-cli, idle-savers, idle-tui.
+ On COSMIC Desktop, install idle-cosmic as well (or use install.sh which detects DE).
+ .
+ Removing this package also removes the product stack the installer seated
+ (modules, official savers, idle-cosmic) and the APT source list drop-in.
+ User config under ~/.config/idle is left in place.
+ .
+ Install:  sudo dnf install idlescreen   /   sudo apt install idlescreen
+ Remove:   sudo dnf remove idlescreen    /   sudo apt remove idlescreen
+
+Package: idlescreen
+Version: 3.0.2-1
+Architecture: all
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 16
+Depends: idle-daemon (>= 3.0.2), idle-cli (>= 3.0.1), idle-savers, idle-tui (>= 3.0.1)
+Recommends: idle-cosmic (>= 3.0.2)
+Filename: pool/main/idlescreen_3.0.2-1_all.deb
+Size: 3004
+MD5sum: 17d3e3a57f810139ce0463bd632153da
+SHA1: 8b36fbb1d3134bc3cceb838f5919b2217be925c4
+SHA256: 532d06a24edf71f513c2229ad5404dbb36dc7a7f5f63a98d17a3b90d1d4ab21a
 Description: IdleScreen product metapackage for Wayland screensavers
  Installs the modular host stack: idle-daemon, idle-cli, idle-savers, idle-tui.
  On COSMIC Desktop, install idle-cosmic as well (or use install.sh which detects DE).
