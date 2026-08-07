@@ -5,12 +5,14 @@
 mod deploy;
 mod host;
 mod pkg;
+mod start_daemon;
 mod ui;
 mod victory;
 
 use std::process::{Command, Stdio, exit};
 
-use deploy::{deploy, print_deploy_result, recount, start_daemon};
+use deploy::{deploy, print_deploy_result, recount};
+use start_daemon::start_daemon;
 use host::{desktop_label, is_apt, is_cosmic, is_dnf, os_pretty, packages, run_status};
 use pkg::survey;
 use ui::{

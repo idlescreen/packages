@@ -1,8 +1,36 @@
 # Post-install daemon and victory
+# Returns 0 if unit active and session bus name is claimed.
+_bus_name_up() {
+    busctl --user --timeout=1 status io.github.idlescreen.Idle >/dev/null 2>&1
+}
+
+_daemon_ready() {
+    systemctl --user is-active --quiet idle-daemon.service 2>/dev/null && _bus_name_up
+}
+
+# Patch known-bad activation line from older packages (dbus-broker rejects User=session).
+_fix_dbus_activation_file() {
+    _f="/usr/share/dbus-1/services/io.github.idlescreen.Idle.service"
+    [ -f "$_f" ] || return 0
+    if grep -q '^User=session$' "$_f" 2>/dev/null; then
+        story_line "Fixing invalid User=session in D-Bus activation file…"
+        if command -v sudo >/dev/null 2>&1; then
+            sudo sed -i '/^User=session$/d' "$_f" 2>/dev/null || true
+        fi
+    fi
+}
+
 awaken_daemon() {
     step "[5/5]  Starting the idle user service"
     story_line "Ensuring ${HOME}/.config/idle exists (daemon config dir)…"
     mkdir -p "${HOME}/.config/idle" "${HOME}/.config/idlescreen"
+    # Leftover atomic-write temps confuse nothing useful and clutter the dir.
+    rm -f "${HOME}/.config/idle"/config.tmp.* 2>/dev/null || true
+
+    _fix_dbus_activation_file
+
+    # Package %post may still be finishing; give user units a moment.
+    sleep 0.3
 
     story_line "Reloading user systemd units…"
     systemctl --user daemon-reload 2>/dev/null || true
@@ -12,50 +40,60 @@ awaken_daemon() {
     story_line "systemctl --user enable idle-daemon.service…"
     systemctl --user enable idle-daemon.service 2>/dev/null || true
 
-    story_line "systemctl --user start idle-daemon.service…"
-    if ! systemctl --user start idle-daemon.service 2>/dev/null; then
-        warn "start returned non-zero — retrying once…"
-        sleep 0.5
+    # Clean restart: upgrade can leave a dying process holding the bus name.
+    story_line "systemctl --user restart idle-daemon.service…"
+    _start_out=$(systemctl --user restart idle-daemon.service 2>&1) || true
+    if ! systemctl --user is-active --quiet idle-daemon.service 2>/dev/null; then
+        warn "restart not active yet — stop + start…"
+        [ -n "$_start_out" ] && dim "   ${_start_out}"
+        systemctl --user stop idle-daemon.service 2>/dev/null || true
+        sleep 0.4
         systemctl --user reset-failed idle-daemon.service 2>/dev/null || true
-        systemctl --user start idle-daemon.service 2>/dev/null || true
+        _start_out=$(systemctl --user start idle-daemon.service 2>&1) || true
+        [ -n "$_start_out" ] && dim "   ${_start_out}"
     fi
 
-    # Wait briefly for Type=dbus to claim the bus name.
+    # Wait for Type=dbus to claim io.github.idlescreen.Idle.
     _i=0
-    while [ "$_i" -lt 25 ]; do
-        if systemctl --user is-active --quiet idle-daemon.service 2>/dev/null; then
+    while [ "$_i" -lt 30 ]; do
+        if _daemon_ready; then
             break
         fi
         sleep 0.2
         _i=$((_i + 1))
     done
 
-    if systemctl --user is-active --quiet idle-daemon.service 2>/dev/null; then
-        ok "idle-daemon.service is ${GREEN}${BOLD}active${RESET} (user session)"
+    if _daemon_ready; then
+        ok "idle-daemon.service is ${GREEN}${BOLD}active${RESET} (D-Bus name claimed)"
         return 0
     fi
 
-    # Fallback: direct spawn if unit still dead (unit file race / session quirks).
-    warn "user unit not active — trying direct idle-daemon spawn…"
-    if command -v idle-daemon >/dev/null 2>&1; then
+    # Fallback: direct spawn only if nothing owns the name (unit race).
+    if ! _bus_name_up && command -v idle-daemon >/dev/null 2>&1; then
+        warn "user unit not ready — trying one-shot idle-daemon spawn…"
         idle-daemon daemon >/dev/null 2>&1 &
-        sleep 0.6
+        sleep 0.8
+        systemctl --user reset-failed idle-daemon.service 2>/dev/null || true
+        systemctl --user start idle-daemon.service 2>/dev/null || true
+        sleep 0.5
     fi
 
-    if systemctl --user is-active --quiet idle-daemon.service 2>/dev/null \
-        || busctl --user status io.github.idlescreen.Idle >/dev/null 2>&1; then
+    if _daemon_ready || _bus_name_up; then
         ok "idle-daemon is up (bus/service)"
         return 0
     fi
 
-    warn "idle-daemon.service is not active right now."
-    dim "   Packages may still be installed. Start with:"
-    dim "   systemctl --user enable --now idle-daemon.service"
+    warn "idle-daemon D-Bus service is not ready."
+    dim "   Packages may still be installed. Diagnose with:"
+    dim "   systemctl --user status idle-daemon.service"
+    dim "   journalctl --user -u idle-daemon.service -n 30 --no-pager"
     dim "   or: idlescreen doctor --fix"
-    dim "   (requires a logged-in user session with systemd --user)"
     if command -v systemctl >/dev/null 2>&1; then
-        dim "   last status: $(systemctl --user is-active idle-daemon.service 2>&1 || true)"
+        dim "   unit: $(systemctl --user is-active idle-daemon.service 2>&1 || true)"
+        dim "   $(systemctl --user status idle-daemon.service --no-pager -l 2>&1 | head -n 8 | tr '\n' ' ')"
     fi
+    journalctl --user -u idle-daemon.service -n 12 --no-pager 2>/dev/null \
+        | while IFS= read -r _line; do dim "   ${_line}"; done || true
 }
 
 victory() {
