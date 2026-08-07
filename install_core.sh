@@ -124,11 +124,14 @@ install_packages() {
         fi
         if ! rpm -q idlescreen >/dev/null 2>&1; then
             warn "Product package idlescreen missing — installing metapackage…"
-            sudo dnf install -y --refresh idlescreen 2>/dev/null || true
+            if ! sudo dnf install -y --refresh idlescreen; then
+                err "failed to install idlescreen metapackage"
+                exit 1
+            fi
         fi
         if ! rpm -q idlescreen >/dev/null 2>&1; then
-            warn "idlescreen metapackage not on channel yet; modular idle-* packages are installed."
-            warn "Remove with:  sudo dnf remove idlescreen   # 2.6+ wipes the full product stack"
+            err "idlescreen metapackage still missing after install — aborting"
+            exit 1
         fi
         say ""
         _missing=0
@@ -136,14 +139,12 @@ install_packages() {
             if rpm -q "$_pkg" >/dev/null 2>&1; then
                 ok "$(rpm -q "$_pkg")"
             else
-                warn "$_pkg not present after deploy"
-                case "$_pkg" in
-                    idle-daemon|idle-cli) _missing=1 ;;
-                esac
+                err "$_pkg not present after deploy"
+                _missing=1
             fi
         done
         if [ "$_missing" -ne 0 ]; then
-            err "Core packages missing after dnf install — aborting"
+            err "Planned packages missing after dnf install — aborting"
             exit 1
         fi
     elif [ "$PKG_MGR" = "apt" ]; then
@@ -164,16 +165,8 @@ install_packages() {
         story_line "Re-syncing the full IdleScreen set against the channel…"
         # shellcheck disable=SC2086
         if ! sudo apt-get install -y $_pkgs; then
-            warn "Full set failed — retrying without idle-tui (older indexes)…"
-            _retry="idle-daemon idle-cli idle-savers"
-            if printf '%s' "$_pkgs" | grep -q idle-cosmic; then
-                _retry="$_retry idle-cosmic"
-            fi
-            # shellcheck disable=SC2086
-            if ! sudo apt-get install -y $_retry; then
-                err "apt-get install failed"
-                exit 1
-            fi
+            err "apt-get install failed for planned set: $_pkgs"
+            exit 1
         fi
         story_line "Verifying dpkg database…"
         if ! dpkg-query -W idle-daemon idle-cli >/dev/null 2>&1; then
@@ -181,13 +174,19 @@ install_packages() {
             exit 1
         fi
         say ""
+        _missing=0
         for _pkg in $_pkgs; do
             if dpkg-query -W "$_pkg" >/dev/null 2>&1; then
                 ok "$(dpkg-query -W -f='${Package} ${Version}' "$_pkg")"
             else
-                warn "$_pkg not present after deploy"
+                err "$_pkg not present after deploy"
+                _missing=1
             fi
         done
+        if [ "$_missing" -ne 0 ]; then
+            err "Planned packages missing after apt install — aborting"
+            exit 1
+        fi
     fi
     story_line "Scrubbing legacy dual-icon desktop leftovers…"
     sudo rm -f \

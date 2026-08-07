@@ -1,123 +1,35 @@
 Package: idle-cli
-Version: 2.5.1-1
+Version: 3.0.0-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 1936
+Installed-Size: 1942
 Depends: idle-daemon, libc6
-Filename: pool/main/idle-cli_2.5.1-1_amd64.deb
-Size: 713908
-MD5sum: 28e5a4bae54e4f2f3a38f9a6880220d9
-SHA1: 7774238651975df7c9cffa6f2c0d1b9139e9b04d
-SHA256: 8241f9c644fa06b2734cc23834bf26396e068e3d9f07358a854b127330118ec4
-Section: utils
-Priority: optional
-Description: Command-line interface for the IdleScreen daemon
- CLI for controlling the Idle daemon over D-Bus (command: idlescreen).
-
-Package: idle-cli
-Version: 2.5.2-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 1926
-Depends: idle-daemon, libc6
-Filename: pool/main/idle-cli_2.5.2-1_amd64.deb
-Size: 709796
-MD5sum: 12561a6375fda72c62fd9dc23f49ab13
-SHA1: 408d7d40fa2dfc35f07247f89c84e60701600cdb
-SHA256: 5387846f10cdd6a94b4499852d40a50947e26accfa7c86fd9ddd61e21f6753b6
-Section: utils
-Priority: optional
-Description: Command-line interface for the IdleScreen daemon
- CLI for controlling the Idle daemon over D-Bus (command: idlescreen).
-
-Package: idle-cli
-Version: 2.5.3-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 1926
-Depends: idle-daemon, libc6
-Filename: pool/main/idle-cli_2.5.3-1_amd64.deb
-Size: 709856
-MD5sum: e1d4d105d76a4e2b1ec1a56ffbd466ec
-SHA1: 1a7ba235b8b5e43fc0f7332612f48a4c2c18f1ca
-SHA256: 38b333f58f9eae66347f28335dcc126ff77a128ccbf58a0ac8f65896f80ec447
-Section: utils
-Priority: optional
-Description: Command-line interface for the IdleScreen daemon
- CLI for controlling the Idle daemon over D-Bus (command: idlescreen).
-
-Package: idle-cli
-Version: 2.5.4-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 1934
-Depends: idle-daemon, libc6
-Filename: pool/main/idle-cli_2.5.4-1_amd64.deb
-Size: 714412
-MD5sum: 65afda8c4b3a776dcabed7bc78f1b2ff
-SHA1: c47846c0bc119d8774e007586155fa4ef21c8473
-SHA256: f638f76e3a2ddfb01483aa814ff3d3a06a255e0929df7301df79ead29659ca81
-Section: utils
-Priority: optional
-Description: Command-line interface for the IdleScreen daemon
- CLI for controlling the Idle daemon over D-Bus (command: idlescreen).
-
-Package: idle-cli
-Version: 2.5.6-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 1934
-Depends: idle-daemon, libc6
-Filename: pool/main/idle-cli_2.5.6-1_amd64.deb
-Size: 714684
-MD5sum: 0fe3d1261937b0050253d17e53cef54f
-SHA1: 5ea938d53451010a4b053651f88e007f28574789
-SHA256: 4ecedb3f1461d7fa9090457cff7b16fd48f6b87fa03b8185d05757aceb267503
+Filename: pool/main/idle-cli_3.0.0-1_amd64.deb
+Size: 714184
+MD5sum: 556684fd646217bd881946d706a5b55a
+SHA1: 592940c8c15975566ff2371885aa73d0950c9c38
+SHA256: 590dff3213382acd214828b8b0d7f1837f281c06456001a31ee2072d555366c7
 Section: utils
 Priority: optional
 Description: Command-line interface for the IdleScreen daemon
  CLI for controlling the Idle daemon over D-Bus (command: idlescreen).
 
 Package: idle-cosmic
-Version: 2.2.1-1
+Version: 3.0.0-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 23317
+Installed-Size: 24343
 Depends: idle-daemon, idle-tui, libc6
 Recommends: idle-cli, idle-tui, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
 Enhances: cosmic-session, cosmic-panel
 Conflicts: app-cosmic (<< 2.1.0), idlescreen-applet (<< 2.1.0), trance-applet (<< 2.0.0)
 Replaces: app-cosmic, idlescreen-applet, trance-applet, idlescreen-cosmic
 Provides: app-cosmic, idlescreen-applet, trance-applet, idlescreen-cosmic
-Filename: pool/main/idle-cosmic_2.2.1-1_amd64.deb
-Size: 6136396
-MD5sum: 75f1281a674b8facdb9a0991e5ea576b
-SHA1: 1b991475229eb6b4380bf227fb6414f8a5fabf62
-SHA256: b76d02d48e1a7d97925ef01fe2f28a807a14d3af31489b5ffa8b4e93181b14a8
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/idle-cosmic
-Description: IdleScreen for COSMIC — product package (applet + pulls daemon and
- recommended savers)
- IdleScreen product for COSMIC Desktop.
- Installs the COSMIC panel applet and depends on idle-daemon.
-
-Package: idle-cosmic
-Version: 2.2.2-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 23318
-Depends: idle-daemon, idle-tui, libc6
-Recommends: idle-cli, idle-tui, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
-Enhances: cosmic-session, cosmic-panel
-Conflicts: app-cosmic (<< 2.1.0), idlescreen-applet (<< 2.1.0), trance-applet (<< 2.0.0)
-Replaces: app-cosmic, idlescreen-applet, trance-applet, idlescreen-cosmic
-Provides: app-cosmic, idlescreen-applet, trance-applet, idlescreen-cosmic
-Filename: pool/main/idle-cosmic_2.2.2-1_amd64.deb
-Size: 6136788
-MD5sum: 1a0ed498c2011b21d383b01cb9fa0385
-SHA1: 7d16b1f4939b28ab8e7239aed3662de7c10fe076
-SHA256: 99807c4c7ccde35cd10092e92e5b6305132fafbacdd59fa605df2b98ba6dae47
+Filename: pool/main/idle-cosmic_3.0.0-1_amd64.deb
+Size: 6333204
+MD5sum: 33d487df732e78c8e8afa01d5e2cfbfe
+SHA1: 3ba228a9777f665e7749b86029c3ed64df446726
+SHA256: afe45bf64a6be9b4fcd9ea57d811e52e2b6e85424d1f9bca78f23cd732afc523
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idle-cosmic
@@ -127,364 +39,188 @@ Description: IdleScreen for COSMIC — product package (applet + pulls daemon an
  Installs the COSMIC panel applet and depends on idle-daemon.
 
 Package: idle-daemon
-Version: 2.5.1-1
+Version: 3.0.0-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 10975
+Installed-Size: 11160
 Depends: dbus, fonts-dejavu-core, idle-cli, libc6
 Recommends: idle-cli, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
 Suggests: idle-cosmic
-Filename: pool/main/idle-daemon_2.5.1-1_amd64.deb
-Size: 2110436
-MD5sum: 67eaefe36c0169916b98404c124d258a
-SHA1: d89915a75cd89a38af7a3084d919eb6555155d58
-SHA256: b562fa63e6f44e3fb45e5be90dab1cc67d6a5f1891eaefa5cedc69b003096e05
-Section: utils
-Priority: optional
-Description: IdleScreen background idle daemon (Wayland screensaver host)
- IdleScreen background idle monitoring and screensaver host for Wayland.
-
-Package: idle-daemon
-Version: 2.5.10-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 11016
-Depends: dbus, fonts-dejavu-core, idle-cli, libc6
-Recommends: idle-cli, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
-Suggests: idle-cosmic
-Filename: pool/main/idle-daemon_2.5.10-1_amd64.deb
-Size: 2130772
-MD5sum: 13a59748f6ed60795c77dba9112e3fa5
-SHA1: 9c17c4c7f7c4120d8c236e944ab0c57e3a404a06
-SHA256: 48d6e90eb32dce6b3374b868c62ef2a5b62367c92435f76fa76637bc7070c02f
-Section: utils
-Priority: optional
-Description: IdleScreen background idle daemon (Wayland screensaver host)
- IdleScreen background idle monitoring and screensaver host for Wayland.
-
-Package: idle-daemon
-Version: 2.5.11-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 11016
-Depends: dbus, fonts-dejavu-core, idle-cli, libc6
-Recommends: idle-cli, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
-Suggests: idle-cosmic
-Filename: pool/main/idle-daemon_2.5.11-1_amd64.deb
-Size: 1951608
-MD5sum: 077d5159e8ce75327204f0bf56ee15ef
-SHA1: edfaceac7887edfdb7dc4aeb8e3199ce1d5da332
-SHA256: 92d42b95dab5ae6e471241f43ba753cf52e94bff3ae127df1e6276a3df4302be
-Section: utils
-Priority: optional
-Description: IdleScreen background idle daemon (Wayland screensaver host)
- IdleScreen background idle monitoring and screensaver host for Wayland.
-
-Package: idle-daemon
-Version: 2.5.12-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 11048
-Depends: dbus, fonts-dejavu-core, idle-cli, libc6
-Recommends: idle-cli, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
-Suggests: idle-cosmic
-Filename: pool/main/idle-daemon_2.5.12-1_amd64.deb
-Size: 2145448
-MD5sum: 5de48c5edbefbc665ad8f4ff874e6b50
-SHA1: 976fdd191d948b9371177ca0a338899a769aad36
-SHA256: 3eab29ebf4955a487487ead1d3fd1b45f7b75abd2ad9203ba28ee399fd9feeff
-Section: utils
-Priority: optional
-Description: IdleScreen background idle daemon (Wayland screensaver host)
- IdleScreen background idle monitoring and screensaver host for Wayland.
-
-Package: idle-daemon
-Version: 2.5.2-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 10975
-Depends: dbus, fonts-dejavu-core, idle-cli, libc6
-Recommends: idle-cli, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
-Suggests: idle-cosmic
-Filename: pool/main/idle-daemon_2.5.2-1_amd64.deb
-Size: 2097272
-MD5sum: 73ab5d5c8f57dd42e117db4fc0f35470
-SHA1: 9fb406a40676a11f4efca3a49f01753368431470
-SHA256: 2fc4933dcb67e6add81e254a103de0db56eced5ee516e914e59795193901317d
-Section: utils
-Priority: optional
-Description: IdleScreen background idle daemon (Wayland screensaver host)
- IdleScreen background idle monitoring and screensaver host for Wayland.
-
-Package: idle-daemon
-Version: 2.5.3-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 10975
-Depends: dbus, fonts-dejavu-core, idle-cli, libc6
-Recommends: idle-cli, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
-Suggests: idle-cosmic
-Filename: pool/main/idle-daemon_2.5.3-1_amd64.deb
-Size: 2093496
-MD5sum: 37b488a7d1649ba00630514635cdaebb
-SHA1: bbbc49ac502c6f1ff35f0755d929775748440627
-SHA256: 874e3ebb4b443a60b0d244ad65880afefb6e342116f99a2adf72efcf53f4cf03
-Section: utils
-Priority: optional
-Description: IdleScreen background idle daemon (Wayland screensaver host)
- IdleScreen background idle monitoring and screensaver host for Wayland.
-
-Package: idle-daemon
-Version: 2.5.4-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 10976
-Depends: dbus, fonts-dejavu-core, idle-cli, libc6
-Recommends: idle-cli, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
-Suggests: idle-cosmic
-Filename: pool/main/idle-daemon_2.5.4-1_amd64.deb
-Size: 2110292
-MD5sum: b345426b7e247607d61827d0cc0ab80a
-SHA1: ebe43c88766330f02af5c46fe7beff47ed8abc68
-SHA256: 8b90df4b0bc8306dda1fe7e94b0818f87d8ebd46d27a3c6d96bc705a1b2b0e89
-Section: utils
-Priority: optional
-Description: IdleScreen background idle daemon (Wayland screensaver host)
- IdleScreen background idle monitoring and screensaver host for Wayland.
-
-Package: idle-daemon
-Version: 2.5.5-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 11000
-Depends: dbus, fonts-dejavu-core, idle-cli, libc6
-Recommends: idle-cli, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
-Suggests: idle-cosmic
-Filename: pool/main/idle-daemon_2.5.5-1_amd64.deb
-Size: 1944208
-MD5sum: 47c5387745396d5f7556cf17383d5349
-SHA1: 70a4e8584cac86645ddde9c200313896164c32e2
-SHA256: 98097c95ecf8a59d890b86f1889613b2a4d6c034a44171e6019f8956a070600c
-Section: utils
-Priority: optional
-Description: IdleScreen background idle daemon (Wayland screensaver host)
- IdleScreen background idle monitoring and screensaver host for Wayland.
-
-Package: idle-daemon
-Version: 2.5.6-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 11000
-Depends: dbus, fonts-dejavu-core, idle-cli, libc6
-Recommends: idle-cli, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
-Suggests: idle-cosmic
-Filename: pool/main/idle-daemon_2.5.6-1_amd64.deb
-Size: 2127656
-MD5sum: aa5343431eef4c6785ad02da9f6f7de9
-SHA1: bedfc968ddabd6c878651f03e915880d0c1579f9
-SHA256: 1c32a3d23c564de70a1a8e61278ffd510a45e470f6ab3148c3328232a8212136
+Filename: pool/main/idle-daemon_3.0.0-1_amd64.deb
+Size: 2066936
+MD5sum: cc0557a1f4f137a6914a5898cf6b79e7
+SHA1: 261aab7cb5ea05b8d96a93ff44a5fd61dcec6a1d
+SHA256: 7ac3f97f7327c99984213f769c80aa4bc25287db64ca79c86243506c2a8150c5
 Section: utils
 Priority: optional
 Description: IdleScreen background idle daemon (Wayland screensaver host)
  IdleScreen background idle monitoring and screensaver host for Wayland.
 
 Package: idle-saver-beams
-Version: 2.0.2-1
+Version: 2.0.3-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 401
+Installed-Size: 409
 Depends: libc6
-Conflicts: trance-plugin-beams (<< 2.0.0)
-Replaces: trance-plugin-beams
-Provides: trance-plugin-beams
-Filename: pool/main/idle-saver-beams_2.0.2-1_amd64.deb
-Size: 178912
-MD5sum: 9d124ba8947b36afa747eed88b112bf3
-SHA1: e2ee4445ae6298fff6254933f869bc59007e26a7
-SHA256: 09bcca851b581915409c9842061bd0c762ba858478ff3fb73a2bfe6afd229048
+Filename: pool/main/idle-saver-beams_2.0.3-1_amd64.deb
+Size: 181140
+MD5sum: 6b34c9499c8ebb942191322756fb97e6
+SHA1: f38fe64e5bed76623514b10c6fe95c0e1cc4ed80
+SHA256: a0bd009659df17773b2fde9413b1f277dbebd29a221b1ebfe85889cbfeeff14d
 Section: utils
 Priority: optional
 Description: Spotlight cones sweeping a rising dust starfield
- Spotlight cones sweeping a rising dust starfield. Official IdleScreen (Trance)
+ Spotlight cones sweeping a rising dust starfield. Official IdleScreen
  screensaver plugin.
 
 Package: idle-saver-bursts
-Version: 2.0.2-1
+Version: 2.0.3-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 415
+Installed-Size: 422
 Depends: libc6
-Conflicts: trance-plugin-bursts (<< 2.0.0)
-Replaces: trance-plugin-bursts
-Provides: trance-plugin-bursts
-Filename: pool/main/idle-saver-bursts_2.0.2-1_amd64.deb
-Size: 193796
-MD5sum: fb1e44ba4419d29d8ee4b22861edda03
-SHA1: 3b2d05e37fe0c8fc14b2c4147180cad0a42f8749
-SHA256: 68c703036abba8edb402d96fd67880e47eebdc5f43ac74e6986b719873dd8bd5
+Filename: pool/main/idle-saver-bursts_2.0.3-1_amd64.deb
+Size: 196076
+MD5sum: 6203564f90a250caa99862ca33aa5825
+SHA1: 1076f29109f918268a5c81480a5e51e71a26a5c2
+SHA256: 6e3e3e883c091668d3bcf94dc1ac7ba70992ce9ec1ea27c0c495e50dadb51fde
 Section: utils
 Priority: optional
 Description: City skyline fireworks particle show
- City skyline fireworks particle show. Official IdleScreen (Trance) screensaver
- plugin.
+ City skyline fireworks particle show. Official IdleScreen screensaver plugin.
 
 Package: idle-saver-chaos
-Version: 2.0.2-1
+Version: 2.0.3-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 402
+Installed-Size: 409
 Depends: libc6
-Conflicts: trance-plugin-chaos (<< 2.0.0)
-Replaces: trance-plugin-chaos
-Provides: trance-plugin-chaos
-Filename: pool/main/idle-saver-chaos_2.0.2-1_amd64.deb
-Size: 180952
-MD5sum: d1f945245b964feebca7c057d3489cdc
-SHA1: fd9f4e70f45249204277fd62c0eb79c8e8d8f608
-SHA256: 9aad25d3b107262a0d6821ea726c7801a55d1c763e2d036baf589da7d36751fa
+Filename: pool/main/idle-saver-chaos_2.0.3-1_amd64.deb
+Size: 183204
+MD5sum: 88852959d2e4cf8d3214e7f886799a3b
+SHA1: 7d7d472b3537bb700bdbd329a317f4017dffbe48
+SHA256: 1f2a48191dc4b0d19b9de801bb37c4b8b868296d504c2862b12041d960a64550
 Section: utils
 Priority: optional
 Description: Chromatic-aberration system logo glitch
- Chromatic-aberration system logo glitch. Official IdleScreen (Trance)
- screensaver plugin.
+ Chromatic-aberration system logo glitch. Official IdleScreen screensaver
+ plugin.
 
 Package: idle-saver-cosmos
-Version: 2.0.2-1
+Version: 2.0.3-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 416
+Installed-Size: 423
 Depends: libc6
-Conflicts: trance-plugin-cosmos (<< 2.0.0)
-Replaces: trance-plugin-cosmos
-Provides: trance-plugin-cosmos
-Filename: pool/main/idle-saver-cosmos_2.0.2-1_amd64.deb
-Size: 185700
-MD5sum: bf2b33691f07ee849363c8993c17bfea
-SHA1: 3c9bde9df8621f82c8993ac6c444a648fb6e90a4
-SHA256: 913491d5d520f1e801c2c77582fa1b8f5b82b9adeb0b5dcddacbf751d43ea417
+Filename: pool/main/idle-saver-cosmos_2.0.3-1_amd64.deb
+Size: 188076
+MD5sum: 24b67177784ca2dcea35a96e9b525034
+SHA1: bff1782529470ce3f546655baaef8f4de951bd11
+SHA256: 49929094e622c297022bf9cbfc1d35aaf68bf1bfa637d0e50cdd175d2455991f
 Section: utils
 Priority: optional
 Description: Accretion disk to collapsed singularity lifecycle
- Accretion disk to collapsed singularity lifecycle. Official IdleScreen (Trance)
+ Accretion disk to collapsed singularity lifecycle. Official IdleScreen
  screensaver plugin.
 
 Package: idle-saver-glyphs
-Version: 2.0.2-1
+Version: 2.0.3-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 379
+Installed-Size: 386
 Depends: libc6
-Conflicts: trance-plugin-glyphs (<< 2.0.0)
-Replaces: trance-plugin-glyphs
-Provides: trance-plugin-glyphs
-Filename: pool/main/idle-saver-glyphs_2.0.2-1_amd64.deb
-Size: 168876
-MD5sum: a8f25ce45ad795ac3988e94af93b4191
-SHA1: 4d09a009ce42e53509ce58411fe72a5c24d828c9
-SHA256: dc175198252e2aed3d5aff464bfe5d738284c44f0122381ad41d9911a662b741
+Filename: pool/main/idle-saver-glyphs_2.0.3-1_amd64.deb
+Size: 171188
+MD5sum: 3cd410889162a4ee44eb7944cf4463fa
+SHA1: 457c5a6e357b10ad1c04f045fc2a482bf1444c87
+SHA256: 9f16346c2964f0c68536d42e3667df70460501c1a1dd33543e369690265ddb2d
 Section: utils
 Priority: optional
 Description: Matrix-style rain with live system information
- Matrix-style rain with live system information. Official IdleScreen (Trance)
- screensaver plugin.
+ Matrix-style rain with live system information. Official IdleScreen screensaver
+ plugin.
 
 Package: idle-saver-gnats
-Version: 2.0.2-1
+Version: 2.0.3-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 411
+Installed-Size: 419
 Depends: libc6
-Conflicts: trance-plugin-gnats (<< 2.0.0)
-Replaces: trance-plugin-gnats
-Provides: trance-plugin-gnats
-Filename: pool/main/idle-saver-gnats_2.0.2-1_amd64.deb
-Size: 192880
-MD5sum: c82929f19d34f34fd24d3454ec372a8c
-SHA1: d9f8f273b9905e48f345f597ed492b47bd38ec63
-SHA256: e8def00dcdb2ad9b779db6036d6c21ae1a224f2ecef96365d1485d9fd747467f
+Filename: pool/main/idle-saver-gnats_2.0.3-1_amd64.deb
+Size: 195152
+MD5sum: 7e168ac7543f2b0745bcba3b8794afff
+SHA1: 982a312217bd3cec4e027f0e013c276f85463b1a
+SHA256: 855f79e670cce1ef2cd8dcf4cfd2264696a5ad1c3ac31f80abaf64a8de515bd8
 Section: utils
 Priority: optional
 Description: Predator-prey firefly swarm
- Predator-prey firefly swarm. Official IdleScreen (Trance) screensaver plugin.
+ Predator-prey firefly swarm. Official IdleScreen screensaver plugin.
 
 Package: idle-saver-hearth
-Version: 2.0.2-1
+Version: 2.0.3-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
 Installed-Size: 361
 Depends: libc6
-Conflicts: trance-plugin-hearth (<< 2.0.0)
-Replaces: trance-plugin-hearth
-Provides: trance-plugin-hearth
-Filename: pool/main/idle-saver-hearth_2.0.2-1_amd64.deb
-Size: 154160
-MD5sum: 4825fb9cc74016bdf358f55a027f03a6
-SHA1: b4c8bd35d7f36c7d57aa61d7c6cdb6bc25e339c7
-SHA256: 77d4ae281a753c1c2ec90fbe3cc668acffd577756ec11c2a4d6fba0e124594f8
+Filename: pool/main/idle-saver-hearth_2.0.3-1_amd64.deb
+Size: 154084
+MD5sum: 91fa4be3e8c17d642303c7cb21cd7c86
+SHA1: db1c6aca9e8e268af7ad81bd24aa880654ab9e91
+SHA256: 508c30afec80ee77fe367c9ae2a4b9e16da666d5e93010d5a7c76d49e2160ae2
 Section: utils
 Priority: optional
 Description: Cozy fireplace: rising embers, log glow, heat shimmer
  Cozy fireplace with rising embers and heat shimmer. Official IdleScreen
- (Trance) screensaver plugin.
+ screensaver plugin.
 
 Package: idle-saver-radar
-Version: 2.0.2-1
+Version: 2.0.3-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 379
+Installed-Size: 380
 Depends: libc6
-Conflicts: trance-plugin-radar (<< 2.0.0)
-Replaces: trance-plugin-radar
-Provides: trance-plugin-radar
-Filename: pool/main/idle-saver-radar_2.0.2-1_amd64.deb
-Size: 170776
-MD5sum: 304a463545900fcd05fe474caa7261a4
-SHA1: a9aafbb1584aafbe5c6bd758e0a4f4f074bb6494
-SHA256: c180f30a286f908a06b7606bc60d457bddd53c2af43da5b2b94b887b8bbf71aa
+Filename: pool/main/idle-saver-radar_2.0.3-1_amd64.deb
+Size: 170764
+MD5sum: 72707c204a379d9e22e1e25963874cfd
+SHA1: d06fc69b11426d53d7123753c9d63801c3986d3c
+SHA256: 2dc2fc322d8d5833454c994b2ec24ba83fee326bd585027ed53c130a99693dbc
 Section: utils
 Priority: optional
 Description: Retro CRT tactical radar sweep
- Retro CRT tactical radar sweep. Official IdleScreen (Trance) screensaver
- plugin.
+ Retro CRT tactical radar sweep. Official IdleScreen screensaver plugin.
 
 Package: idle-saver-ripple
-Version: 2.0.2-1
+Version: 2.0.3-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 372
+Installed-Size: 380
 Depends: libc6
-Conflicts: trance-plugin-ripple (<< 2.0.0)
-Replaces: trance-plugin-ripple
-Provides: trance-plugin-ripple
-Filename: pool/main/idle-saver-ripple_2.0.2-1_amd64.deb
-Size: 158268
-MD5sum: b15155234b5c71987df29d334dba2f16
-SHA1: 617b56e9a53e83c72fb6cb24566a1a52782fd7d3
-SHA256: 5e367d431a50edf8006ca6e93276e13f985c90acacce0e1707c0acdc03718ebf
+Filename: pool/main/idle-saver-ripple_2.0.3-1_amd64.deb
+Size: 160496
+MD5sum: 09e3cd096220582b7cc23105f91213ff
+SHA1: 95f08e45fdc7668e6bc2d5730b98bca70cd47519
+SHA256: 9472ff5bf2ed3e0718eae0d10a2c06328c2abd6e9a8b45dfa2ec8a8380aae379
 Section: utils
 Priority: optional
 Description: Rain on a still pond: expanding rings and soft drizzle
- Rain on a still pond with expanding rings. Official IdleScreen (Trance)
- screensaver plugin.
+ Rain on a still pond with expanding rings. Official IdleScreen screensaver
+ plugin.
 
 Package: idle-saver-storm
-Version: 2.0.2-1
+Version: 2.0.3-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 439
+Installed-Size: 447
 Depends: libc6
-Conflicts: trance-plugin-storm (<< 2.0.0)
-Replaces: trance-plugin-storm
-Provides: trance-plugin-storm
-Filename: pool/main/idle-saver-storm_2.0.2-1_amd64.deb
-Size: 195160
-MD5sum: 7db30b04fb36db3a3067b56c5fd03bd8
-SHA1: b57aea6d8812f54209db64bd170dbb9a5a0c1463
-SHA256: f9424d18091403824ca66a1c5fc139613075e149ce1ef291ac5db94eca9306e6
+Filename: pool/main/idle-saver-storm_2.0.3-1_amd64.deb
+Size: 197456
+MD5sum: 224f027963da645c6d026cbab89de19b
+SHA1: 17505cb38f2cf514ce5941c330ba8ce1ce37f7f7
+SHA256: 693f12d4216895fbdba222027e65e6ac2564c387ea7e7d49890e782df9cb837b
 Section: utils
 Priority: optional
 Description: Forest rain, lightning, and wildlife silhouettes
- Forest rain, lightning, and wildlife silhouettes. Official IdleScreen (Trance)
+ Forest rain, lightning, and wildlife silhouettes. Official IdleScreen
  screensaver plugin.
 
 Package: idle-savers
@@ -508,38 +244,35 @@ Description: Meta package that hard-depends on all official IdleScreen saver plu
  idle-cosmic (not installed alone by end users).
 
 Package: idle-studio
-Version: 0.3.3-1
+Version: 1.0.0-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 1844
-Depends: libc6, render
-Recommends: idle-savers, ffmpeg
-Filename: pool/main/idle-studio_0.3.3-1_amd64.deb
-Size: 568792
-MD5sum: bbfca463bd4bf355e3ba4188867b22c4
-SHA1: 7d05c94dde910056bf52689d1545e3cd33266b5a
-SHA256: 4086412fecba9b5b1dcbfb2fd05d16ff5695f18e090adc8b3f5ad03485592577
+Installed-Size: 1381
+Filename: pool/main/idle-studio_1.0.0-1_amd64.deb
+Size: 488728
+MD5sum: 23e7af64bac7d803bc0e52b043cfd08a
+SHA1: 8f222445e61326e47bbba5d4e227967b296ef896
+SHA256: 9b68ccd32242d2fad095b925ea056cf71b37a6de890bb462c57130e6aa70a3d0
 Section: utils
 Priority: optional
-Homepage: https://github.com/idlescreen/render
-Description: IdleScreen Studio — UI that drives the render capability
- IdleScreen Studio (TUI Director) — queues offline jobs for the render
- capability.
+Homepage: https://github.com/idlescreen/idle-studio
+Description: IdleScreen Director — queue offline render jobs (CLI + TUI)
+ IdleScreen Director UI for offline video renders.
 
 Package: idle-tui
-Version: 2.3.1-1
+Version: 3.0.0-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 3510
+Installed-Size: 4000
 Depends: idle-daemon, libc6
 Conflicts: app-tui (<< 2.1.0), idlescreen-tui (<< 2.1.0), trance-tui (<< 2.0.0)
 Replaces: app-tui, idlescreen-tui, trance-tui
 Provides: app-tui, idlescreen-tui, trance-tui
-Filename: pool/main/idle-tui_2.3.1-1_amd64.deb
-Size: 1015752
-MD5sum: faa584a1e73eb96ad6b5853551826424
-SHA1: 78c3a359e6537c214311698a0b8821082a152a0b
-SHA256: b0e5556c2901bf0f6a63a2d9ce6b99f8d5332f42bf6372a6bf94df30dfa92558
+Filename: pool/main/idle-tui_3.0.0-1_amd64.deb
+Size: 1183772
+MD5sum: b904b6d758b5f5149f3bf16a7f750889
+SHA1: 3b185558f15561a15dea4d8c576ed0d16e3aa6c6
+SHA256: d4aa4ac68e99cb0e48f30ad0850d1cede069c84753ab1a79556bffc177727ed4
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idle-tui
@@ -547,79 +280,17 @@ Description: Optional TUI client for IdleScreen (idle-tui)
  Optional live TUI controller for IdleScreen.
 
 Package: idlescreen
-Version: 2.5.0-1
-Architecture: all
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Depends: idle-daemon (>= 2.5.0), idle-cli (>= 2.5.0), idle-savers, idle-tui (>= 2.3.0)
-Recommends: idle-cosmic (>= 2.2.0)
-Filename: pool/main/idlescreen_2.5.0-1_all.deb
-Size: 792
-MD5sum: 4646b3913f69838d9f1cf1c29e42a2f8
-SHA1: ca73bd1f5dbd38fc2035a2c9ee054073a6209f53
-SHA256: 995df5b5b6ccea4a5248cdb12c78cad880c2bd3c7ab7f6b04c9f82cb6d2c1172
-Section: utils
-Priority: optional
-Description: IdleScreen product metapackage
- Modular host stack for Wayland ambient screensavers.
-
-Package: idlescreen
-Version: 2.6.0-1
+Version: 3.0.0-1
 Architecture: all
 Maintainer: IdleScreen <jerydleuck@gmail.com>
 Installed-Size: 16
-Depends: idle-daemon (>= 2.5.0), idle-cli (>= 2.5.0), idle-savers, idle-tui (>= 2.3.0)
-Recommends: idle-cosmic (>= 2.2.0)
-Filename: pool/main/idlescreen_2.6.0-1_all.deb
-Size: 2552
-MD5sum: 704751fb99024512ef838ea98e1b9d0b
-SHA1: 77327621e82afdc35be1101f6a02a1ab20bb81d4
-SHA256: 3fe43523e15b182cb951213054b17e875d59bbdeb07f48899121caea76f5222a
-Description: IdleScreen product metapackage for Wayland screensavers
- Installs the modular host stack: idle-daemon, idle-cli, idle-savers, idle-tui.
- On COSMIC Desktop, install idle-cosmic as well (or use install.sh which detects DE).
- .
- Removing this package also removes the product stack the installer seated
- (modules, official savers, idle-cosmic) and the APT source list drop-in.
- User config under ~/.config/idle is left in place.
- .
- Install:  sudo dnf install idlescreen   /   sudo apt install idlescreen
- Remove:   sudo dnf remove idlescreen    /   sudo apt remove idlescreen
-
-Package: idlescreen
-Version: 2.6.1-1
-Architecture: all
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 16
-Depends: idle-daemon (>= 2.5.0), idle-cli (>= 2.5.0), idle-savers, idle-tui (>= 2.3.0)
-Recommends: idle-cosmic (>= 2.2.0)
-Filename: pool/main/idlescreen_2.6.1-1_all.deb
-Size: 3012
-MD5sum: 50c9aeefc18ee612e545261d86703f42
-SHA1: b72def923acaf67c1a939b0d770f6ca12597c0e5
-SHA256: 6080495b058376ceb1850377a98a911a61c09518c2edc9398f7708d2645dcaad
-Description: IdleScreen product metapackage for Wayland screensavers
- Installs the modular host stack: idle-daemon, idle-cli, idle-savers, idle-tui.
- On COSMIC Desktop, install idle-cosmic as well (or use install.sh which detects DE).
- .
- Removing this package also removes the product stack the installer seated
- (modules, official savers, idle-cosmic) and the APT source list drop-in.
- User config under ~/.config/idle is left in place.
- .
- Install:  sudo dnf install idlescreen   /   sudo apt install idlescreen
- Remove:   sudo dnf remove idlescreen    /   sudo apt remove idlescreen
-
-Package: idlescreen
-Version: 2.6.1-1
-Architecture: all
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 16
-Depends: idle-daemon (>= 2.5.0), idle-cli (>= 2.5.0), idle-savers, idle-tui (>= 2.3.0)
-Recommends: idle-cosmic (>= 2.2.0)
-Filename: pool/main/idlescreen_2.6.2-1_all.deb
-Size: 3012
-MD5sum: c805d496700ce9ea8a1e196e8965bb00
-SHA1: e4d7a8c8483f4b4614edd7a29a77db76953659c6
-SHA256: 9e3acf6982009854ba137ffd0367dc0dac98c2d2868a6c404ff2a9d68d0ee7d2
+Depends: idle-daemon (>= 3.0.0), idle-cli (>= 3.0.0), idle-savers, idle-tui (>= 3.0.0)
+Recommends: idle-cosmic (>= 3.0.0)
+Filename: pool/main/idlescreen_3.0.0-1_all.deb
+Size: 3004
+MD5sum: 1798a89c76b7cdba75bff61e80582c04
+SHA1: 67e01df298783e4d6167daada153f191188cbd6b
+SHA256: 78dcc383aefa1a0c5bc27237143bf880df286e55be40928deee7bfff222bc823
 Description: IdleScreen product metapackage for Wayland screensavers
  Installs the modular host stack: idle-daemon, idle-cli, idle-savers, idle-tui.
  On COSMIC Desktop, install idle-cosmic as well (or use install.sh which detects DE).
@@ -652,35 +323,17 @@ Description: IdleScreen Studio product metapackage (offline render Director)
  Removing this package also removes idle-studio and render.
 
 Package: render
-Version: 0.3.2-1
+Version: 1.0.0-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 20413
-Depends: ffmpeg, libc6
-Recommends: idle-savers
-Filename: pool/main/render_0.3.2-1_amd64.deb
-Size: 5031520
-MD5sum: bca2566f0e87eca0d7eaca0cfa6a35ea
-SHA1: 3168fc79aa0707f969a8a4c50faafc60fde50306
-SHA256: 9a95c323d046f7d679d1f91c3bcedfb1c31a3d2b290ff843bf4353de30c3ff46
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/render
-Description: IdleScreen offline export capability — simulation to AV1 video
- Offline IdleScreen effect renderer (saver math → AV1 via ffmpeg).
-
-Package: render
-Version: 0.3.3-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 20413
+Installed-Size: 21642
 Depends: ffmpeg | ffmpeg-free | ffmpeg-full, libc6
 Recommends: idle-savers
-Filename: pool/main/render_0.3.3-1_amd64.deb
-Size: 5031532
-MD5sum: 1b22b1347c7cad3d4a35f53a888fbf56
-SHA1: 534be2abe3e1db170e5bd203f27074f332f4ecca
-SHA256: 05a3f1721f1da97f71cedbd8d817baeb49835fa22ac13036e18b02c0bd32480d
+Filename: pool/main/render_1.0.0-1_amd64.deb
+Size: 5116092
+MD5sum: ca9278cb9c28d3e0102aacf0bb8c331c
+SHA1: 17b03e9e1bf35abdfa06a1bb6a7388cdfd0c96fd
+SHA256: f00aa080de893ea2d733fcc8178a70522b6dce5416c0ad2cd2c65b5bfec41ff4
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/render

@@ -11,12 +11,14 @@
 
 set -eu
 
+REPO_BASE="${IDLESCREEN_REPO_BASE:-https://idlescreen.github.io/packages}"
+MODULES="ui.sh detect.sh repo.sh install_core.sh post_install.sh"
+
 # Handle `--verify` before sourcing anything else so the user can run it
 # even if the helper files are missing.
 case "${1:-}" in
     --verify|-V|verify)
         _script_path="$0"
-        # shellcheck disable=SC2046
         if command -v sha256sum >/dev/null 2>&1; then
             _hash_cmd="sha256sum"
         elif command -v shasum >/dev/null 2>&1; then
@@ -26,13 +28,18 @@ case "${1:-}" in
             exit 1
         fi
         echo "=== SHA-256 of installer files ==="
+        _dir="$(cd "$(dirname "$_script_path")" 2>/dev/null && pwd || echo .)"
         for _f in "$_script_path" \
-                  "$(cd "$(dirname "$_script_path")" 2>/dev/null && pwd || echo .)/ui.sh" \
-                  "$(cd "$(dirname "$_script_path")" 2>/dev/null && pwd || echo .)/detect.sh" \
-                  "$(cd "$(dirname "$_script_path")" 2>/dev/null && pwd || echo .)/repo.sh" \
-                  "$(cd "$(dirname "$_script_path")" 2>/dev/null && pwd || echo .)/install_core.sh" \
-                  "$(cd "$(dirname "$_script_path")" 2>/dev/null && pwd || echo .)/post_install.sh"; do
-            [ -f "$_f" ] && $_hash_cmd "$_f" 2>/dev/null || echo "  (missing) $_f"
+                  "$_dir/ui.sh" \
+                  "$_dir/detect.sh" \
+                  "$_dir/repo.sh" \
+                  "$_dir/install_core.sh" \
+                  "$_dir/post_install.sh"; do
+            if [ -f "$_f" ]; then
+                $_hash_cmd "$_f" 2>/dev/null
+            else
+                echo "  (missing) $_f"
+            fi
         done
         echo ""
         echo "Compare these hashes against an out-of-band published copy"
@@ -41,14 +48,39 @@ case "${1:-}" in
         ;;
 esac
 
-# To allow local running vs remote, we need to load modules.
-# When run locally via curl | sh, these files won't be present unless we download them.
-# We will source relative to this script if possible.
+# Resolve module directory: local checkout, or bootstrap from REPO_BASE (curl|sh).
 SCRIPT_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd || echo ".")"
+BOOTSTRAP_TMP=""
+cleanup_bootstrap() {
+    if [ -n "$BOOTSTRAP_TMP" ] && [ -d "$BOOTSTRAP_TMP" ]; then
+        rm -rf "$BOOTSTRAP_TMP"
+    fi
+}
+trap cleanup_bootstrap EXIT INT TERM
+
+if [ ! -f "$SCRIPT_DIR/ui.sh" ]; then
+    if ! command -v curl >/dev/null 2>&1; then
+        echo "install: ui.sh missing and curl not available to bootstrap from $REPO_BASE" >&2
+        exit 1
+    fi
+    BOOTSTRAP_TMP=$(mktemp -d)
+    echo "Bootstrapping installer modules from ${REPO_BASE}…"
+    for f in $MODULES; do
+        curl -fsSL "${REPO_BASE}/${f}" -o "${BOOTSTRAP_TMP}/${f}" \
+            || { echo "install: failed to download ${REPO_BASE}/${f}" >&2; exit 1; }
+    done
+    SCRIPT_DIR="$BOOTSTRAP_TMP"
+fi
+
+# shellcheck disable=SC1090
 . "$SCRIPT_DIR/ui.sh"
+# shellcheck disable=SC1090
 . "$SCRIPT_DIR/detect.sh"
+# shellcheck disable=SC1090
 . "$SCRIPT_DIR/repo.sh"
+# shellcheck disable=SC1090
 . "$SCRIPT_DIR/install_core.sh"
+# shellcheck disable=SC1090
 . "$SCRIPT_DIR/post_install.sh"
 
 main() {

@@ -1,8 +1,8 @@
 Package: idlescreen
-Version: 2.6.1-1
+Version: 3.0.0-1
 Architecture: all
-Depends: idle-daemon (>= 2.5.0), idle-cli (>= 2.5.0), idle-savers, idle-tui (>= 2.3.0)
-Recommends: idle-cosmic (>= 2.2.0)
+Depends: idle-daemon (>= 3.0.0), idle-cli (>= 3.0.0), idle-savers, idle-tui (>= 3.0.0)
+Recommends: idle-cosmic (>= 3.0.0)
 Maintainer: IdleScreen <jerydleuck@gmail.com>
 Description: IdleScreen product metapackage for Wayland screensavers
  Installs the modular host stack: idle-daemon, idle-cli, idle-savers, idle-tui.
