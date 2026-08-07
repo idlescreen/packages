@@ -1,8 +1,8 @@
 // SPDX-License-Identifier: Apache-2.0
 
+use super::constants::{CORE_PACKAGES, COSMIC_EXTRA};
 use crate::compare_versions;
 use std::cmp::Ordering;
-use super::constants::{CORE_PACKAGES, COSMIC_EXTRA};
 
 /// Survey classification for one package (no I/O).
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

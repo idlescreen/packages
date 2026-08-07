@@ -62,8 +62,8 @@ pub fn format_cosmic_line(planned: bool, installed: bool) -> Option<String> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use super::super::constants::DNF_GPG_DISCLAIMER;
+    use super::*;
 
     #[test]
     fn gpg_disclaimer_does_not_claim_repo_signed() {

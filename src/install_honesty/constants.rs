@@ -72,8 +72,8 @@ mod tests {
         for name in scripts {
             let path = dir.join(name);
             if path.exists() {
-                let content = std::fs::read_to_string(&path)
-                    .unwrap_or_else(|_| panic!("read {name}"));
+                let content =
+                    std::fs::read_to_string(&path).unwrap_or_else(|_| panic!("read {name}"));
                 combined.push_str(&content);
                 combined.push('\n');
             }
