@@ -2,24 +2,59 @@
 awaken_daemon() {
     step "[5/5]  Starting the idle user service"
     story_line "Ensuring ${HOME}/.config/idle exists (daemon config dir)…"
-    mkdir -p "${HOME}/.config/idle"
+    mkdir -p "${HOME}/.config/idle" "${HOME}/.config/idlescreen"
+
     story_line "Reloading user systemd units…"
     systemctl --user daemon-reload 2>/dev/null || true
     systemctl --user reset-failed idle-daemon.service 2>/dev/null || true
-    story_line "systemctl --user enable --now idle-daemon.service…"
-    if systemctl --user enable --now idle-daemon.service 2>/dev/null; then
-        :
-    else
-        warn "enable --now returned non-zero (may need a graphical user session)"
+
+    # Always enable so the unit starts with the graphical session next login.
+    story_line "systemctl --user enable idle-daemon.service…"
+    systemctl --user enable idle-daemon.service 2>/dev/null || true
+
+    story_line "systemctl --user start idle-daemon.service…"
+    if ! systemctl --user start idle-daemon.service 2>/dev/null; then
+        warn "start returned non-zero — retrying once…"
+        sleep 0.5
+        systemctl --user reset-failed idle-daemon.service 2>/dev/null || true
+        systemctl --user start idle-daemon.service 2>/dev/null || true
     fi
-    pause 0.4
+
+    # Wait briefly for Type=dbus to claim the bus name.
+    _i=0
+    while [ "$_i" -lt 25 ]; do
+        if systemctl --user is-active --quiet idle-daemon.service 2>/dev/null; then
+            break
+        fi
+        sleep 0.2
+        _i=$((_i + 1))
+    done
+
     if systemctl --user is-active --quiet idle-daemon.service 2>/dev/null; then
         ok "idle-daemon.service is ${GREEN}${BOLD}active${RESET} (user session)"
-    else
-        warn "idle-daemon.service is not active right now."
-        dim "   Packages may still be installed. Start later with:"
-        dim "   systemctl --user enable --now idle-daemon.service"
-        dim "   (requires a logged-in user session with systemd --user)"
+        return 0
+    fi
+
+    # Fallback: direct spawn if unit still dead (unit file race / session quirks).
+    warn "user unit not active — trying direct idle-daemon spawn…"
+    if command -v idle-daemon >/dev/null 2>&1; then
+        idle-daemon daemon >/dev/null 2>&1 &
+        sleep 0.6
+    fi
+
+    if systemctl --user is-active --quiet idle-daemon.service 2>/dev/null \
+        || busctl --user status io.github.idlescreen.Idle >/dev/null 2>&1; then
+        ok "idle-daemon is up (bus/service)"
+        return 0
+    fi
+
+    warn "idle-daemon.service is not active right now."
+    dim "   Packages may still be installed. Start with:"
+    dim "   systemctl --user enable --now idle-daemon.service"
+    dim "   or: idlescreen doctor --fix"
+    dim "   (requires a logged-in user session with systemd --user)"
+    if command -v systemctl >/dev/null 2>&1; then
+        dim "   last status: $(systemctl --user is-active idle-daemon.service 2>&1 || true)"
     fi
 }
 
