@@ -17,6 +17,8 @@ Website: [https://idlescreen.github.io](https://idlescreen.github.io)
 curl -fsSL https://idlescreen.github.io/packages/install.sh | sh
 ```
 
+**Channel honesty:** the one-line installer and Pages index serve **whatever is last published** to this repo’s `master` (GitHub Pages). Development checkouts may contain newer pool NVRs (e.g. product line **3.0.0**) that are **not** public until they are pushed and Pages rebuilds. Local integrity: monorepo `scripts/publish_gate.sh` / `scripts/publish_prep.sh`.
+
 **Studio** (offline Director — separate from the screensaver stack):
 
 ```bash
