@@ -141,17 +141,9 @@ pub fn start_daemon() -> bool {
         "idle-daemon.service",
     ]));
     story_line("systemctl --user enable idle-daemon.service…");
-    let _ = run_status(Command::new("systemctl").args([
-        "--user",
-        "enable",
-        "idle-daemon.service",
-    ]));
+    let _ = run_status(Command::new("systemctl").args(["--user", "enable", "idle-daemon.service"]));
     story_line("systemctl --user start idle-daemon.service…");
-    if !run_status(Command::new("systemctl").args([
-        "--user",
-        "start",
-        "idle-daemon.service",
-    ])) {
+    if !run_status(Command::new("systemctl").args(["--user", "start", "idle-daemon.service"])) {
         warn("start returned non-zero — retrying once…");
         std::thread::sleep(std::time::Duration::from_millis(500));
         let _ = run_status(Command::new("systemctl").args([
@@ -159,17 +151,16 @@ pub fn start_daemon() -> bool {
             "reset-failed",
             "idle-daemon.service",
         ]));
-        let _ = run_status(Command::new("systemctl").args([
-            "--user",
-            "start",
-            "idle-daemon.service",
-        ]));
+        let _ =
+            run_status(Command::new("systemctl").args(["--user", "start", "idle-daemon.service"]));
     }
     // Brief wait for Type=dbus to claim the bus name.
     for _ in 0..25 {
-        let active = run_capture(
-            Command::new("systemctl").args(["--user", "is-active", "idle-daemon.service"]),
-        )
+        let active = run_capture(Command::new("systemctl").args([
+            "--user",
+            "is-active",
+            "idle-daemon.service",
+        ]))
         .map(|s| s == "active")
         .unwrap_or(false);
         if active {
@@ -190,9 +181,11 @@ pub fn start_daemon() -> bool {
         warn("user unit not active — trying direct idle-daemon spawn…");
         let _ = Command::new("idle-daemon").arg("daemon").spawn();
         std::thread::sleep(std::time::Duration::from_millis(600));
-        let active2 = run_capture(
-            Command::new("systemctl").args(["--user", "is-active", "idle-daemon.service"]),
-        )
+        let active2 = run_capture(Command::new("systemctl").args([
+            "--user",
+            "is-active",
+            "idle-daemon.service",
+        ]))
         .map(|s| s == "active")
         .unwrap_or(false);
         if active2 {
