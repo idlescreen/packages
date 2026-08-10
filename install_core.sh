@@ -232,4 +232,9 @@ install_packages() {
         warn "Deploy finished — ${PRESENT_COUNT}/${PLANNED_COUNT} planned package(s) present."
         warn "Missing: ${MISSING_AFTER}"
     fi
+
+    # Record what actually landed on disk, including capability declarations.
+    if command -v audit_installed_plugins >/dev/null 2>&1; then
+        audit_installed_plugins
+    fi
 }

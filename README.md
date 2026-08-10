@@ -182,7 +182,7 @@ idlescreen tui
 
 - [Signing SOP](docs/SIGNING.md) — required before publishing RPMs
 - [Migration guide](docs/MIGRATION.md) — Crateria/Trance → IdleScreen
-- [AGENT.md](AGENT.md) — hardening contract
+- AGENT.md — hardening contract
 
 ## Links
 
