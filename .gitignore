@@ -1,8 +1,26 @@
-/update
+# ==========================================
+# GLOBAL ORG IGNORES (Agent, OS, IDE, Build)
+# ==========================================
+.agents/
+scratch/
+.env
+.env.*
+.envrc
 .DS_Store
 Thumbs.db
-
-# Build outputs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+/target/
 target/
+**/*.rs.bk
+*.pdb
+__pycache__/
+*.pyc
+# ==========================================
+/update
+# Build outputs
 *.deb.bak
 PRUNE_TMPDIR
