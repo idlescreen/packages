@@ -98,13 +98,13 @@ Package: idle-cli
 Version: 3.0.1-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 1942
+Installed-Size: 1939
 Depends: idle-daemon, libc6
 Filename: pool/main/idle-cli_3.0.1-1_amd64.deb
-Size: 714548
-MD5sum: 3d3a2200c6135c457638fb36252f456f
-SHA1: 6b1a239a72dac02ce6a442500ad6454c1967ae95
-SHA256: dd46ba40b0a14cd415ba66c6b7e10c52d830999bbd3e622384d3a59a4992e03f
+Size: 713308
+MD5sum: f8f3b5d0b7135333a3e8fe94d1744ab6
+SHA1: 981f0b73a08f331e6ee79e5926b4b0421cb7d4b5
+SHA256: 5abbcbbd3644b3819ac5319c7ba0c613fdd7bd90d4b2a33622eadcc2bc3ffa54
 Section: utils
 Priority: optional
 Description: Command-line interface for the IdleScreen daemon
@@ -417,6 +417,24 @@ Size: 2096780
 MD5sum: 5331d1a0484a8fca082439f0638a2fc2
 SHA1: a8f46d2cdf9f7f19fe11c052a030330c5bed8359
 SHA256: 355c110cb22da9f42a490abdd2225ff23b3b88a76935cfe917a58edfdff21d9f
+Section: utils
+Priority: optional
+Description: IdleScreen background idle daemon (Wayland screensaver host)
+ IdleScreen background idle monitoring and screensaver host for Wayland.
+
+Package: idle-daemon
+Version: 3.0.3-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 11156
+Depends: dbus, fonts-dejavu-core, idle-cli, libc6
+Recommends: idle-cli, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
+Suggests: idle-cosmic
+Filename: pool/main/idle-daemon_3.0.3-1_amd64.deb
+Size: 1901304
+MD5sum: e599a030c4137fcf0327643abbb9b0fb
+SHA1: e1dd86870b5bc480f2fd99fbcb59570427daee26
+SHA256: b215043f8e946b8c0d8a308ba912a46b9cc5de0a97194e1969c50aad3aaca574
 Section: utils
 Priority: optional
 Description: IdleScreen background idle daemon (Wayland screensaver host)
@@ -1000,6 +1018,29 @@ Size: 3004
 MD5sum: 17d3e3a57f810139ce0463bd632153da
 SHA1: 8b36fbb1d3134bc3cceb838f5919b2217be925c4
 SHA256: 532d06a24edf71f513c2229ad5404dbb36dc7a7f5f63a98d17a3b90d1d4ab21a
+Description: IdleScreen product metapackage for Wayland screensavers
+ Installs the modular host stack: idle-daemon, idle-cli, idle-savers, idle-tui.
+ On COSMIC Desktop, install idle-cosmic as well (or use install.sh which detects DE).
+ .
+ Removing this package also removes the product stack the installer seated
+ (modules, official savers, idle-cosmic) and the APT source list drop-in.
+ User config under ~/.config/idle is left in place.
+ .
+ Install:  sudo dnf install idlescreen   /   sudo apt install idlescreen
+ Remove:   sudo dnf remove idlescreen    /   sudo apt remove idlescreen
+
+Package: idlescreen
+Version: 3.0.3-1
+Architecture: all
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 16
+Depends: idle-daemon (>= 3.0.3), idle-cli (>= 3.0.1), idle-savers, idle-tui (>= 3.0.1)
+Recommends: idle-cosmic (>= 3.0.2)
+Filename: pool/main/idlescreen_3.0.3-1_all.deb
+Size: 3008
+MD5sum: 6b29d8e2b26a39d9ef141438038d4638
+SHA1: 53a890eeaf8f6d634d6188b1b86ae8bc407394c8
+SHA256: d2450a320ea781ff4fea419eea9691432937f1c8631c71b90e75985506913235
 Description: IdleScreen product metapackage for Wayland screensavers
  Installs the modular host stack: idle-daemon, idle-cli, idle-savers, idle-tui.
  On COSMIC Desktop, install idle-cosmic as well (or use install.sh which detects DE).

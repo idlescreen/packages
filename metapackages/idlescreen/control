@@ -1,7 +1,7 @@
 Package: idlescreen
-Version: 3.0.2-1
+Version: 3.0.3-1
 Architecture: all
-Depends: idle-daemon (>= 3.0.2), idle-cli (>= 3.0.1), idle-savers, idle-tui (>= 3.0.1)
+Depends: idle-daemon (>= 3.0.3), idle-cli (>= 3.0.1), idle-savers, idle-tui (>= 3.0.1)
 Recommends: idle-cosmic (>= 3.0.2)
 Maintainer: IdleScreen <jerydleuck@gmail.com>
 Description: IdleScreen product metapackage for Wayland screensavers

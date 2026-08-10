@@ -1,11 +1,11 @@
 Name:           idlescreen
-Version:        3.0.2
+Version:        3.0.3
 Release:        1
 Summary:        IdleScreen product metapackage for Wayland screensavers
 License:        Apache-2.0
 URL:            https://idlescreen.github.io
 BuildArch:      noarch
-Requires:       idle-daemon >= 3.0.2
+Requires:       idle-daemon >= 3.0.3
 Requires:       idle-cli >= 3.0.1
 Requires:       idle-savers
 Requires:       idle-tui >= 3.0.1
@@ -54,6 +54,10 @@ fi
 %{_libexecdir}/idlescreen/schedule-remove-stack
 
 %changelog
+* Mon Aug 10 2026 IdleScreen <jerydleuck@gmail.com> - 3.0.3-1
+- Align metapackage with idle-daemon 3.0.3 (audit-harden release, F-009/F-012 closed)
+- Requires daemon >= 3.0.3; cli/tui >= 3.0.1; recommends cosmic >= 3.0.2
+- Closes F-002 (channel lag): idle-cosmic 3.0.2 + idle-daemon 3.0.3 now seat in GitHub Pages
 * Fri Aug 07 2026 IdleScreen <jerydleuck@gmail.com> - 3.0.2-1
 - Align metapackage with idle-daemon 3.0.2 (D-Bus activation fix)
 - Requires daemon >= 3.0.2; cli/tui >= 3.0.1; recommends cosmic >= 3.0.2

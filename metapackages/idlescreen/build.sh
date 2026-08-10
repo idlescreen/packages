@@ -6,7 +6,7 @@ set -eu
 ROOT=$(CDPATH= cd -- "$(dirname "$0")/../.." && pwd)
 META="$ROOT/metapackages/idlescreen"
 # Single source of truth: DEBIAN/control Version field (must match this build).
-VERSION=3.0.2
+VERSION=3.0.3
 RELEASE=1
 CONTROL_VER=$(awk -F': ' '/^Version:/{print $2; exit}' "$META/control")
 if [ "$CONTROL_VER" != "${VERSION}-${RELEASE}" ]; then
