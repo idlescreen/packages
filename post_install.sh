@@ -99,6 +99,11 @@ awaken_daemon() {
 victory() {
     _pkgs="$1"
     say ""
+    # Idempotent: re-runs re-audit whatever is on disk now, so the JSONL log
+    # records the post-install state even when the deploy phase was a no-op.
+    if command -v audit_installed_plugins >/dev/null 2>&1; then
+        audit_installed_plugins
+    fi
     if [ -z "${MISSING_AFTER:-}" ] && systemctl --user is-active --quiet idle-daemon.service 2>/dev/null; then
         _banner_title="INSTALL FINISHED"
         _banner_note="packages present · daemon active"

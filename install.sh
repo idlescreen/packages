@@ -12,7 +12,7 @@
 set -eu
 
 REPO_BASE="${IDLESCREEN_REPO_BASE:-https://idlescreen.github.io/packages}"
-MODULES="ui.sh detect.sh repo.sh install_core.sh post_install.sh"
+MODULES="ui.sh detect.sh repo.sh install_core.sh install_audit.sh post_install.sh"
 
 # Handle `--verify` before sourcing anything else so the user can run it
 # even if the helper files are missing.
@@ -34,6 +34,7 @@ case "${1:-}" in
                   "$_dir/detect.sh" \
                   "$_dir/repo.sh" \
                   "$_dir/install_core.sh" \
+                  "$_dir/install_audit.sh" \
                   "$_dir/post_install.sh"; do
             if [ -f "$_f" ]; then
                 $_hash_cmd "$_f" 2>/dev/null
@@ -80,6 +81,8 @@ fi
 . "$SCRIPT_DIR/repo.sh"
 # shellcheck disable=SC1090
 . "$SCRIPT_DIR/install_core.sh"
+# shellcheck disable=SC1090
+. "$SCRIPT_DIR/install_audit.sh"
 # shellcheck disable=SC1090
 . "$SCRIPT_DIR/post_install.sh"
 
