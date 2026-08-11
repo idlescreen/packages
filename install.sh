@@ -8,6 +8,15 @@
 # `--verify` prints the SHA-256 of this script plus any sibling files it
 # sources. Compare those hashes against an out-of-band published copy
 # (release notes, signed tag, social, etc.) before piping `sh` to it.
+#
+# `--verify-self <hex>` exits non-zero unless THIS script's SHA-256 matches
+# the expected hex. Use for automated deploys to fail closed on a tampered
+# download. Example:
+#   curl -fsSL https://idlescreen.github.io/packages/install.sh -o install.sh && \
+#       ./install.sh --verify-self 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08 install.sh && \
+#       ./install.sh
+#
+# See TRUST.md for the full trust model and verification procedure.
 
 set -eu
 
@@ -45,6 +54,31 @@ case "${1:-}" in
         echo ""
         echo "Compare these hashes against an out-of-band published copy"
         echo "(GitHub release notes, signed commit, etc.) before running."
+        exit 0
+        ;;
+    --verify-self)
+        # Fail-closed self-check for automated deploys.
+        _expected="${2:-}"
+        _script_path="${3:-${0}}"
+        if [ -z "$_expected" ]; then
+            echo "verify-self: missing expected sha256" >&2
+            echo "usage: $0 --verify-self <hex> [script-path]" >&2
+            exit 2
+        fi
+        if ! command -v sha256sum >/dev/null 2>&1 && ! command -v shasum >/dev/null 2>&1; then
+            echo "verify-self: no sha256sum or shasum on PATH" >&2
+            exit 1
+        fi
+        if command -v sha256sum >/dev/null 2>&1; then
+            _actual=$(sha256sum "$_script_path" 2>/dev/null | awk '{print $1}')
+        else
+            _actual=$(shasum -a 256 "$_script_path" 2>/dev/null | awk '{print $1}')
+        fi
+        if [ "$_actual" != "$_expected" ]; then
+            echo "verify-self: FAIL — expected $_expected, got $_actual" >&2
+            exit 1
+        fi
+        echo "verify-self: OK ($_actual)"
         exit 0
         ;;
 esac
