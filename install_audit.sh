@@ -34,9 +34,30 @@ _audit_json_scalar() {
     case "$1" in
         "") printf 'null' ;;
         true|false) printf '%s' "$1" ;;
-        *[!0-9]*) printf '"%s"' "$(printf '%s' "$1" | sed 's/\\/\\\\/g; s/"/\\"/g')" ;;
+        *[!0-9]*) printf '"%s"' "$(printf '%s' "$1" | _audit_json_escape)" ;;
         *) printf '%s' "$1" ;;
     esac
+}
+
+# JSON-escape a string per RFC 8259 §7: backslash, double-quote, and
+# all control characters (U+0000..=U+001F). Newlines and tabs in a
+# plugin_id / plugin_version would break the audit log JSONL; this
+# keeps the format valid even if a malicious manifest sneaks past the
+# manifest gate.
+#
+# Implementation: sed first escapes backslash + double-quote. Then
+# `tr` rewrites each literal control char to a sentinel letter
+# (b/f/n/r/t). Then sed adds the backslash prefix. We do the tr-then-sed
+# dance in the opposite order from a naive pipeline because sed's `\b`
+# pattern is a word-boundary anchor, not a literal backslash — sed
+# re-pass would mangle the result.
+_audit_json_escape() {
+    sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' | tr '\b\f\n\r\t' 'BFNRT' |
+    sed -e 's/B/\\b/g' \
+           -e 's/F/\\f/g' \
+           -e 's/N/\\n/g' \
+           -e 's/R/\\r/g' \
+           -e 's/T/\\t/g'
 }
 
 # TOML array -> JSON array (already bracketed in the source file).
