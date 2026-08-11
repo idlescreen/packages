@@ -84,7 +84,14 @@ case "${1:-}" in
 esac
 
 # Resolve module directory: local checkout, or bootstrap from REPO_BASE (curl|sh).
-SCRIPT_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd || echo ".")"
+# Fail closed if cd fails: sourcing from "." would source ui.sh from the
+# caller's cwd (B5 forbidden path). Refuse to run if we cannot resolve
+# our own directory.
+SCRIPT_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
+if [ -z "$SCRIPT_DIR" ] || [ "$SCRIPT_DIR" != "$(cd "$(dirname "$0")" && pwd)" ]; then
+    echo "install: failed to resolve own script directory; refusing to run" >&2
+    exit 1
+fi
 BOOTSTRAP_TMP=""
 cleanup_bootstrap() {
     if [ -n "$BOOTSTRAP_TMP" ] && [ -d "$BOOTSTRAP_TMP" ]; then
