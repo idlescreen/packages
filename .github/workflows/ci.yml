@@ -1,57 +1,35 @@
-name: CI
+name: Shell-script CI
 
 on:
   push:
-    branches:
-      - master
+    branches: [ "master", "main" ]
   pull_request:
-    branches:
-      - master
-  workflow_dispatch:
-
-permissions:
-  contents: write
+    branches: [ "master", "main" ]
 
 jobs:
-  test:
-    name: Test and Lint
+  shell-checks:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          ref: ${{ github.head_ref || github.ref }}
+    - uses: actions/checkout@v4
 
-      - name: Install Rust components
-        run: rustup component add clippy rustfmt
+    - name: Install shellcheck
+      run: sudo apt-get update && sudo apt-get install -y shellcheck
 
-      - name: Run cargo fmt
-        run: cargo fmt --all
+    - name: shellcheck installer scripts
+      run: |
+        shellcheck install.sh
+        shellcheck install_core.sh
+        shellcheck install_audit.sh
+        shellcheck post_install.sh
+        shellcheck ui.sh
+        shellcheck detect.sh
+        shellcheck repo.sh
 
-      - name: Run cargo clippy --fix
-        run: cargo clippy --workspace --all-targets --all-features --fix --allow-dirty --allow-staged
+    - name: Run audit JSON-escape test (F-202 regression)
+      run: bash tests/test_audit_json_escape.sh
 
-      - name: Auto-commit fmt and clippy fixes
-        run: |
-          git config --global user.name "github-actions[bot]"
-          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add -A
-          if [ -n "$(git status --porcelain)" ]; then
-            git commit -m "chore: auto-format and fix clippy lints"
-            git push origin HEAD:${{ github.head_ref || github.ref_name }}
-          fi
-
-      - name: Run cargo clippy check
-        run: cargo clippy --workspace --all-targets --all-features -- -D warnings
-
-      - name: Run cargo test
-        run: cargo test --all-targets --all-features
-
-      - name: Install cargo-deny
-        run: |
-          mkdir -p ~/.cargo/bin
-          curl -sSL https://github.com/EmbarkStudios/cargo-deny/releases/download/0.20.2/cargo-deny-0.20.2-x86_64-unknown-linux-musl.tar.gz | tar -xz --strip-components=1 -C ~/.cargo/bin
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-
-      - name: Run cargo deny check
-        run: cargo deny check advisories
+    - name: bash -n syntax check
+      run: |
+        for f in install.sh install_core.sh install_audit.sh post_install.sh; do
+          bash -n "$f"
+        done
