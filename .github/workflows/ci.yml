@@ -28,6 +28,12 @@ jobs:
     - name: Run audit JSON-escape test (F-202 regression)
       run: bash tests/test_audit_json_escape.sh
 
+    - name: Run install.sh smoke test (mock package manager)
+      run: bash tests/test_install_smoke.sh
+
+    - name: Run --verify-self edge cases
+      run: bash tests/test_verify_self_edge.sh
+
     - name: bash -n syntax check
       run: |
         for f in install.sh install_core.sh install_audit.sh post_install.sh; do
