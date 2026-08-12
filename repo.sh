@@ -37,11 +37,20 @@ setup_repo_apt() {
     story_line "Creating /etc/apt/keyrings if needed…"
     sudo mkdir -p /etc/apt/keyrings
     story_line "Downloading IdleScreen APT signing keyring…"
-    if ! curl -fsSL "${REPO_BASE}/apt/idlescreen-keyring.gpg" \
-        | sudo tee /etc/apt/keyrings/idlescreen-keyring.gpg >/dev/null; then
+    _tmp_key=$(mktemp)
+    if ! curl -fsSL "${REPO_BASE}/apt/idlescreen-keyring.gpg" -o "$_tmp_key"; then
         err "Could not download APT keyring from ${REPO_BASE}/apt/idlescreen-keyring.gpg"
+        rm -f "$_tmp_key"
         exit 1
     fi
+    _fpr=$(gpg --show-keys --with-colons "$_tmp_key" 2>/dev/null | awk -F: '/^fpr:/ {print $10; exit}')
+    if [ "$_fpr" != "549E73C9BC9229C786E538E2FBD8FC52C7817DD2" ]; then
+        err "APT keyring fingerprint mismatch!"
+        rm -f "$_tmp_key"
+        exit 1
+    fi
+    sudo mv "$_tmp_key" /etc/apt/keyrings/idlescreen-keyring.gpg
+    sudo chmod 644 /etc/apt/keyrings/idlescreen-keyring.gpg
     ok "Keyring → ${BOLD}/etc/apt/keyrings/idlescreen-keyring.gpg${RESET}"
     story_line "Writing APT source list (stable/main, signed-by keyring)…"
     echo "deb [signed-by=/etc/apt/keyrings/idlescreen-keyring.gpg] ${REPO_BASE}/apt/ stable main" \

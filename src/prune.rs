@@ -50,7 +50,7 @@ fn collect_packages(dir_path: &Path, is_deb: bool) -> Result<Vec<(String, Packag
     Ok(out)
 }
 
-fn prune_directory(dir_path: &Path, keep: usize, is_deb: bool) -> Result<(), String> {
+fn prune_directory(dir_path: &Path, keep: usize, is_deb: bool, is_dry_run: bool) -> Result<(), String> {
     if !dir_path.exists() {
         return Ok(());
     }
@@ -77,8 +77,12 @@ fn prune_directory(dir_path: &Path, keep: usize, is_deb: bool) -> Result<(), Str
             .file_name()
             .map(|s| s.to_string_lossy().into_owned())
             .unwrap_or_else(|| path.display().to_string());
-        println!("  rm {name:?}");
-        fs::remove_file(path).map_err(|e| e.to_string())?;
+        if is_dry_run {
+            println!("  [dry-run] would rm {name:?}");
+        } else {
+            println!("  rm {name:?}");
+            fs::remove_file(path).map_err(|e| e.to_string())?;
+        }
         removed += 1;
     }
 
@@ -102,7 +106,9 @@ fn parse_keep_arg(args: &[String]) -> Result<usize, String> {
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args: Vec<String> = env::args().collect();
-    let keep = match parse_keep_arg(&args) {
+    let is_dry_run = args.iter().any(|arg| arg == "--dry-run");
+    let filtered_args: Vec<String> = args.into_iter().filter(|arg| arg != "--dry-run").collect();
+    let keep = match parse_keep_arg(&filtered_args) {
         Ok(k) => k,
         Err(msg) => {
             eprintln!("{msg}");
@@ -110,8 +116,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     };
 
-    prune_directory(Path::new("apt/pool/main"), keep, true)?;
-    prune_directory(Path::new("rpm/pool"), keep, false)?;
+    prune_directory(Path::new("apt/pool/main"), keep, true, is_dry_run)?;
+    prune_directory(Path::new("rpm/pool"), keep, false, is_dry_run)?;
 
     println!("\nNext: regenerate the repository indices with: cargo run --bin update");
     Ok(())
@@ -150,7 +156,7 @@ mod tests {
             let _ = ver;
             fs::write(dir.join(name), b"x").expect("write");
         }
-        prune_directory(&dir, 1, true).expect("prune");
+        prune_directory(&dir, 1, true, false).expect("prune");
         let left: Vec<_> = fs::read_dir(&dir)
             .expect("rd")
             .filter_map(|e| e.ok())
@@ -164,7 +170,7 @@ mod tests {
     fn prune_missing_dir_ok() {
         let dir = env::temp_dir().join("idlescreen-prune-missing-noexist");
         let _ = fs::remove_dir_all(&dir);
-        prune_directory(&dir, 3, true).expect("missing ok");
+        prune_directory(&dir, 3, true, false).expect("missing ok");
     }
 
     #[test]

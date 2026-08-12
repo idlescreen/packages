@@ -10,8 +10,7 @@
    `idle-savers`, `idle-tui`) and, on COSMIC, `idle-cosmic`.
 4. Enables + starts the `idle-daemon.service` user unit.
 5. Writes an install-time plugin-capability audit log to
-   `/var/log/idlescreen/install-audit.jsonl` (or
-   `${XDG_STATE_HOME:-$HOME/.local/state}/idle/install-audit.jsonl`).
+   `/var/log/idlescreen/install-audit.jsonl`.
 
 ## What the installer does NOT do
 
@@ -99,6 +98,4 @@ If `--verify` shows hashes that don't match an out-of-band source:
 
 ## See also
 
-- `docs/SIGNING.md` — full GPG signing SOP
-- `docs/MIGRATION.md` — migrating from legacy `trance-*` packages
 - `install_audit.sh` — the audit log format spec (in this repo)

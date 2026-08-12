@@ -52,12 +52,17 @@ _audit_json_scalar() {
 # pattern is a word-boundary anchor, not a literal backslash — sed
 # re-pass would mangle the result.
 _audit_json_escape() {
-    sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' | tr '\b\f\n\r\t' 'BFNRT' |
-    sed -e 's/B/\\b/g' \
-           -e 's/F/\\f/g' \
-           -e 's/N/\\n/g' \
-           -e 's/R/\\r/g' \
-           -e 's/T/\\t/g'
+    _c1=$(printf '\1')
+    _c2=$(printf '\2')
+    _c3=$(printf '\3')
+    _c4=$(printf '\4')
+    _c5=$(printf '\5')
+    sed -e 's/\\/\\\\/g' -e 's/"/\\"/g' | tr '\b\f\n\r\t' '\1\2\3\4\5' |
+    sed -e "s/$_c1/\\\\b/g" \
+        -e "s/$_c2/\\\\f/g" \
+        -e "s/$_c3/\\\\n/g" \
+        -e "s/$_c4/\\\\r/g" \
+        -e "s/$_c5/\\\\t/g"
 }
 
 # TOML array -> JSON array (already bracketed in the source file).
@@ -71,6 +76,21 @@ _audit_landlock_abi() {
         cat /sys/kernel/security/landlock/abi_version 2>/dev/null || printf 'null'
     else
         printf 'null'
+    fi
+}
+
+# Best-effort extraction of the signer identity from a detached .sig file.
+# We do NOT verify the signature here — only inspect the OpenPGP packet
+# to recover the signing keyid (4-byte, hex). Returns "null" on any failure
+# so the audit log never fails the install.
+_audit_signer_from_sig() {
+    [ -f "$1" ] || { printf 'null'; return 0; }
+    _gpg_out=$(gpg --list-packets --no-tty "$1" 2>/dev/null) || { printf 'null'; return 0; }
+    _keyid=$(printf '%s\n' "$_gpg_out" | grep -i 'key.*id' 2>/dev/null | grep -oE '[0-9A-Fa-f]{16}' 2>/dev/null | head -n1)
+    if [ -z "$_keyid" ]; then
+        printf 'null'
+    else
+        _audit_json_scalar "$_keyid"
     fi
 }
 
@@ -139,8 +159,23 @@ _audit_record() {
         "$(_audit_json_array "$(_audit_toml "$_mf" filesystem_read)")" \
         "$(_audit_json_array "$(_audit_toml "$_mf" filesystem_write)")"
     printf ',"sandbox_profile":%s' "$(_audit_json_scalar "$(_audit_toml "$_mf" profile)")"
-    # Signature flow is not implemented in Sprint 02 (PM.md): always null.
-    printf ',"signed_hash":null,"signer":null'
+    # Signature state: recorded from the on-disk artifacts + the operator's
+    # runtime opt-in env var. The host enforces IDLE_REQUIRE_MANIFEST_SIGNATURE;
+    # the audit log mirrors the same posture so an operator reading the log can
+    # see whether each plugin was deployed under a verifier.
+    _sig="${_mf%.idleplugin.toml}.idleplugin.toml.sig"
+    _sig_present="false"
+    [ -f "$_sig" ] && _sig_present="true"
+    _sig_hash="null"
+    _signer="null"
+    if [ -f "$_sig" ]; then
+        _sig_hash=$(_audit_sha256 "$_sig")
+        _signer=$(_audit_signer_from_sig "$_sig" 2>/dev/null || printf 'null')
+    fi
+    _enforce="false"
+    [ -n "${IDLE_REQUIRE_MANIFEST_SIGNATURE:-}" ] && _enforce="true"
+    printf ',"signature":{"enforce":%s,"present":%s,"sha256":%s,"signer":%s}' \
+        "$_enforce" "$_sig_present" "$_sig_hash" "$_signer"
     printf ',"host":{"os":"%s","kernel":"%s","landlock_abi":%s}' "$_os" "$_kernel" "$_abi"
     printf ',"result":"%s"}\n' "$_result"
 }

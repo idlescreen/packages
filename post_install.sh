@@ -104,6 +104,32 @@ victory() {
     if command -v audit_installed_plugins >/dev/null 2>&1; then
         audit_installed_plugins
     fi
+    # Per Sprint 09 A09-H11: end-of-install should leave the user with a
+    # working preview, not a banner. Best-effort: try the first detected
+    # saver; if the daemon is up and idle is enabled, run a 5-second
+    # preview so the user sees the tool actually working. Non-blocking:
+    # any failure here is just a hint, not an error.
+    if [ -z "${MISSING_AFTER:-}" ] \
+        && command -v idlescreen >/dev/null 2>&1 \
+        && systemctl --user is-active --quiet idle-daemon.service 2>/dev/null; then
+        _first_saver=$(find /usr/libexec/idle/screensavers -maxdepth 1 -name 'libscreensaver_*.so' 2>/dev/null \
+            | head -n1 | xargs -I{} basename {} .so 2>/dev/null \
+            | sed 's/^libscreensaver_//')
+        if [ -n "${_first_saver:-}" ]; then
+            say ""
+            say "${DIM}Demonstrating ${_first_saver} for 5 seconds …${RESET}"
+            say "${DIM}(press any key to skip)${RESET}"
+            say ""
+            if command -v timeout >/dev/null 2>&1; then
+                timeout 5 idlescreen preview "$_first_saver" >/dev/null 2>&1 || true
+            else
+                idlescreen preview "$_first_saver" >/dev/null 2>&1 &
+                _prev=$!
+                sleep 5
+                kill "$_prev" 2>/dev/null || true
+            fi
+        fi
+    fi
     if [ -z "${MISSING_AFTER:-}" ] && systemctl --user is-active --quiet idle-daemon.service 2>/dev/null; then
         _banner_title="INSTALL FINISHED"
         _banner_note="packages present · daemon active"
@@ -172,6 +198,7 @@ victory() {
     esac
 
     say "  ${BOLD}Quick start${RESET}"
+    say "    ${CYAN}idlescreen enable${RESET}     enable daemon"
     say "    ${CYAN}idlescreen tui${RESET}        interactive dashboard"
     say "    ${CYAN}idlescreen status${RESET}     daemon + saver state"
     say "    ${CYAN}idlescreen preview beams${RESET}  try an effect"

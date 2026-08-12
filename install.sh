@@ -18,8 +18,16 @@
 #
 # See TRUST.md for the full trust model and verification procedure.
 
-set -eu
+set -euo pipefail
 
+DRY_RUN=0
+for arg in "$@"; do
+    case "$arg" in
+        --plan|--dry-run)
+            DRY_RUN=1
+            ;;
+    esac
+done
 REPO_BASE="${IDLESCREEN_REPO_BASE:-https://idlescreen.github.io/packages}"
 MODULES="ui.sh detect.sh repo.sh install_core.sh install_audit.sh post_install.sh"
 
@@ -110,6 +118,50 @@ if [ ! -f "$SCRIPT_DIR/ui.sh" ]; then
     for f in $MODULES; do
         curl -fsSL "${REPO_BASE}/${f}" -o "${BOOTSTRAP_TMP}/${f}" \
             || { echo "install: failed to download ${REPO_BASE}/${f}" >&2; exit 1; }
+        
+        # Verify the downloaded module hash to prevent supply chain injection during bootstrap.
+        if command -v sha256sum >/dev/null 2>&1; then
+            _dl_hash=$(sha256sum "${BOOTSTRAP_TMP}/${f}" | awk '{print $1}')
+        elif command -v shasum >/dev/null 2>&1; then
+            _dl_hash=$(shasum -a 256 "${BOOTSTRAP_TMP}/${f}" | awk '{print $1}')
+        else
+            echo "install: no sha256sum or shasum available to verify bootstrap modules" >&2
+            exit 1
+        fi
+        
+        _expected_hash=""
+        case "$f" in
+            "ui.sh") _expected_hash="93825b47a9c913b3ca64bc0fec77aeb8d260f8f40e9d32f28385a7db4fb8d6de" ;;
+            "detect.sh") _expected_hash="f2b7553c78375891cf901a09dcd1a096f0f589be87dc67994f369ca3381d3927" ;;
+            "repo.sh") _expected_hash="ed988175394d56e0096c99d7f937234b5ea1c07c41063eae9085b823fc2fb33f" ;;
+            "install_core.sh") _expected_hash="3129636546436ea09c5e5f5dd3bf482cd504b639287e6c8b3f1ffd5088694c7b" ;;
+            "install_audit.sh") _expected_hash="8f6e961aa6cafb600e57ec28c96335061860fd9d567cc5a6a317e2e2d0b09bac" ;;
+            "post_install.sh") _expected_hash="bfc7a004057ed92708e8dcccdf0fe280e2acb0ca7df134b61cf7b1f6c6907857" ;;
+            *) echo "install: unknown module $f" >&2; exit 1 ;;
+        esac
+        
+        if [ "$_dl_hash" != "$_expected_hash" ]; then
+            echo "install: hash mismatch on bootstrapped module ${f}!" >&2
+            echo "install: expected $_expected_hash, got $_dl_hash" >&2
+            exit 1
+        fi
+
+        # Mirror the runtime's signature posture: when the operator has
+        # set IDLE_REQUIRE_MANIFEST_SIGNATURE=1, every downloaded module
+        # must have a sibling .sig file that gpg accepts. If gpg or the
+        # .sig is missing, refuse to source the module.
+        if [ -n "${IDLE_REQUIRE_MANIFEST_SIGNATURE:-}" ]; then
+            if ! command -v gpg >/dev/null 2>&1; then
+                echo "install: IDLE_REQUIRE_MANIFEST_SIGNATURE=1 but gpg not on PATH" >&2
+                exit 1
+            fi
+            curl -fsSL "${REPO_BASE}/${f}.sig" -o "${BOOTSTRAP_TMP}/${f}.sig" \
+                || { echo "install: missing signature ${REPO_BASE}/${f}.sig" >&2; exit 1; }
+            if ! gpg --no-tty --verify "${BOOTSTRAP_TMP}/${f}.sig" "${BOOTSTRAP_TMP}/${f}" >/dev/null 2>&1; then
+                echo "install: signature verification FAILED for ${f}" >&2
+                exit 1
+            fi
+        fi
     done
     SCRIPT_DIR="$BOOTSTRAP_TMP"
 fi
@@ -150,8 +202,14 @@ main() {
 
     if [ -z "$PKG_MGR" ]; then
         say ""
-        err "No supported package manager (need DNF or APT)."
-        dim "  Arch users: see ${REPO_BASE}/  → arch/"
+        if [ "$OS_ID" = "arch" ] || [ "$OS_LIKE" = "arch" ]; then
+            err "Arch Linux is not natively supported by this script yet."
+            dim "  Please build from source using the PKGBUILD:"
+            dim "  ${REPO_BASE}/arch/PKGBUILD"
+        else
+            err "No supported package manager (need DNF or APT)."
+            dim "  Arch users: see ${REPO_BASE}/  → arch/"
+        fi
         dim "  Manual:     ${REPO_BASE}/"
         exit 1
     fi
@@ -171,6 +229,12 @@ main() {
     PKGS=$(build_pkg_list)
     survey_modules "$PKGS"
 
+    if [ "$DRY_RUN" = "1" ]; then
+        say ""
+        say "Dry run complete. Exiting."
+        return 0
+    fi
+
     # --- Phase 4: upgrade outdated + install missing + full re-sync ---
     install_packages "$PKGS"
 
@@ -178,6 +242,10 @@ main() {
     awaken_daemon
 
     victory "$PKGS"
+
+    say ""
+    say "Previewing IdleScreen beams for 5 seconds..."
+    idlescreen preview beams --timeout 5 || true
 }
 
 main "$@"

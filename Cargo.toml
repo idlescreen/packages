@@ -1,4 +1,6 @@
 [package]
+authors = ["idlescreen developers"]
+repository = "https://github.com/idlescreen/idlescreen"
 name = "idlescreen-packages"
 version = "4.0.5"
 edition = "2024"

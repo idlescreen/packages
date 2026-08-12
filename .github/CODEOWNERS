@@ -1,9 +1,18 @@
 # Default owners (GitHub user; org login is not a valid CODEOWNER)
 *       @UberMetroid
 
-/sign_all.sh            @UberMetroid
-/update.sh              @UberMetroid
-/docs/                  @UberMetroid
-/apt/                   @UberMetroid
-/rpm/                   @UberMetroid
-/.github/               @UberMetroid
+# Critical-path ownership
+/sign_all.sh                            @UberMetroid
+/update.sh                              @UberMetroid
+/install*.sh                            @UberMetroid
+/install.sh                             @UberMetroid
+/install_core.sh                        @UberMetroid
+/install_audit.sh                       @UberMetroid
+/install-studio.sh                      @UberMetroid
+/post_install.sh                        @UberMetroid
+/repo.sh                                @UberMetroid
+/docs/SIGNING.md                        @UberMetroid
+/docs/MIGRATION.md                      @UberMetroid
+/apt/                                   @UberMetroid
+/rpm/                                   @UberMetroid
+/.github/                               @UberMetroid

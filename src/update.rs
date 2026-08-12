@@ -65,6 +65,29 @@ fn run_createrepo() -> Result<(), String> {
     Ok(())
 }
 
+fn sign_rpms() -> Result<(), String> {
+    let signing_key = resolve_signing_key(resolve_gpg_name_from_env().as_deref(), "jerydleuck@gmail.com");
+    let rpm_pool = Path::new("rpm/pool");
+    if !rpm_pool.exists() { return Ok(()); }
+
+    let mut rpms = Vec::new();
+    if let Ok(entries) = fs::read_dir(rpm_pool) {
+        for entry in entries.flatten() {
+            if entry.path().extension().and_then(|s| s.to_str()) == Some("rpm") { rpms.push(entry.path()); }
+        }
+    }
+
+    if rpms.is_empty() { return Ok(()); }
+
+    println!("Signing {} RPMs...", rpms.len());
+    let mut cmd = Command::new("rpmsign");
+    cmd.arg("--addsign").arg("--key-id").arg(&signing_key);
+    for rpm in &rpms { cmd.arg(rpm); }
+    run_cmd(&mut cmd)?;
+    println!("Signed RPMs successfully.");
+    Ok(())
+}
+
 fn sign_rpm_metadata() -> Result<(), String> {
     let signing_key = resolve_signing_key(
         resolve_gpg_name_from_env().as_deref(),
@@ -218,6 +241,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let gpg_bin = resolve_gpg_bin_from_env();
     sign_apt_release(&signing_key, &gpg_bin)?;
 
+    sign_rpms()?;
     run_createrepo()?;
     sign_rpm_metadata()?;
 

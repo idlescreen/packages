@@ -125,8 +125,8 @@ main() {
     say "  ${DIM}installing:${RESET} ${BOLD}${META}${RESET}  (pulls idle-studio + render)"
     say "  ${DIM}plugins:${RESET}   ${SAVERS}"
     if [ "$PKG" = "dnf" ]; then
-        if ! sudo dnf install -y --refresh --setopt=idlescreen.metadata_expire=0 "$META" $SAVERS; then
-            if ! sudo dnf install -y --refresh --setopt=idlescreen.metadata_expire=0 "$META"; then
+        if ! sudo dnf install --refresh --setopt=idlescreen.metadata_expire=0 "$META" $SAVERS; then
+            if ! sudo dnf install --refresh --setopt=idlescreen.metadata_expire=0 "$META"; then
                 err "dnf could not install: $META"
                 say "  ${DIM}If checksum errors: sudo dnf clean all && sudo rm -rf /var/cache/libdnf5/idlescreen-*${RESET}"
                 exit 1

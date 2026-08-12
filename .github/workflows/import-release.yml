@@ -8,16 +8,27 @@ on:
 permissions:
   contents: write
 
+# Allowed source repos for the import trigger. Anything outside this list is
+# rejected at the first step so a compromised PAT cannot push arbitrary
+# release payloads into our pool.
+env:
+  ALLOWED_REPOS: ${{ vars.IDLESCREEN_IMPORT_REPOS || 'idlescreen/idle,idlescreen/idle-cosmic,idlescreen/idle-tui,idlescreen/idle-studio,idlescreen/packages,idlescreen/idle-saver-beams,idlescreen/idle-saver-bursts,idlescreen/idle-saver-chaos,idlescreen/idle-saver-cosmos,idlescreen/idle-saver-glyphs,idlescreen/idle-saver-gnats,idlescreen/idle-saver-hearth,idlescreen/idle-saver-radar,idlescreen/idle-saver-ripple,idlescreen/idle-saver-storm' }}
+
 jobs:
   import:
     name: 'Import & Index Release'
     runs-on: ubuntu-latest
-    env:
-      GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
-      GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
     steps:
       - name: Checkout packages repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
+
+      - name: Reject unexpected source repo
+        run: |
+          _repo="${{ github.event.client_payload.repo }}"
+          case ",${ALLOWED_REPOS}," in
+            *",${_repo},"*) echo "source repo: ${_repo} (allowed)" ;;
+            *) echo "ERROR: dispatch from untrusted repo '${_repo}' (allowed: ${ALLOWED_REPOS})" >&2; exit 1 ;;
+          esac
 
       - name: Install Rust
         run: |
@@ -29,28 +40,44 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y dpkg-dev apt-utils createrepo-c rpm gpg
 
-      - name: Download release assets
+      - name: Download release assets (no clobber)
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          # Download all .deb assets from the release to apt/pool/main/
+          set -e
+          # Refuse to clobber an existing pool file. Either the dispatch is a
+          # legitimate new release (no overlap with pool) or the operator
+          # must intervene. This closes the silent-overwrite hole.
+          _check_no_overlap() {
+            for f in "$1"/*.deb "$1"/*.rpm; do
+              [ -e "$f" ] || continue
+              echo "ERROR: pool already has $(basename "$f"); refusing clobber" >&2
+              exit 1
+            done
+          }
+          _check_no_overlap apt/pool/main
+          _check_no_overlap rpm/pool
+
           gh release download "${{ github.event.client_payload.tag }}" \
             --repo "${{ github.event.client_payload.repo }}" \
             --pattern "*.deb" \
-            --dir apt/pool/main/ --clobber || true
+            --dir apt/pool/main/ || true
 
-          # Download all .rpm assets from the release to rpm/pool/
           gh release download "${{ github.event.client_payload.tag }}" \
             --repo "${{ github.event.client_payload.repo }}" \
             --pattern "*.rpm" \
-            --dir rpm/pool/ --clobber || true
+            --dir rpm/pool/ || true
 
       - name: Prune old versions from pool
         run: |
-          # Keep the latest 3 versions of each package to prevent bloat
+          # Keep the latest 3 versions of each package to prevent bloat.
+          # The prune binary is local to this repo and only acts on the pool
+          # directories; dispatch payloads cannot supply alternate paths.
           cargo run --release --bin prune
 
       - name: Require GPG private key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
         run: |
           if [ -z "$GPG_PRIVATE_KEY" ]; then
             echo "ERROR: secret GPG_PRIVATE_KEY is required (refuse unsigned publish)"
@@ -58,6 +85,9 @@ jobs:
           fi
 
       - name: Import GPG private key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           # Set up GPG agent to allow loopback pinentry
           mkdir -p ~/.gnupg
@@ -84,6 +114,7 @@ jobs:
           CRATERIA_GPG_NAME: ${{ secrets.CRATERIA_GPG_NAME }}
           IDLESCREEN_SKIP_RPM_SIGN_INSTALL: "true"
           CRATERIA_SKIP_RPM_SIGN_INSTALL: "true"
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           # Prefer IDLESCREEN_GPG_NAME; fall back to CRATERIA_GPG_NAME / default identity
           export IDLESCREEN_GPG_NAME="${IDLESCREEN_GPG_NAME:-${CRATERIA_GPG_NAME:-jerydleuck@gmail.com}}"
