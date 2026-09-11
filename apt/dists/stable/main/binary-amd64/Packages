@@ -230,26 +230,6 @@ Description: Spotlight cones sweeping a rising dust starfield
  screensaver plugin.
 
 Package: idle-saver-bursts
-Version: 2.0.2-1
-Architecture: amd64
-Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 415
-Depends: libc6
-Conflicts: trance-plugin-bursts (<< 2.0.0)
-Replaces: trance-plugin-bursts
-Provides: trance-plugin-bursts
-Filename: pool/main/idle-saver-bursts_2.0.2-1_amd64.deb
-Size: 193796
-MD5sum: fb1e44ba4419d29d8ee4b22861edda03
-SHA1: 3b2d05e37fe0c8fc14b2c4147180cad0a42f8749
-SHA256: 68c703036abba8edb402d96fd67880e47eebdc5f43ac74e6986b719873dd8bd5
-Section: utils
-Priority: optional
-Description: City skyline fireworks particle show
- City skyline fireworks particle show. Official IdleScreen (Trance) screensaver
- plugin.
-
-Package: idle-saver-bursts
 Version: 2.0.3-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
@@ -276,6 +256,23 @@ Size: 215816
 MD5sum: 5393a520464e89d4a71d118a4c0efa85
 SHA1: 66f5e91b2ddee5c9878ad867e09bf0d61b0a60fc
 SHA256: f9e4be790b1f074f77cbb6898e32ce22454372fec8eaa9bac95a75e1339b9e28
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: City skyline fireworks particle show
+ City skyline fireworks particle show. Official IdleScreen screensaver plugin.
+
+Package: idle-saver-bursts
+Version: 2.2.1-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 473
+Depends: libc6
+Filename: pool/main/idle-saver-bursts_2.2.1-1_amd64.deb
+Size: 215840
+MD5sum: 8f2005f8bec793f9863041b3df8e9a7b
+SHA1: 9f59bd48b6421809bb4827528744a3f88fb09616
+SHA256: 7fa6d236b45865400564630468bda030cc6246183e91d5d12e81d667691547b8
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idlescreen
