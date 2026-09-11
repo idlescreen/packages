@@ -1,3 +1,4 @@
+# shellcheck shell=sh
 # Detect OS / package manager / desktop
 OS_ID="unknown"
 OS_NAME="Unknown Linux"

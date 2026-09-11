@@ -66,9 +66,9 @@ mod tests {
     use super::*;
 
     #[test]
-    fn gpg_disclaimer_does_not_claim_repo_signed() {
+    fn gpg_disclaimer_accurately_states_signing() {
         assert!(DNF_GPG_DISCLAIMER.contains("gpgcheck=1"));
-        assert!(DNF_GPG_DISCLAIMER.contains("repo_gpgcheck=0"));
+        assert!(DNF_GPG_DISCLAIMER.contains("repo_gpgcheck=1"));
         assert!(!DNF_GPG_DISCLAIMER.to_lowercase().contains("repo signed"));
     }
 

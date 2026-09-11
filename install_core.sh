@@ -1,3 +1,4 @@
+# shellcheck shell=sh
 # Install logic
 survey_modules() {
     _pkgs="$1"

@@ -1,3 +1,4 @@
+# shellcheck shell=sh
 # Install-time plugin audit (Sprint 02, DECISION-MANIFEST-01)
 #
 # Walks every installed screensaver .so, pairs it with its
@@ -189,6 +190,7 @@ audit_installed_plugins() {
     }
 
     _ts=$(date -u +%Y-%m-%dT%H:%M:%SZ 2>/dev/null || printf 'unknown')
+    # shellcheck disable=SC1091
     _os=$(. /etc/os-release 2>/dev/null && printf '%s' "${ID:-unknown}")
     _kernel=$(uname -r 2>/dev/null || printf 'unknown')
     _abi=$(_audit_landlock_abi)

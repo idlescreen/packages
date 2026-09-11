@@ -1,3 +1,4 @@
+# shellcheck shell=sh
 # Repo logic
 REPO_BASE="https://idlescreen.github.io/packages"
 

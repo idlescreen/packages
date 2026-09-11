@@ -36,6 +36,11 @@ META="idlescreen-studio"
 # Plugins for effect names.
 SAVERS="idle-savers"
 
+# Pinned signing-key fingerprints — the package-channel trust anchors are
+# verified out-of-band so a compromised Pages origin cannot swap them.
+RPM_KEY_FPR="3D2D670DBD9BD94D7B2D23D356ED99E8C0243160"
+APT_KEY_FPR="549E73C9BC9229C786E538E2FBD8FC52C7817DD2"
+
 need_cmd() {
     command -v "$1" >/dev/null 2>&1 || {
         err "need command: $1"
@@ -98,10 +103,38 @@ main() {
     if [ "$PKG" = "dnf" ]; then
         need_cmd curl
         need_cmd sudo
-        sudo curl -fsSL "${REPO_BASE}/rpm/idlescreen.repo" \
-            -o /etc/yum.repos.d/idlescreen.repo
+        need_cmd gpg
+        _tmp_key=$(mktemp)
+        if ! curl -fsSL "${REPO_BASE}/rpm/idlescreen-key.gpg" -o "$_tmp_key"; then
+            err "could not download RPM signing key"
+            rm -f "$_tmp_key"
+            exit 1
+        fi
+        _fpr=$(gpg --show-keys --with-colons "$_tmp_key" 2>/dev/null | awk -F: '/^fpr:/ {print $10; exit}')
+        if [ "$_fpr" != "$RPM_KEY_FPR" ]; then
+            err "RPM signing key fingerprint mismatch (got ${_fpr:-none})"
+            rm -f "$_tmp_key"
+            exit 1
+        fi
+        sudo mkdir -p /etc/pki/rpm-gpg
+        sudo mv "$_tmp_key" /etc/pki/rpm-gpg/idlescreen-key.gpg
+        sudo chmod 644 /etc/pki/rpm-gpg/idlescreen-key.gpg
+        sudo rpm --import /etc/pki/rpm-gpg/idlescreen-key.gpg 2>/dev/null || true
+        ok "RPM key → /etc/pki/rpm-gpg/idlescreen-key.gpg (fingerprint verified)"
+        # .repo written from pinned content — a fetched .repo could swap the
+        # gpgkey/baseurl trust anchor on a compromised origin.
+        printf '%s\n' \
+            "[idlescreen]" \
+            "name=IdleScreen RPM Repository" \
+            "baseurl=${REPO_BASE}/rpm" \
+            "enabled=1" \
+            "gpgcheck=1" \
+            "repo_gpgcheck=1" \
+            "gpgkey=file:///etc/pki/rpm-gpg/idlescreen-key.gpg" \
+            "metadata_expire=1h" \
+            | sudo tee /etc/yum.repos.d/idlescreen.repo >/dev/null
         ok "repo → /etc/yum.repos.d/idlescreen.repo"
-        say "  ${DIM}baseurl ${REPO_BASE}/rpm · package gpgcheck=1 · repo_gpgcheck=0${RESET}"
+        say "  ${DIM}baseurl ${REPO_BASE}/rpm · package gpgcheck=1 · repo_gpgcheck=1${RESET}"
         sudo dnf clean all --repo=idlescreen >/dev/null 2>&1 || true
         sudo rm -rf /var/cache/libdnf5/idlescreen-* 2>/dev/null || true
         sudo dnf makecache --refresh --repo=idlescreen >/dev/null 2>&1 \
@@ -110,10 +143,23 @@ main() {
     else
         need_cmd curl
         need_cmd sudo
+        need_cmd gpg
         sudo mkdir -p /etc/apt/keyrings
-        curl -fsSL "${REPO_BASE}/apt/idlescreen-keyring.gpg" \
-            | sudo tee /etc/apt/keyrings/idlescreen-keyring.gpg >/dev/null
-        ok "keyring → /etc/apt/keyrings/idlescreen-keyring.gpg"
+        _tmp_key=$(mktemp)
+        if ! curl -fsSL "${REPO_BASE}/apt/idlescreen-keyring.gpg" -o "$_tmp_key"; then
+            err "could not download APT keyring"
+            rm -f "$_tmp_key"
+            exit 1
+        fi
+        _fpr=$(gpg --show-keys --with-colons "$_tmp_key" 2>/dev/null | awk -F: '/^fpr:/ {print $10; exit}')
+        if [ "$_fpr" != "$APT_KEY_FPR" ]; then
+            err "APT keyring fingerprint mismatch (got ${_fpr:-none})"
+            rm -f "$_tmp_key"
+            exit 1
+        fi
+        sudo mv "$_tmp_key" /etc/apt/keyrings/idlescreen-keyring.gpg
+        sudo chmod 644 /etc/apt/keyrings/idlescreen-keyring.gpg
+        ok "keyring → /etc/apt/keyrings/idlescreen-keyring.gpg (fingerprint verified)"
         echo "deb [signed-by=/etc/apt/keyrings/idlescreen-keyring.gpg] ${REPO_BASE}/apt/ stable main" \
             | sudo tee /etc/apt/sources.list.d/idlescreen.list >/dev/null
         ok "source → /etc/apt/sources.list.d/idlescreen.list"
@@ -167,9 +213,9 @@ main() {
     else
         warn "no ffmpeg yet — install ffmpeg-free (Fedora) or ffmpeg before encoding"
     fi
-    if [ -d /usr/libexec/idle/screensavers ] \
-        && ls /usr/libexec/idle/screensavers/*.so >/dev/null 2>&1; then
-        _n=$(ls /usr/libexec/idle/screensavers/*.so 2>/dev/null | wc -l)
+    set -- /usr/libexec/idle/screensavers/*.so
+    if [ -d /usr/libexec/idle/screensavers ] && [ -e "$1" ]; then
+        _n=$#
         ok "plugins: ${_n} under /usr/libexec/idle/screensavers"
     else
         warn "no plugins under /usr/libexec/idle/screensavers — install idle-savers"

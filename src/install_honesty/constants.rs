@@ -50,8 +50,8 @@ pub const PRODUCT_STACK_ON_REMOVE: &[&str] = &[
 pub const REMOVE_BLURB: &str =
     "sudo dnf remove idlescreen   # also removes modules, savers, idle-cosmic, repo drop-in";
 
-/// Truthful DNF channel disclaimer (packages GPG-checked; repo metadata not).
-pub const DNF_GPG_DISCLAIMER: &str = "package gpgcheck=1 · repo_gpgcheck=0";
+/// Truthful DNF channel disclaimer (packages + repo metadata both GPG-checked).
+pub const DNF_GPG_DISCLAIMER: &str = "package gpgcheck=1 · repo_gpgcheck=1";
 
 #[cfg(test)]
 mod tests {
@@ -95,8 +95,8 @@ mod tests {
         );
         assert!(s.contains("look current"), "all-current survey wording");
         assert!(
-            s.contains("package gpgcheck=1") && s.contains("repo_gpgcheck=0"),
-            "DNF disclaimer must not overclaim repo signing"
+            s.contains("package gpgcheck=1") && s.contains("repo_gpgcheck=1"),
+            "DNF disclaimer must state package + repo metadata signing"
         );
         assert!(
             !s.contains("repo signed"),

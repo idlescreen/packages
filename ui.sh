@@ -1,3 +1,4 @@
+# shellcheck shell=sh
 # Terminal style and Open the story
 if [ -t 1 ] && [ "${NO_COLOR:-}" = "" ] && [ "${TERM:-dumb}" != "dumb" ]; then
     ORANGE="\033[38;5;208m"
@@ -41,7 +42,7 @@ spin_while() {
             0) _ch='|' ;;
             1) _ch='/' ;;
             2) _ch='-' ;;
-            3) _ch='\' ;;
+            3) _ch="\\" ;;
         esac
         printf "\r ${CYAN}%s${RESET} %s…  " "$_ch" "$_label"
         _i=$((_i + 1))

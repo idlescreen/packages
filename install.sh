@@ -18,7 +18,11 @@
 #
 # See TRUST.md for the full trust model and verification procedure.
 
-set -euo pipefail
+# POSIX-safe: no pipefail — this script must run under `curl | sh` where sh
+# may be dash (Debian/Ubuntu), and `set -o pipefail` is fatal there. Every
+# security gate below (sha256 pins, key fingerprint) fails closed on empty
+# output, so pipefail semantics are not load-bearing.
+set -eu
 
 DRY_RUN=0
 for arg in "$@"; do
@@ -131,12 +135,12 @@ if [ ! -f "$SCRIPT_DIR/ui.sh" ]; then
         
         _expected_hash=""
         case "$f" in
-            "ui.sh") _expected_hash="93825b47a9c913b3ca64bc0fec77aeb8d260f8f40e9d32f28385a7db4fb8d6de" ;;
-            "detect.sh") _expected_hash="f2b7553c78375891cf901a09dcd1a096f0f589be87dc67994f369ca3381d3927" ;;
-            "repo.sh") _expected_hash="591ea1a29f9e1e8756f4d2c948be13e370410a070f0cf7f4563b56d5bdb90e94" ;;
-            "install_core.sh") _expected_hash="3129636546436ea09c5e5f5dd3bf482cd504b639287e6c8b3f1ffd5088694c7b" ;;
-            "install_audit.sh") _expected_hash="8f6e961aa6cafb600e57ec28c96335061860fd9d567cc5a6a317e2e2d0b09bac" ;;
-            "post_install.sh") _expected_hash="1d8917d2cb72eccc8e5d5851c8a6f71f5623795c5d5f412b62825628954ac632" ;;
+            "ui.sh") _expected_hash="af4ba64b19c76a0dcfaf9b9536ed9551a708efe2c8fa4980e9603dc292e2851c" ;;
+            "detect.sh") _expected_hash="74bfc7fc66a3554e324e9cc2684e5e1da7767a6622a238a0514655ae9ad59d93" ;;
+            "repo.sh") _expected_hash="55f6d8e9c7b62a6a033d64ab6bb622f0b5864d7c51128ae90ab8580039122d75" ;;
+            "install_core.sh") _expected_hash="18856b9a53482fd1092e9096cb0bdbb90d5dcedfdccb343ed7bb64d34fa1263f" ;;
+            "install_audit.sh") _expected_hash="c98ef03512480e3fbb54cf35381227a901ce330a466e8023fae770d2246bec49" ;;
+            "post_install.sh") _expected_hash="f9e3792b8feefe8e2415a7191ed65161d635d9d12d36d3e391506017f6b9eb91" ;;
             *) echo "install: unknown module $f" >&2; exit 1 ;;
         esac
         
@@ -166,17 +170,17 @@ if [ ! -f "$SCRIPT_DIR/ui.sh" ]; then
     SCRIPT_DIR="$BOOTSTRAP_TMP"
 fi
 
-# shellcheck disable=SC1090
+# shellcheck disable=SC1090,SC1091
 . "$SCRIPT_DIR/ui.sh"
-# shellcheck disable=SC1090
+# shellcheck disable=SC1090,SC1091
 . "$SCRIPT_DIR/detect.sh"
-# shellcheck disable=SC1090
+# shellcheck disable=SC1090,SC1091
 . "$SCRIPT_DIR/repo.sh"
-# shellcheck disable=SC1090
+# shellcheck disable=SC1090,SC1091
 . "$SCRIPT_DIR/install_core.sh"
-# shellcheck disable=SC1090
+# shellcheck disable=SC1090,SC1091
 . "$SCRIPT_DIR/install_audit.sh"
-# shellcheck disable=SC1090
+# shellcheck disable=SC1090,SC1091
 . "$SCRIPT_DIR/post_install.sh"
 
 main() {

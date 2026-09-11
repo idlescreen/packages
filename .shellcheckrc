@@ -1,0 +1,4 @@
+# Modules share globals across source boundaries (detect.sh sets OS_NAME,
+# ARCH, SESSION_TYPE consumed by install.sh/post_install.sh). SC2034 cannot
+# see across the dynamic . "$SCRIPT_DIR/x.sh" boundary — safe to disable.
+disable=SC2034

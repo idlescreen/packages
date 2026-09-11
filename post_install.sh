@@ -1,3 +1,4 @@
+# shellcheck shell=sh
 # Post-install daemon and victory
 # Returns 0 if unit active and session bus name is claimed.
 _bus_name_up() {
