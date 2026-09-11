@@ -429,6 +429,24 @@ Description: Matrix-style rain with live system information
  Matrix-style rain with live system information. Official IdleScreen screensaver
  plugin.
 
+Package: idle-saver-glyphs
+Version: 2.2.0-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 438
+Depends: libc6
+Filename: pool/main/idle-saver-glyphs_2.2.0-1_amd64.deb
+Size: 191728
+MD5sum: cda57f4c440c1a7a7bce626a0bce3ce0
+SHA1: 933cb7a765b3cb12e4a9ae37e01b049cd493eac7
+SHA256: 1da902fd825047ece1353ff8ad79536d3255aaedc5d66195935968b9eb9aee06
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: Matrix-style rain with live system information
+ Matrix-style rain with live system information. Official IdleScreen screensaver
+ plugin.
+
 Package: idle-saver-gnats
 Version: 2.0.2-1
 Architecture: amd64
