@@ -699,6 +699,24 @@ Description: Forest rain, lightning, and wildlife silhouettes
  Forest rain, lightning, and wildlife silhouettes. Official IdleScreen
  screensaver plugin.
 
+Package: idle-saver-storm
+Version: 2.2.0-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 476
+Depends: libc6
+Filename: pool/main/idle-saver-storm_2.2.0-1_amd64.deb
+Size: 196924
+MD5sum: 59475ac49060c56ff989db1571282733
+SHA1: 61d11626bfe1ec94f45c0e68740873cecafd2a9a
+SHA256: bf94cbebd9c94b901a10fc02c1ed7ef5379cd6a1ed3cfb4a349552add42229c4
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: Forest rain, lightning, and wildlife silhouettes
+ Forest rain, lightning, and wildlife silhouettes. Official IdleScreen
+ screensaver plugin.
+
 Package: idle-savers
 Version: 2.3.1-1
 Architecture: amd64
