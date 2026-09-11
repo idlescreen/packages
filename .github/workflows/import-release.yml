@@ -8,6 +8,13 @@ on:
 permissions:
   contents: write
 
+# Serialise imports: parallel dispatches regenerate the same pool metadata
+# and the rebase in the last step conflicts. Queuing is correct — each run
+# imports its own release artifacts.
+concurrency:
+  group: import-release
+  cancel-in-progress: false
+
 # Allowed source repos for the import trigger. Anything outside this list is
 # rejected at the first step so a compromised PAT cannot push arbitrary
 # release payloads into our pool.
