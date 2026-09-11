@@ -24,7 +24,7 @@ for c in rpm dpkg-query curl dnf apt-get sudo systemctl pkexec gtk-update-icon-c
 done
 SCRIPT_DIR="$TMP/repo"
 mkdir -p "$SCRIPT_DIR"
-cp -f /home/jeryd/Projects/idlescreen/packages/install.sh "$SCRIPT_DIR/"
+cp -f "$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)/install.sh" "$SCRIPT_DIR/"
 
 fail=0
 SCRIPT="$SCRIPT_DIR/install.sh"

@@ -78,10 +78,11 @@ chmod +x "$MOCKBIN/gpg"
 # Helper modules from the repo.
 SCRIPT_DIR="$TMP/repo"
 mkdir -p "$SCRIPT_DIR"
-cp -f /home/jeryd/Projects/idlescreen/packages/install.sh "$SCRIPT_DIR/"
+REPO_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+cp -f "$REPO_ROOT/install.sh" "$SCRIPT_DIR/"
 for mod in ui.sh detect.sh repo.sh install_core.sh install_audit.sh post_install.sh; do
-    if [ -f "/home/jeryd/Projects/idlescreen/packages/$mod" ]; then
-        cp -f "/home/jeryd/Projects/idlescreen/packages/$mod" "$SCRIPT_DIR/"
+    if [ -f "$REPO_ROOT/$mod" ]; then
+        cp -f "$REPO_ROOT/$mod" "$SCRIPT_DIR/"
     fi
 done
 

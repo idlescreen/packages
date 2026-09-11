@@ -2,7 +2,7 @@
 # Test signature field extraction and enforcement flag in audit log (H-A12)
 
 set -eu
-. /home/jeryd/Projects/idlescreen/packages/install_audit.sh
+. "$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)/install_audit.sh"
 
 fail=0
 check() {
