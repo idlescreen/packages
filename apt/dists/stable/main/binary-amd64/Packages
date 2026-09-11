@@ -439,25 +439,6 @@ Description: Matrix-style rain with live system information
  plugin.
 
 Package: idle-saver-gnats
-Version: 2.0.2-1
-Architecture: amd64
-Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 411
-Depends: libc6
-Conflicts: trance-plugin-gnats (<< 2.0.0)
-Replaces: trance-plugin-gnats
-Provides: trance-plugin-gnats
-Filename: pool/main/idle-saver-gnats_2.0.2-1_amd64.deb
-Size: 192880
-MD5sum: c82929f19d34f34fd24d3454ec372a8c
-SHA1: d9f8f273b9905e48f345f597ed492b47bd38ec63
-SHA256: e8def00dcdb2ad9b779db6036d6c21ae1a224f2ecef96365d1485d9fd747467f
-Section: utils
-Priority: optional
-Description: Predator-prey firefly swarm
- Predator-prey firefly swarm. Official IdleScreen (Trance) screensaver plugin.
-
-Package: idle-saver-gnats
 Version: 2.0.3-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
@@ -484,6 +465,23 @@ Size: 214736
 MD5sum: 16a42d1d704bbe222c1812b72c244d1e
 SHA1: 8d25b92405b56fe696549beec6f4150c68f64d4b
 SHA256: 1caf116c7235ca1a40bd2d7aaee32c7cf841c93084dbf7cdbc8f6cc1aed3f917
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: Predator-prey firefly swarm
+ Predator-prey firefly swarm. Official IdleScreen screensaver plugin.
+
+Package: idle-saver-gnats
+Version: 2.2.1-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 469
+Depends: libc6
+Filename: pool/main/idle-saver-gnats_2.2.1-1_amd64.deb
+Size: 214728
+MD5sum: 136beef828c3b0e94cf285bc3f1f94f5
+SHA1: 5dea27b5cb92e06b41d7bc38a773f5e4a7542d71
+SHA256: 488740930a2396fca138e085a1e8236f913d89548e4c573817fa07e4aad0265e
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idlescreen
