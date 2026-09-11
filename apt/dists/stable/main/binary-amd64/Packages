@@ -177,26 +177,6 @@ Description: IdleScreen background idle daemon (Wayland screensaver host)
  IdleScreen background idle monitoring and screensaver host for Wayland.
 
 Package: idle-saver-beams
-Version: 2.0.2-1
-Architecture: amd64
-Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 401
-Depends: libc6
-Conflicts: trance-plugin-beams (<< 2.0.0)
-Replaces: trance-plugin-beams
-Provides: trance-plugin-beams
-Filename: pool/main/idle-saver-beams_2.0.2-1_amd64.deb
-Size: 178912
-MD5sum: 9d124ba8947b36afa747eed88b112bf3
-SHA1: e2ee4445ae6298fff6254933f869bc59007e26a7
-SHA256: 09bcca851b581915409c9842061bd0c762ba858478ff3fb73a2bfe6afd229048
-Section: utils
-Priority: optional
-Description: Spotlight cones sweeping a rising dust starfield
- Spotlight cones sweeping a rising dust starfield. Official IdleScreen (Trance)
- screensaver plugin.
-
-Package: idle-saver-beams
 Version: 2.0.3-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
@@ -224,6 +204,24 @@ Size: 200880
 MD5sum: adbf25642a0d594d066513e36e08e0d6
 SHA1: adcf441031f71f296c79ece2d668aaac1d41e730
 SHA256: bca0d28c7ea6bd2b26342ea57d0692c61bf1d5aa3bc149811e95af02c3bd8f54
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: Spotlight cones sweeping a rising dust starfield
+ Spotlight cones sweeping a rising dust starfield. Official IdleScreen
+ screensaver plugin.
+
+Package: idle-saver-beams
+Version: 2.2.1-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 459
+Depends: libc6
+Filename: pool/main/idle-saver-beams_2.2.1-1_amd64.deb
+Size: 200924
+MD5sum: 3b0b25fa9444d02f46115316fba43c50
+SHA1: 4cdb029172a9b3b28537ed2c9987778b564424a1
+SHA256: c82917b0106040449cc9a5c1b234d635721bec32fbd97bc26b7f688008cdab9e
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idlescreen
