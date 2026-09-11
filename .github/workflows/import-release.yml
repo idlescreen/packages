@@ -155,7 +155,7 @@ jobs:
             export CRATERIA_GPG_BIN="/tmp/gpg-wrapper"
           fi
           # Sign RPM payloads + rebuild APT/RPM indexes (see docs/SIGNING.md)
-          cargo run --release --bin sign
+          if [ -n "$GPG_PASSPHRASE" ]; then IDLESCREEN_GPG_BIN=/tmp/gpg-wrapper CRATERIA_GPG_BIN=/tmp/gpg-wrapper cargo run --release --bin sign; else cargo run --release --bin sign; fi
           rm -f /tmp/gpg-passphrase.txt /tmp/gpg-wrapper
           # Fail if any RPM lacks a signature from our key. ubuntu's rpm 4.18
           # cannot cryptographically verify Ed25519 header signatures (needs
@@ -171,11 +171,30 @@ jobs:
         env:
           DISPATCH_REPO: ${{ github.event.client_payload.repo }}
           DISPATCH_TAG: ${{ github.event.client_payload.tag }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          IDLESCREEN_GPG_NAME: ${{ secrets.IDLESCREEN_GPG_NAME }}
+          CRATERIA_GPG_NAME: ${{ secrets.CRATERIA_GPG_NAME }}
+          IDLESCREEN_SKIP_RPM_SIGN_INSTALL: "true"
+          CRATERIA_SKIP_RPM_SIGN_INSTALL: "true"
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          # Commit only if files have changed (e.g. packages added or indices updated)
           git diff-index --quiet HEAD || git commit -m "Import ${DISPATCH_REPO} ${DISPATCH_TAG}"
-          git pull --rebase
-          git push
+
+          # Bounded retry: when a concurrent import pushed first, reset to
+          # origin and regenerate the indexes over the merged pool (the new
+          # packages are untracked files — they survive reset --hard). The
+          # metadata is deterministic, so this converges instead of failing.
+          for _attempt in 1 2 3; do
+            if git push; then
+              exit 0
+            fi
+            git fetch origin
+            git reset --hard origin/master
+            if [ -n "$GPG_PASSPHRASE" ]; then IDLESCREEN_GPG_BIN=/tmp/gpg-wrapper CRATERIA_GPG_BIN=/tmp/gpg-wrapper cargo run --release --bin sign; else cargo run --release --bin sign; fi
+            git add -A
+            git commit -m "Import ${DISPATCH_REPO} ${DISPATCH_TAG} (merged)" || true
+          done
+          echo "ERROR: push failed after 3 attempts" >&2
+          exit 1
