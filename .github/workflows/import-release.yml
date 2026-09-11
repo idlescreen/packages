@@ -60,28 +60,37 @@ jobs:
           DISPATCH_TAG: ${{ github.event.client_payload.tag }}
         run: |
           set -e
-          # Refuse to clobber an existing pool file. Either the dispatch is a
-          # legitimate new release (no overlap with pool) or the operator
-          # must intervene. This closes the silent-overwrite hole.
-          _check_no_overlap() {
-            for f in "$1"/*.deb "$1"/*.rpm; do
-              [ -e "$f" ] || continue
-              echo "ERROR: pool already has $(basename "$f"); refusing clobber" >&2
-              exit 1
-            done
-          }
-          _check_no_overlap apt/pool/main
-          _check_no_overlap rpm/pool
+          # Refuse to clobber an existing pool file: download to a staging
+          # dir first, compare basenames against the pool, then move in.
+          # Either the dispatch is a legitimate new release (no overlap) or
+          # the operator must intervene. This closes the silent-overwrite hole.
+          _tmp=$(mktemp -d)
+          trap 'rm -rf "$_tmp"' EXIT
+          mkdir -p "$_tmp/deb" "$_tmp/rpm"
 
           gh release download "${DISPATCH_TAG}" \
             --repo "${DISPATCH_REPO}" \
             --pattern "*.deb" \
-            --dir apt/pool/main/ || true
+            --dir "$_tmp/deb" || true
 
           gh release download "${DISPATCH_TAG}" \
             --repo "${DISPATCH_REPO}" \
             --pattern "*.rpm" \
-            --dir rpm/pool/ || true
+            --dir "$_tmp/rpm" || true
+
+          _guard() {
+            for f in "$1"/*; do
+              [ -e "$f" ] || continue
+              if [ -e "$2/$(basename "$f")" ]; then
+                echo "ERROR: pool already has $(basename "$f"); refusing clobber" >&2
+                exit 1
+              fi
+            done
+          }
+          _guard "$_tmp/deb" apt/pool/main
+          _guard "$_tmp/rpm" rpm/pool
+          mv "$_tmp/deb"/*.deb apt/pool/main/ 2>/dev/null || true
+          mv "$_tmp/rpm"/*.rpm rpm/pool/ 2>/dev/null || true
 
       - name: Prune old versions from pool
         run: |
