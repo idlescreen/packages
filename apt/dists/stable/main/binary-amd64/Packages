@@ -333,26 +333,6 @@ Description: Chromatic-aberration system logo glitch
  plugin.
 
 Package: idle-saver-cosmos
-Version: 2.0.2-1
-Architecture: amd64
-Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 416
-Depends: libc6
-Conflicts: trance-plugin-cosmos (<< 2.0.0)
-Replaces: trance-plugin-cosmos
-Provides: trance-plugin-cosmos
-Filename: pool/main/idle-saver-cosmos_2.0.2-1_amd64.deb
-Size: 185700
-MD5sum: bf2b33691f07ee849363c8993c17bfea
-SHA1: 3c9bde9df8621f82c8993ac6c444a648fb6e90a4
-SHA256: 913491d5d520f1e801c2c77582fa1b8f5b82b9adeb0b5dcddacbf751d43ea417
-Section: utils
-Priority: optional
-Description: Accretion disk to collapsed singularity lifecycle
- Accretion disk to collapsed singularity lifecycle. Official IdleScreen (Trance)
- screensaver plugin.
-
-Package: idle-saver-cosmos
 Version: 2.0.3-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
@@ -380,6 +360,24 @@ Size: 207628
 MD5sum: 4732fd9d4c68e71f14b09251c7f8bdbf
 SHA1: 1cf193089270a0f3665c6970ea137bb7f9ec3ca9
 SHA256: 51653ff98e35523ab9c4b48aee2d24d28944ba1e935d434af7cf7e6859940738
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: Accretion disk to collapsed singularity lifecycle
+ Accretion disk to collapsed singularity lifecycle. Official IdleScreen
+ screensaver plugin.
+
+Package: idle-saver-cosmos
+Version: 2.2.1-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 474
+Depends: libc6
+Filename: pool/main/idle-saver-cosmos_2.2.1-1_amd64.deb
+Size: 207620
+MD5sum: b07d0540bf049c71d34769d726c1b72f
+SHA1: 6996dd054ba61a67c280a78d5e031fddf682331b
+SHA256: 0accc43a13b44608e6d81564e00fad4a3eb55f3a83980ba0e24587e84b28dabd
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idlescreen
