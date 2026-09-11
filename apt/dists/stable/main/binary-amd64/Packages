@@ -265,6 +265,23 @@ Priority: optional
 Description: City skyline fireworks particle show
  City skyline fireworks particle show. Official IdleScreen screensaver plugin.
 
+Package: idle-saver-bursts
+Version: 2.2.0-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 473
+Depends: libc6
+Filename: pool/main/idle-saver-bursts_2.2.0-1_amd64.deb
+Size: 215816
+MD5sum: 5393a520464e89d4a71d118a4c0efa85
+SHA1: 66f5e91b2ddee5c9878ad867e09bf0d61b0a60fc
+SHA256: f9e4be790b1f074f77cbb6898e32ce22454372fec8eaa9bac95a75e1339b9e28
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: City skyline fireworks particle show
+ City skyline fireworks particle show. Official IdleScreen screensaver plugin.
+
 Package: idle-saver-chaos
 Version: 2.0.2-1
 Architecture: amd64
