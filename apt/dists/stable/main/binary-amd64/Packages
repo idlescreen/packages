@@ -536,6 +536,24 @@ Description: Cozy fireplace: rising embers, log glow, heat shimmer
  Cozy fireplace with rising embers and heat shimmer. Official IdleScreen
  screensaver plugin.
 
+Package: idle-saver-hearth
+Version: 2.2.0-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 420
+Depends: libc6
+Filename: pool/main/idle-saver-hearth_2.2.0-1_amd64.deb
+Size: 176444
+MD5sum: be02dfe535a6c67370e4b1784baae181
+SHA1: 9a82db384108a6738e51a8086cfb0fa8b5151ae6
+SHA256: a6d9c4233097119f81e0ad4ebe3a40b6a2a1ab1bcb417bf9819824642728c6eb
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: Cozy fireplace: rising embers, log glow, heat shimmer
+ Cozy fireplace with rising embers and heat shimmer. Official IdleScreen
+ screensaver plugin.
+
 Package: idle-saver-radar
 Version: 2.0.2-1
 Architecture: amd64
