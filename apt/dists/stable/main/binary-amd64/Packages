@@ -590,6 +590,23 @@ Priority: optional
 Description: Retro CRT tactical radar sweep
  Retro CRT tactical radar sweep. Official IdleScreen screensaver plugin.
 
+Package: idle-saver-radar
+Version: 2.2.0-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 437
+Depends: libc6
+Filename: pool/main/idle-saver-radar_2.2.0-1_amd64.deb
+Size: 192700
+MD5sum: c3ad096332cb189cee0daf2d9eb15315
+SHA1: a96b3d6ab8222996d279f1893a2b1f63dc0a7df3
+SHA256: 28e7b09101c957b6e55b89d1af9ee72273ec41dd2dda5641abc96d6ff1fb05db
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: Retro CRT tactical radar sweep
+ Retro CRT tactical radar sweep. Official IdleScreen screensaver plugin.
+
 Package: idle-saver-ripple
 Version: 2.0.2-1
 Architecture: amd64
