@@ -596,26 +596,6 @@ Description: IdleScreen Director — queue offline render jobs (CLI + TUI)
  IdleScreen Director UI for offline video renders.
 
 Package: idle-tui
-Version: 2.3.1-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 3510
-Depends: idle-daemon, libc6
-Conflicts: app-tui (<< 2.1.0), idlescreen-tui (<< 2.1.0), trance-tui (<< 2.0.0)
-Replaces: app-tui, idlescreen-tui, trance-tui
-Provides: app-tui, idlescreen-tui, trance-tui
-Filename: pool/main/idle-tui_2.3.1-1_amd64.deb
-Size: 1015752
-MD5sum: faa584a1e73eb96ad6b5853551826424
-SHA1: 78c3a359e6537c214311698a0b8821082a152a0b
-SHA256: b0e5556c2901bf0f6a63a2d9ce6b99f8d5332f42bf6372a6bf94df30dfa92558
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/idle-tui
-Description: Optional TUI client for IdleScreen (idle-tui)
- Optional live TUI controller for IdleScreen.
-
-Package: idle-tui
 Version: 3.0.0-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -649,6 +629,26 @@ Size: 1185092
 MD5sum: f999f409b6b9590d7c7ad0735671f704
 SHA1: 084fc819ac964a08ee7ef18aad8c56eb6b0ac017
 SHA256: d5a7723fbff87c2c2406cbe4cf4e16f466877c7ef0ad29e2acafbe642331f498
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idle-tui
+Description: Optional TUI client for IdleScreen (idle-tui)
+ Optional live TUI controller for IdleScreen.
+
+Package: idle-tui
+Version: 3.2.0-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 4165
+Depends: idle-daemon, libc6
+Conflicts: app-tui (<< 2.1.0), idlescreen-tui (<< 2.1.0), trance-tui (<< 2.0.0)
+Replaces: app-tui, idlescreen-tui, trance-tui
+Provides: app-tui, idlescreen-tui, trance-tui
+Filename: pool/main/idle-tui_3.2.0-1_amd64.deb
+Size: 1217736
+MD5sum: c1221b19e57fe51cfd99551421d568ad
+SHA1: 0fc915c7e029afa7adc844b26d17e6e225f9cde7
+SHA256: c65e13fb6fefca461d5c9498a218e8320abdfd651780cf48dcffd718a1f5711c
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idle-tui
