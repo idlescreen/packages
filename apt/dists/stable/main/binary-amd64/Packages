@@ -211,6 +211,24 @@ Description: Spotlight cones sweeping a rising dust starfield
  Spotlight cones sweeping a rising dust starfield. Official IdleScreen
  screensaver plugin.
 
+Package: idle-saver-beams
+Version: 2.2.0-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 459
+Depends: libc6
+Filename: pool/main/idle-saver-beams_2.2.0-1_amd64.deb
+Size: 200880
+MD5sum: adbf25642a0d594d066513e36e08e0d6
+SHA1: adcf441031f71f296c79ece2d668aaac1d41e730
+SHA256: bca0d28c7ea6bd2b26342ea57d0692c61bf1d5aa3bc149811e95af02c3bd8f54
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: Spotlight cones sweeping a rising dust starfield
+ Spotlight cones sweeping a rising dust starfield. Official IdleScreen
+ screensaver plugin.
+
 Package: idle-saver-bursts
 Version: 2.0.2-1
 Architecture: amd64
