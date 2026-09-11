@@ -374,6 +374,24 @@ Description: Accretion disk to collapsed singularity lifecycle
  Accretion disk to collapsed singularity lifecycle. Official IdleScreen
  screensaver plugin.
 
+Package: idle-saver-cosmos
+Version: 2.2.0-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 474
+Depends: libc6
+Filename: pool/main/idle-saver-cosmos_2.2.0-1_amd64.deb
+Size: 207628
+MD5sum: 4732fd9d4c68e71f14b09251c7f8bdbf
+SHA1: 1cf193089270a0f3665c6970ea137bb7f9ec3ca9
+SHA256: 51653ff98e35523ab9c4b48aee2d24d28944ba1e935d434af7cf7e6859940738
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: Accretion disk to collapsed singularity lifecycle
+ Accretion disk to collapsed singularity lifecycle. Official IdleScreen
+ screensaver plugin.
+
 Package: idle-saver-glyphs
 Version: 2.0.2-1
 Architecture: amd64
