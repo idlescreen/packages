@@ -319,6 +319,24 @@ Description: Chromatic-aberration system logo glitch
  Chromatic-aberration system logo glitch. Official IdleScreen screensaver
  plugin.
 
+Package: idle-saver-chaos
+Version: 2.2.0-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 460
+Depends: libc6
+Filename: pool/main/idle-saver-chaos_2.2.0-1_amd64.deb
+Size: 202892
+MD5sum: 2ee90a4c105e377491f73b66996367e8
+SHA1: 229948ac2937937c96b22446ae193a130cb2f8d2
+SHA256: d1c8416c5b5c7b798808f446d5c0d8a66ecd486a2a0a2315c1fab4cc95fbc153
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: Chromatic-aberration system logo glitch
+ Chromatic-aberration system logo glitch. Official IdleScreen screensaver
+ plugin.
+
 Package: idle-saver-cosmos
 Version: 2.0.2-1
 Architecture: amd64
