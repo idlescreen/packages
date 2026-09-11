@@ -482,6 +482,23 @@ Priority: optional
 Description: Predator-prey firefly swarm
  Predator-prey firefly swarm. Official IdleScreen screensaver plugin.
 
+Package: idle-saver-gnats
+Version: 2.2.0-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 469
+Depends: libc6
+Filename: pool/main/idle-saver-gnats_2.2.0-1_amd64.deb
+Size: 214736
+MD5sum: 16a42d1d704bbe222c1812b72c244d1e
+SHA1: 8d25b92405b56fe696549beec6f4150c68f64d4b
+SHA256: 1caf116c7235ca1a40bd2d7aaee32c7cf841c93084dbf7cdbc8f6cc1aed3f917
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: Predator-prey firefly swarm
+ Predator-prey firefly swarm. Official IdleScreen screensaver plugin.
+
 Package: idle-saver-hearth
 Version: 2.0.2-1
 Architecture: amd64
