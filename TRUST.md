@@ -48,13 +48,40 @@ curl -fsSL https://idlescreen.github.io/packages/install.sh -o install.sh
 ./install.sh --verify
 
 # Compare the printed hashes against an out-of-band source:
+#   - The signed checksum manifest (below)
 #   - GitHub release notes for the matching tag
 #   - The signed commit on https://github.com/idlescreen/packages
-#   - A maintainer post on the project mailing list / Matrix / IRC
 #
 # If hashes match, run:
 ./install.sh
 ```
+
+## Signed checksum manifest
+
+Every Pages deploy publishes `checksums.sha256` covering the installer,
+its modules, and the key files — plus a detached signature
+`checksums.sha256.asc` made with the package signing key. To verify the
+installer cryptographically (stronger than a hash compare):
+
+```sh
+base=https://idlescreen.github.io/packages
+curl -fsSL $base/install.sh          -o install.sh
+curl -fsSL $base/checksums.sha256    -o checksums.sha256
+curl -fsSL $base/checksums.sha256.asc -o checksums.sha256.asc
+
+# If you already trust our key (post-first-install, or from a key server):
+gpg --no-default-keyring \
+    --keyring /etc/pki/rpm-gpg/idlescreen-key.gpg \
+    --verify checksums.sha256.asc checksums.sha256
+
+# Then check the script itself:
+grep ' install.sh$' checksums.sha256 | sha256sum -c -
+./install.sh
+```
+
+First-install remains trust-on-first-use over TLS — the manifest's value
+is for re-verification, mirrors, and anyone cross-checking against a
+copy of the key they already hold.
 
 For automated deploys, hard-pin a specific release by setting
 `IDLESCREEN_VERSION=4.0.5` (or whatever the latest tagged release is) in

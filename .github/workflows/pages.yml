@@ -40,6 +40,45 @@ jobs:
         with:
           enablement: true
 
+      # Publish checksums.sha256 (+ detached sig) covering every installer
+      # entry point so users can verify downloads out-of-band: fetch the
+      # manifest from Pages, verify it against our key, then sha256sum -c.
+      - name: Generate signed checksum manifest
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+          IDLESCREEN_GPG_NAME: ${{ secrets.IDLESCREEN_GPG_NAME }}
+          CRATERIA_GPG_NAME: ${{ secrets.CRATERIA_GPG_NAME }}
+        run: |
+          set -e
+          sha256sum install.sh install-studio.sh repo.sh ui.sh detect.sh \
+            install_core.sh install_audit.sh post_install.sh \
+            rpm/idlescreen-key.gpg apt/idlescreen-keyring.gpg \
+            > checksums.sha256
+
+          if [ -z "$GPG_PRIVATE_KEY" ]; then
+            echo "no GPG_PRIVATE_KEY — publishing unsigned manifest" >&2
+            exit 0
+          fi
+          _name="${IDLESCREEN_GPG_NAME:-${CRATERIA_GPG_NAME:-jerydleuck@gmail.com}}"
+          mkdir -p ~/.gnupg && chmod 700 ~/.gnupg
+          echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+          gpgconf --kill gpg-agent || true
+          if [ -n "$GPG_PASSPHRASE" ]; then
+            printf '%s' "$GPG_PASSPHRASE" > /tmp/gpg-pass.txt && chmod 600 /tmp/gpg-pass.txt
+            echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --pinentry-mode loopback \
+              --passphrase-file /tmp/gpg-pass.txt --import
+            gpg --batch --yes --pinentry-mode loopback \
+              --passphrase-file /tmp/gpg-pass.txt \
+              --local-user "$_name" --detach-sign --armor \
+              -o checksums.sha256.asc checksums.sha256
+            rm -f /tmp/gpg-pass.txt
+          else
+            echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import
+            gpg --batch --yes --local-user "$_name" \
+              --detach-sign --armor -o checksums.sha256.asc checksums.sha256
+          fi
+
       # Full tree: install scripts, apt/, rpm/ (pool + repodata), index.html
       - name: Upload Artifact
         uses: actions/upload-pages-artifact@v5
