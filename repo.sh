@@ -20,9 +20,11 @@ setup_repo_dnf() {
         rm -f "$_tmp_key"
         exit 1
     fi
-    _fpr=$(gpg --show-keys --with-colons "$_tmp_key" 2>/dev/null | awk -F: '/^fpr:/ {print $10; exit}')
-    if [ "$_fpr" != "$RPM_KEY_FPR" ]; then
-        err "RPM signing key fingerprint mismatch! (expected $RPM_KEY_FPR, got ${_fpr:-none})"
+    # The key file may carry both the Ed25519 and RSA keys — the pin holds
+    # when the expected fingerprint is among the primary-key fingerprints.
+    if ! gpg --show-keys --with-colons "$_tmp_key" 2>/dev/null \
+        | awk -F: '/^fpr:/ {print $10}' | grep -qx "$RPM_KEY_FPR"; then
+        err "RPM signing key fingerprint mismatch! ($RPM_KEY_FPR not present in key file)"
         rm -f "$_tmp_key"
         exit 1
     fi
@@ -83,8 +85,8 @@ setup_repo_apt() {
         rm -f "$_tmp_key"
         exit 1
     fi
-    _fpr=$(gpg --show-keys --with-colons "$_tmp_key" 2>/dev/null | awk -F: '/^fpr:/ {print $10; exit}')
-    if [ "$_fpr" != "549E73C9BC9229C786E538E2FBD8FC52C7817DD2" ]; then
+    if ! gpg --show-keys --with-colons "$_tmp_key" 2>/dev/null \
+        | awk -F: '/^fpr:/ {print $10}' | grep -qx "549E73C9BC9229C786E538E2FBD8FC52C7817DD2"; then
         err "APT keyring fingerprint mismatch!"
         rm -f "$_tmp_key"
         exit 1

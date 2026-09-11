@@ -156,7 +156,7 @@ jobs:
           # clients verify fully at install via the pinned repo key.
           for f in rpm/pool/*.rpm; do
             rpm -Kv "$f" 2>/dev/null \
-              | grep -qiE 'c0243160|3d2d670dbd9bd94d7b2d23d356ed99e8c0243160' \
+              | grep -qiE 'c0243160|c7817dd2|3d2d670dbd9bd94d7b2d23d356ed99e8c0243160|549e73c9bc9229c786e538e2fbd8fc52c7817dd2' \
               || { echo "UNSIGNED or wrong key: $f"; rpm -Kv "$f"; exit 1; }
           done
 

@@ -137,7 +137,7 @@ if [ ! -f "$SCRIPT_DIR/ui.sh" ]; then
         case "$f" in
             "ui.sh") _expected_hash="af4ba64b19c76a0dcfaf9b9536ed9551a708efe2c8fa4980e9603dc292e2851c" ;;
             "detect.sh") _expected_hash="74bfc7fc66a3554e324e9cc2684e5e1da7767a6622a238a0514655ae9ad59d93" ;;
-            "repo.sh") _expected_hash="55f6d8e9c7b62a6a033d64ab6bb622f0b5864d7c51128ae90ab8580039122d75" ;;
+            "repo.sh") _expected_hash="034ae9c8a2e290db538ea9602690a38604a4f2f740677d9b0f398f2ebb39bc77" ;;
             "install_core.sh") _expected_hash="18856b9a53482fd1092e9096cb0bdbb90d5dcedfdccb343ed7bb64d34fa1263f" ;;
             "install_audit.sh") _expected_hash="c98ef03512480e3fbb54cf35381227a901ce330a466e8023fae770d2246bec49" ;;
             "post_install.sh") _expected_hash="f9e3792b8feefe8e2415a7191ed65161d635d9d12d36d3e391506017f6b9eb91" ;;
