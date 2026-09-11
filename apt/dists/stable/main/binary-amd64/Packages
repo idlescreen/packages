@@ -386,26 +386,6 @@ Description: Accretion disk to collapsed singularity lifecycle
  screensaver plugin.
 
 Package: idle-saver-glyphs
-Version: 2.0.2-1
-Architecture: amd64
-Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 379
-Depends: libc6
-Conflicts: trance-plugin-glyphs (<< 2.0.0)
-Replaces: trance-plugin-glyphs
-Provides: trance-plugin-glyphs
-Filename: pool/main/idle-saver-glyphs_2.0.2-1_amd64.deb
-Size: 168876
-MD5sum: a8f25ce45ad795ac3988e94af93b4191
-SHA1: 4d09a009ce42e53509ce58411fe72a5c24d828c9
-SHA256: dc175198252e2aed3d5aff464bfe5d738284c44f0122381ad41d9911a662b741
-Section: utils
-Priority: optional
-Description: Matrix-style rain with live system information
- Matrix-style rain with live system information. Official IdleScreen (Trance)
- screensaver plugin.
-
-Package: idle-saver-glyphs
 Version: 2.0.3-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
@@ -433,6 +413,24 @@ Size: 191728
 MD5sum: cda57f4c440c1a7a7bce626a0bce3ce0
 SHA1: 933cb7a765b3cb12e4a9ae37e01b049cd493eac7
 SHA256: 1da902fd825047ece1353ff8ad79536d3255aaedc5d66195935968b9eb9aee06
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: Matrix-style rain with live system information
+ Matrix-style rain with live system information. Official IdleScreen screensaver
+ plugin.
+
+Package: idle-saver-glyphs
+Version: 2.2.1-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 438
+Depends: libc6
+Filename: pool/main/idle-saver-glyphs_2.2.1-1_amd64.deb
+Size: 191760
+MD5sum: b9f4d659f3a3d3d6e3ad185cf8b7952f
+SHA1: 4e920ba15dfaafecafbe787a7e96e27b1d50c1b2
+SHA256: d2612888953efa733e8b909d9fbe7d425bcfaf8c303d7a6296c98f111bf90a16
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idlescreen
