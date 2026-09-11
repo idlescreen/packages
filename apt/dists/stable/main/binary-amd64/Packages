@@ -644,6 +644,24 @@ Description: Rain on a still pond: expanding rings and soft drizzle
  Rain on a still pond with expanding rings. Official IdleScreen screensaver
  plugin.
 
+Package: idle-saver-ripple
+Version: 2.2.0-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 431
+Depends: libc6
+Filename: pool/main/idle-saver-ripple_2.2.0-1_amd64.deb
+Size: 180852
+MD5sum: 841d6a95f9eea2454f2cec542bab8656
+SHA1: cd6d67aab5abc8654cc416a21ef8499381de3834
+SHA256: e50c672310c41c9caf4802d3e73e20898c83438977224fdcef3a3f499d8f6fed
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: Rain on a still pond: expanding rings and soft drizzle
+ Rain on a still pond with expanding rings. Official IdleScreen screensaver
+ plugin.
+
 Package: idle-saver-storm
 Version: 2.0.2-1
 Architecture: amd64
