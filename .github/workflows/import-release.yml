@@ -150,6 +150,9 @@ jobs:
           # Sign RPM payloads + rebuild APT/RPM indexes (see docs/SIGNING.md)
           cargo run --release --bin sign
           rm -f /tmp/gpg-passphrase.txt /tmp/gpg-wrapper
+          # rpm -K verifies against the rpmdb keyring — import our public key
+          # first or every signature reports NOKEY.
+          sudo rpm --import rpm/idlescreen-key.gpg
           # Fail if any RPM lacks a signature
           for f in rpm/pool/*.rpm; do
             rpm -K "$f" | grep -q 'signatures OK' || { echo "UNSIGNED: $f"; exit 1; }
