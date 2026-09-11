@@ -1,14 +1,53 @@
 # Repo logic
 REPO_BASE="https://idlescreen.github.io/packages"
 
+# Fingerprint of the IdleScreen RPM signing key (rpm/idlescreen-key.gpg).
+# Pinned so the DNF trust anchor is verified the same way the APT keyring is.
+RPM_KEY_FPR="3D2D670DBD9BD94D7B2D23D356ED99E8C0243160"
+
+# System dirs; env-overridable for the mock-package-manager smoke test.
+RPM_GPG_DIR="${IDLESCREEN_RPM_GPG_DIR:-/etc/pki/rpm-gpg}"
+YUM_REPOS_D="${IDLESCREEN_YUM_REPOS_D:-/etc/yum.repos.d}"
+
 setup_repo_dnf() {
     step "[2/5]  Opening the package gate  ·  RPM repository"
-    story_line "Writing IdleScreen DNF repo file…"
+    story_line "Fetching + fingerprint-checking the IdleScreen RPM signing key…"
     pause 0.3
-    sudo curl -fsSL "${REPO_BASE}/rpm/idlescreen.repo" \
-        -o /etc/yum.repos.d/idlescreen.repo
-    ok "Repo written → ${BOLD}/etc/yum.repos.d/idlescreen.repo${RESET}"
-    dim "   baseurl ${REPO_BASE}/rpm  ·  package gpgcheck=1  ·  repo_gpgcheck=0"
+    _tmp_key=$(mktemp)
+    if ! curl -fsSL "${REPO_BASE}/rpm/idlescreen-key.gpg" -o "$_tmp_key"; then
+        err "Could not download RPM signing key from ${REPO_BASE}/rpm/idlescreen-key.gpg"
+        rm -f "$_tmp_key"
+        exit 1
+    fi
+    _fpr=$(gpg --show-keys --with-colons "$_tmp_key" 2>/dev/null | awk -F: '/^fpr:/ {print $10; exit}')
+    if [ "$_fpr" != "$RPM_KEY_FPR" ]; then
+        err "RPM signing key fingerprint mismatch! (expected $RPM_KEY_FPR, got ${_fpr:-none})"
+        rm -f "$_tmp_key"
+        exit 1
+    fi
+    sudo mkdir -p "$RPM_GPG_DIR"
+    sudo mv "$_tmp_key" "$RPM_GPG_DIR/idlescreen-key.gpg"
+    sudo chmod 644 "$RPM_GPG_DIR/idlescreen-key.gpg"
+    sudo rpm --import "$RPM_GPG_DIR/idlescreen-key.gpg" 2>/dev/null || true
+    ok "RPM key → ${BOLD}${RPM_GPG_DIR}/idlescreen-key.gpg${RESET} (fingerprint verified)"
+
+    # The .repo file is written from pinned content, never fetched: a fetched
+    # .repo's gpgkey/baseurl would let a compromised origin swap the trust
+    # anchor entirely. gpgkey points at the fingerprint-verified local file.
+    story_line "Writing IdleScreen DNF repo file (pinned content)…"
+    sudo mkdir -p "$YUM_REPOS_D"
+    printf '%s\n' \
+        "[idlescreen]" \
+        "name=IdleScreen RPM Repository" \
+        "baseurl=${REPO_BASE}/rpm" \
+        "enabled=1" \
+        "gpgcheck=1" \
+        "repo_gpgcheck=1" \
+        "gpgkey=file://${RPM_GPG_DIR}/idlescreen-key.gpg" \
+        "metadata_expire=1h" \
+        | sudo tee "${YUM_REPOS_D}/idlescreen.repo" >/dev/null
+    ok "Repo written → ${BOLD}${YUM_REPOS_D}/idlescreen.repo${RESET}"
+    dim "   baseurl ${REPO_BASE}/rpm  ·  package gpgcheck=1  ·  repo_gpgcheck=1"
     story_line "Refreshing IdleScreen channel metadata…"
     sudo dnf clean metadata --repo=idlescreen >/dev/null 2>&1 || true
     _meta_ok=0

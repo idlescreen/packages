@@ -64,6 +64,17 @@ for cmd in rpm dpkg-query curl dnf apt-get sudo systemctl pkexec gtk-update-icon
     ln -sfn "$MOCKBIN/_dispatch" "$MOCKBIN/$cmd"
 done
 
+# gpg is not symlinked to the dispatcher: --show-keys --with-colons must
+# emit a fpr: line for the installer fingerprint checks. FAKE_GPG_FPR
+# controls the emitted fingerprint so the negative case can forge a bad key.
+cat > "$MOCKBIN/gpg" <<'GPG'
+#!/bin/sh
+_fpr="${FAKE_GPG_FPR:-3D2D670DBD9BD94D7B2D23D356ED99E8C0243160}"
+printf 'fpr:::::::::%s:\n' "$_fpr"
+exit 0
+GPG
+chmod +x "$MOCKBIN/gpg"
+
 # Helper modules from the repo.
 SCRIPT_DIR="$TMP/repo"
 mkdir -p "$SCRIPT_DIR"
@@ -103,6 +114,8 @@ fi
     cd "$SCRIPT_DIR"
     PATH="$MOCKBIN:/usr/bin:/bin" \
     IDLESCREEN_REPO_BASE="file://$SCRIPT_DIR" \
+    IDLESCREEN_RPM_GPG_DIR="$TMP/rpm-gpg" \
+    IDLESCREEN_YUM_REPOS_D="$TMP/yum.repos.d" \
     XDG_RUNTIME_DIR="$TMP/xdg" \
     HOME="$TMP/home" \
     XDG_CONFIG_HOME="$TMP/home/.config" \
@@ -118,6 +131,27 @@ else
     echo "FAIL: install.sh did not call dnf or apt-get (log:)"
     head -10 "$LOG" | sed 's/^/    /'
     fail=$((fail + 1))
+fi
+
+# 5. Negative: forged RPM signing key (wrong fingerprint) must refuse
+#    BEFORE the package-manager stage — fail closed on a poisoned origin.
+: > "$LOG"
+(
+    cd "$SCRIPT_DIR"
+    PATH="$MOCKBIN:/usr/bin:/bin" \
+    IDLESCREEN_REPO_BASE="file://$SCRIPT_DIR" \
+    IDLESCREEN_RPM_GPG_DIR="$TMP/rpm-gpg-bad" \
+    IDLESCREEN_YUM_REPOS_D="$TMP/yum.repos.d-bad" \
+    FAKE_GPG_FPR="DEADBEEFDEADBEEFDEADBEEFDEADBEEFDEADBEEF" \
+    XDG_RUNTIME_DIR="$TMP/xdg" \
+    HOME="$TMP/home" \
+    timeout 30 sh install.sh >/dev/null 2>&1 || true
+)
+if grep -qE 'fake dnf |fake apt-get ' "$LOG" 2>/dev/null; then
+    echo "FAIL: forged RPM key fingerprint still reached package-manager stage"
+    fail=$((fail + 1))
+else
+    echo "ok: forged RPM key fingerprint refuses before dnf/apt"
 fi
 
 if [ "$fail" -eq 0 ]; then
