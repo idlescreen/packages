@@ -179,24 +179,6 @@ Description: IdleScreen background idle daemon (Wayland screensaver host)
  IdleScreen background idle monitoring and screensaver host for Wayland.
 
 Package: idle-saver-beams
-Version: 2.2.0-1
-Architecture: amd64
-Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 459
-Depends: libc6
-Filename: pool/main/idle-saver-beams_2.2.0-1_amd64.deb
-Size: 200880
-MD5sum: adbf25642a0d594d066513e36e08e0d6
-SHA1: adcf441031f71f296c79ece2d668aaac1d41e730
-SHA256: bca0d28c7ea6bd2b26342ea57d0692c61bf1d5aa3bc149811e95af02c3bd8f54
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: Spotlight cones sweeping a rising dust starfield
- Spotlight cones sweeping a rising dust starfield. Official IdleScreen
- screensaver plugin.
-
-Package: idle-saver-beams
 Version: 2.2.1-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
@@ -232,22 +214,23 @@ Description: Spotlight cones sweeping a rising dust starfield
  Spotlight cones sweeping a rising dust starfield. Official IdleScreen
  screensaver plugin.
 
-Package: idle-saver-bursts
-Version: 2.2.0-1
+Package: idle-saver-beams
+Version: 2.3.1-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 473
+Installed-Size: 333
 Depends: libc6
-Filename: pool/main/idle-saver-bursts_2.2.0-1_amd64.deb
-Size: 215816
-MD5sum: 5393a520464e89d4a71d118a4c0efa85
-SHA1: 66f5e91b2ddee5c9878ad867e09bf0d61b0a60fc
-SHA256: f9e4be790b1f074f77cbb6898e32ce22454372fec8eaa9bac95a75e1339b9e28
+Filename: pool/main/idle-saver-beams_2.3.1-1_amd64.deb
+Size: 155228
+MD5sum: 93442c870c4f5648d6fd49ef21d30207
+SHA1: 132dfccb9c057bd2d5f4309a41805e28de540f46
+SHA256: 62c8cb06310a0b25596b73bf76fbe63d6d863fd099afa300a97261d8f521e5a9
 Section: utils
 Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: City skyline fireworks particle show
- City skyline fireworks particle show. Official IdleScreen screensaver plugin.
+Homepage: https://github.com/idlescreen/idle-savers
+Description: Spotlight cones sweeping a rising dust starfield
+ Spotlight cones sweeping a rising dust starfield. Official IdleScreen
+ screensaver plugin.
 
 Package: idle-saver-bursts
 Version: 2.2.1-1
@@ -283,23 +266,22 @@ Homepage: https://github.com/idlescreen/idle-savers
 Description: City skyline fireworks particle show
  City skyline fireworks particle show. Official IdleScreen screensaver plugin.
 
-Package: idle-saver-chaos
-Version: 2.2.0-1
+Package: idle-saver-bursts
+Version: 2.3.1-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 460
+Installed-Size: 351
 Depends: libc6
-Filename: pool/main/idle-saver-chaos_2.2.0-1_amd64.deb
-Size: 202892
-MD5sum: 2ee90a4c105e377491f73b66996367e8
-SHA1: 229948ac2937937c96b22446ae193a130cb2f8d2
-SHA256: d1c8416c5b5c7b798808f446d5c0d8a66ecd486a2a0a2315c1fab4cc95fbc153
+Filename: pool/main/idle-saver-bursts_2.3.1-1_amd64.deb
+Size: 171036
+MD5sum: 21702e82acc79c566475f7736e6bf063
+SHA1: ba300f5e5cce66e873bf7048268dcc656a435636
+SHA256: de82cb8dfec9947a6aa8dd74bf4907f52f7a63d41d0500d3928d3b721262eb3b
 Section: utils
 Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: Chromatic-aberration system logo glitch
- Chromatic-aberration system logo glitch. Official IdleScreen screensaver
- plugin.
+Homepage: https://github.com/idlescreen/idle-savers
+Description: City skyline fireworks particle show
+ City skyline fireworks particle show. Official IdleScreen screensaver plugin.
 
 Package: idle-saver-chaos
 Version: 2.2.1-1
@@ -337,23 +319,23 @@ Description: Chromatic-aberration system logo glitch
  Chromatic-aberration system logo glitch. Official IdleScreen screensaver
  plugin.
 
-Package: idle-saver-cosmos
-Version: 2.2.0-1
+Package: idle-saver-chaos
+Version: 2.3.1-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 474
+Installed-Size: 337
 Depends: libc6
-Filename: pool/main/idle-saver-cosmos_2.2.0-1_amd64.deb
-Size: 207628
-MD5sum: 4732fd9d4c68e71f14b09251c7f8bdbf
-SHA1: 1cf193089270a0f3665c6970ea137bb7f9ec3ca9
-SHA256: 51653ff98e35523ab9c4b48aee2d24d28944ba1e935d434af7cf7e6859940738
+Filename: pool/main/idle-saver-chaos_2.3.1-1_amd64.deb
+Size: 158136
+MD5sum: d11fa39798309966b523f396546f9a29
+SHA1: ccdef9fbd5102ec7f92d838f54fa65ca0b71200b
+SHA256: 41a49f5a053e6c1ea98de78622ea2c427f38f07eb6481b1dca83edf189d15ed6
 Section: utils
 Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: Accretion disk to collapsed singularity lifecycle
- Accretion disk to collapsed singularity lifecycle. Official IdleScreen
- screensaver plugin.
+Homepage: https://github.com/idlescreen/idle-savers
+Description: Chromatic-aberration system logo glitch
+ Chromatic-aberration system logo glitch. Official IdleScreen screensaver
+ plugin.
 
 Package: idle-saver-cosmos
 Version: 2.2.1-1
@@ -391,23 +373,23 @@ Description: Accretion disk to collapsed singularity lifecycle
  Accretion disk to collapsed singularity lifecycle. Official IdleScreen
  screensaver plugin.
 
-Package: idle-saver-glyphs
-Version: 2.2.0-1
+Package: idle-saver-cosmos
+Version: 2.3.1-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 438
+Installed-Size: 365
 Depends: libc6
-Filename: pool/main/idle-saver-glyphs_2.2.0-1_amd64.deb
-Size: 191728
-MD5sum: cda57f4c440c1a7a7bce626a0bce3ce0
-SHA1: 933cb7a765b3cb12e4a9ae37e01b049cd493eac7
-SHA256: 1da902fd825047ece1353ff8ad79536d3255aaedc5d66195935968b9eb9aee06
+Filename: pool/main/idle-saver-cosmos_2.3.1-1_amd64.deb
+Size: 167408
+MD5sum: 4c210b910c2fcab17b3065e5fc58111a
+SHA1: 800a183b021360d313f166a83e5b66bd6a68a286
+SHA256: a8b883129a6c2c3744118e27cb6ea7102efd625f2ee578c2f8077690308b45a2
 Section: utils
 Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: Matrix-style rain with live system information
- Matrix-style rain with live system information. Official IdleScreen screensaver
- plugin.
+Homepage: https://github.com/idlescreen/idle-savers
+Description: Accretion disk to collapsed singularity lifecycle
+ Accretion disk to collapsed singularity lifecycle. Official IdleScreen
+ screensaver plugin.
 
 Package: idle-saver-glyphs
 Version: 2.2.1-1
@@ -445,22 +427,23 @@ Description: Matrix-style rain with live system information
  Matrix-style rain with live system information. Official IdleScreen screensaver
  plugin.
 
-Package: idle-saver-gnats
-Version: 2.2.0-1
+Package: idle-saver-glyphs
+Version: 2.3.1-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 469
+Installed-Size: 324
 Depends: libc6
-Filename: pool/main/idle-saver-gnats_2.2.0-1_amd64.deb
-Size: 214736
-MD5sum: 16a42d1d704bbe222c1812b72c244d1e
-SHA1: 8d25b92405b56fe696549beec6f4150c68f64d4b
-SHA256: 1caf116c7235ca1a40bd2d7aaee32c7cf841c93084dbf7cdbc8f6cc1aed3f917
+Filename: pool/main/idle-saver-glyphs_2.3.1-1_amd64.deb
+Size: 151652
+MD5sum: dc0b30d7471012d6e9a1b4f398fa1c4f
+SHA1: ad578e9e0fc0a3240135a1f135e30e8884741a2c
+SHA256: 27360f72d268b5b24e254664968af5502ed86d40399ff94c815babbf4f0cae25
 Section: utils
 Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: Predator-prey firefly swarm
- Predator-prey firefly swarm. Official IdleScreen screensaver plugin.
+Homepage: https://github.com/idlescreen/idle-savers
+Description: Matrix-style rain with live system information
+ Matrix-style rain with live system information. Official IdleScreen screensaver
+ plugin.
 
 Package: idle-saver-gnats
 Version: 2.2.1-1
@@ -496,23 +479,22 @@ Homepage: https://github.com/idlescreen/idle-savers
 Description: Predator-prey firefly swarm
  Predator-prey firefly swarm. Official IdleScreen screensaver plugin.
 
-Package: idle-saver-hearth
-Version: 2.2.1-1
+Package: idle-saver-gnats
+Version: 2.3.1-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 419
+Installed-Size: 354
 Depends: libc6
-Filename: pool/main/idle-saver-hearth_2.2.1-1_amd64.deb
-Size: 176572
-MD5sum: 083bde349808273a4bb29b94afb246fc
-SHA1: 62ad5eb968e73bf49300465a59f963a1739a662c
-SHA256: a2af46c2b88f2c896f47ac3f87f2befedb04053c883cde0256c26c90fc591d19
+Filename: pool/main/idle-saver-gnats_2.3.1-1_amd64.deb
+Size: 174272
+MD5sum: 1ca54102e06f9af5f9f9ccb2a98d9cae
+SHA1: 14d41c38c653b8f74e29df5fc8b77621a1d126e2
+SHA256: 5bd3e546bd1e8296f489d161a4f068bdb8258c464a00ffe241c13017c3dfc8d2
 Section: utils
 Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: Cozy fireplace: rising embers, log glow, heat shimmer
- Cozy fireplace with rising embers and heat shimmer. Official IdleScreen
- screensaver plugin.
+Homepage: https://github.com/idlescreen/idle-savers
+Description: Predator-prey firefly swarm
+ Predator-prey firefly swarm. Official IdleScreen screensaver plugin.
 
 Package: idle-saver-hearth
 Version: 2.2.2-1
@@ -550,22 +532,23 @@ Description: Cozy fireplace: rising embers, log glow, heat shimmer
  Cozy fireplace with rising embers and heat shimmer. Official IdleScreen
  screensaver plugin.
 
-Package: idle-saver-radar
-Version: 2.2.0-1
+Package: idle-saver-hearth
+Version: 2.3.1-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 437
+Installed-Size: 347
 Depends: libc6
-Filename: pool/main/idle-saver-radar_2.2.0-1_amd64.deb
-Size: 192700
-MD5sum: c3ad096332cb189cee0daf2d9eb15315
-SHA1: a96b3d6ab8222996d279f1893a2b1f63dc0a7df3
-SHA256: 28e7b09101c957b6e55b89d1af9ee72273ec41dd2dda5641abc96d6ff1fb05db
+Filename: pool/main/idle-saver-hearth_2.3.1-1_amd64.deb
+Size: 160020
+MD5sum: 078132b484d39573f2edbd368375035f
+SHA1: 8a9ee99ae9b35a52e340abdda64ceadca56b4142
+SHA256: eb792387eeec489a75562ac95b23b2a6f224a1e563c81612120ba98dfe05f6e9
 Section: utils
 Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: Retro CRT tactical radar sweep
- Retro CRT tactical radar sweep. Official IdleScreen screensaver plugin.
+Homepage: https://github.com/idlescreen/idle-savers
+Description: Cozy fireplace: rising embers, log glow, heat shimmer
+ Cozy fireplace with rising embers and heat shimmer. Official IdleScreen
+ screensaver plugin.
 
 Package: idle-saver-radar
 Version: 2.2.1-1
@@ -601,23 +584,22 @@ Homepage: https://github.com/idlescreen/idle-savers
 Description: Retro CRT tactical radar sweep
  Retro CRT tactical radar sweep. Official IdleScreen screensaver plugin.
 
-Package: idle-saver-ripple
-Version: 2.2.0-1
+Package: idle-saver-radar
+Version: 2.3.1-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 431
+Installed-Size: 326
 Depends: libc6
-Filename: pool/main/idle-saver-ripple_2.2.0-1_amd64.deb
-Size: 180852
-MD5sum: 841d6a95f9eea2454f2cec542bab8656
-SHA1: cd6d67aab5abc8654cc416a21ef8499381de3834
-SHA256: e50c672310c41c9caf4802d3e73e20898c83438977224fdcef3a3f499d8f6fed
+Filename: pool/main/idle-saver-radar_2.3.1-1_amd64.deb
+Size: 151848
+MD5sum: 73d8b9f139d816997f1038ccba2500a6
+SHA1: 5aefeb84388a430dd413061d31e5993b1f0a507a
+SHA256: f0ccd5c1b71202a0b55c36acf13f5c5ec2be4c9b4c8bf2e63559575651c34582
 Section: utils
 Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: Rain on a still pond: expanding rings and soft drizzle
- Rain on a still pond with expanding rings. Official IdleScreen screensaver
- plugin.
+Homepage: https://github.com/idlescreen/idle-savers
+Description: Retro CRT tactical radar sweep
+ Retro CRT tactical radar sweep. Official IdleScreen screensaver plugin.
 
 Package: idle-saver-ripple
 Version: 2.2.1-1
@@ -655,23 +637,23 @@ Description: Rain on a still pond: expanding rings and soft drizzle
  Rain on a still pond with expanding rings. Official IdleScreen screensaver
  plugin.
 
-Package: idle-saver-storm
-Version: 2.2.0-1
+Package: idle-saver-ripple
+Version: 2.3.1-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 476
+Installed-Size: 335
 Depends: libc6
-Filename: pool/main/idle-saver-storm_2.2.0-1_amd64.deb
-Size: 196924
-MD5sum: 59475ac49060c56ff989db1571282733
-SHA1: 61d11626bfe1ec94f45c0e68740873cecafd2a9a
-SHA256: bf94cbebd9c94b901a10fc02c1ed7ef5379cd6a1ed3cfb4a349552add42229c4
+Filename: pool/main/idle-saver-ripple_2.3.1-1_amd64.deb
+Size: 148648
+MD5sum: 321354fa461e599d9910bbe3e917d948
+SHA1: a2d88e36a79df593ae431b659c97e82308ebd281
+SHA256: 38273b865d1c445a892d295c6c857e8004cb521051a1ba3c2dd9b882d1a54350
 Section: utils
 Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: Forest rain, lightning, and wildlife silhouettes
- Forest rain, lightning, and wildlife silhouettes. Official IdleScreen
- screensaver plugin.
+Homepage: https://github.com/idlescreen/idle-savers
+Description: Rain on a still pond: expanding rings and soft drizzle
+ Rain on a still pond with expanding rings. Official IdleScreen screensaver
+ plugin.
 
 Package: idle-saver-storm
 Version: 2.2.1-1
@@ -702,6 +684,24 @@ Size: 153728
 MD5sum: c0fd83cdcf90d6fa6ae5d9d878413498
 SHA1: acdb376a3ba9f0e2c014ebd8b9a9d67d89751d66
 SHA256: 1b7dca78461d0e78f708f4b9f2fff7ea377126d4e1f0dbdea0b0cc2dd63b2c41
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idle-savers
+Description: Forest rain, lightning, and wildlife silhouettes
+ Forest rain, lightning, and wildlife silhouettes. Official IdleScreen
+ screensaver plugin.
+
+Package: idle-saver-storm
+Version: 2.3.1-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 354
+Depends: libc6
+Filename: pool/main/idle-saver-storm_2.3.1-1_amd64.deb
+Size: 153772
+MD5sum: deae8d85e9c1a0f8b56d5c053d4b5bc5
+SHA1: c5214b09afe8c74c9ac18437e604c696afdb0c12
+SHA256: f16556fa9a3f0c115e67bf4f38685963973c0a70236828fbdf59761776ece29a
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idle-savers
