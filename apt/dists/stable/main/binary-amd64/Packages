@@ -122,25 +122,6 @@ Description: IdleScreen for COSMIC — product package (applet + pulls daemon an
  Installs the COSMIC panel applet and depends on idle-daemon.
 
 Package: idle-daemon
-Version: 3.5.6-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 11572
-Depends: dbus, fonts-dejavu-core, libc6
-Recommends: idle-cli, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
-Suggests: idle-cosmic
-Filename: pool/main/idle-daemon_3.5.6-1_amd64.deb
-Size: 1946068
-MD5sum: f261e67283b2fe0de0663ba6d0303a2e
-SHA1: 0d1817c80410a6066ff296cc9753f47ce0b3e132
-SHA256: 1e63bcc6e5e3fef716d141300e9abe7eba69c388fa8229abe68b757eac0be680
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: IdleScreen background idle daemon (Wayland screensaver host)
- IdleScreen background idle monitoring and screensaver host for Wayland.
-
-Package: idle-daemon
 Version: 3.5.7-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -172,6 +153,25 @@ Size: 1950808
 MD5sum: 5a6cc2fc5edf5c861e9c782120188487
 SHA1: 35f86d54d050381a8bfe38a8c7b34e91ef089a4f
 SHA256: db4c18e67a6e1694070cb764f8da6f8ee842d786dd563cbee8651a555d5a7e0c
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: IdleScreen background idle daemon (Wayland screensaver host)
+ IdleScreen background idle monitoring and screensaver host for Wayland.
+
+Package: idle-daemon
+Version: 3.5.9-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 11610
+Depends: dbus, fonts-dejavu-core, libc6
+Recommends: idle-cli, idle-saver-aurora, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
+Suggests: idle-cosmic
+Filename: pool/main/idle-daemon_3.5.9-1_amd64.deb
+Size: 2158864
+MD5sum: 91194271e41d5050071ec4ded6be1009
+SHA1: 2935a60ca6cef2e8463c339898ed38366346514d
+SHA256: e4f7da1f989c5a47b9fa6a71eb046deb1d2750721403669b6d6bd36816c6eb15
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idlescreen

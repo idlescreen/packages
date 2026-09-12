@@ -4,38 +4,38 @@ Hash: SHA512
 Architectures: amd64
 Codename: stable
 Components: main
-Date: Sat, 12 Sep 2026 19:39:08 +0000
+Date: Sat, 12 Sep 2026 19:40:24 +0000
 Description: IdleScreen APT Repository (stable/main)
 Label: IdleScreen
 Origin: IdleScreen
 Suite: stable
 MD5Sum:
- 323d8811deba9d96dea89d393ae42511              197 Release
- c650890a10b7963fff34aec089bea1b8            38317 main/binary-amd64/Packages
- f57cc1b5ff8a31591af109807d5c2c84             8172 main/binary-amd64/Packages.gz
+ 97ceb379ac3b3cad0daf5d969477031d              197 Release
+ 7467bfc4484914741186618104aee266            38336 main/binary-amd64/Packages
+ cc5495f156a1f310370e66e18577897c             8172 main/binary-amd64/Packages.gz
 SHA1:
- 98ab43eb71aae47365cd5a75ab604cba2316b970              197 Release
- 75511302c1e2733390a9cc1cca1a6fb715df8678            38317 main/binary-amd64/Packages
- 48451e4fe42ac037b279c33ac7e77874c3f92df1             8172 main/binary-amd64/Packages.gz
+ 539405d1445835d14d1856218244c875231881b3              197 Release
+ e650826f7f4efcc2a58357df1bfad87d124d2dc2            38336 main/binary-amd64/Packages
+ 717a9379a01b9a61d2ce49735ed498b271088117             8172 main/binary-amd64/Packages.gz
 SHA256:
- 151f66464bcd30f273d3df1bddc74a80c68de3ed52a2234d8dbf3b940098f5c4              197 Release
- 429c89095a26316c780dddd3f264222b8b7fb79ca65e5153748bd3a573d07b8d            38317 main/binary-amd64/Packages
- 7c83411f5e02e95c18630e01ddce6b045a562299b6a7e726c9823349c35e10a2             8172 main/binary-amd64/Packages.gz
+ b49b68c830d63c0297a502d4cda9b04563783f4dc8d077824b50dbe10ff97f88              197 Release
+ a942573b4869f677831fe29fc9a2e707bc333a846012e17fa08612695d70966b            38336 main/binary-amd64/Packages
+ cad76df7a50996821914e21227829673e6726eab6f42292080ae86cb0a5bb2f2             8172 main/binary-amd64/Packages.gz
 SHA512:
- afe0e256380e27fb977c37fc9c2bcdfef19eb0bf10c8930c04e79e6f0ed78e7ef53e8a4e9c471446ea6c0b5c7e6d9b36dcacdb3441e936dd15b0b570a6590b3c              197 Release
- a3bf9e08c1e2979e21e6daa47a0d00e85facbd7ddbbc2734138fec0c63acc62c958a367c3cbc4027e759045749d0b95987d24f074e8210696ee22f3ef8a6e541            38317 main/binary-amd64/Packages
- 4160b33c71089211aef00ea992ae74757bb8e062a2d21b02446e482f524a61e48ec5189f6ede6d2c6eb7f31e8c481ce0713647184461f69890ef0b82a011a8e8             8172 main/binary-amd64/Packages.gz
+ 2ad86e7c33e585f1545c21b107003555415cc1cdf6a0d6eced2aadebe92d04a735b63b00240dab820b7fba8d2b15f39d470a2943011e163ba92d6ea1eb810c1e              197 Release
+ 4e27fdfc2dd6075817ee5179e8c33b2c11a2f66e0262e676273499d7f5066a9ce9482d75687c29a1f74ea6804636f310e809a34d5e1770f2f783e45a0c377be5            38336 main/binary-amd64/Packages
+ 87be0b0a74225359d5b3d7b12e3472d5f6c8e9e54c34fd303e2840b0de1045a3e6c02cab77b00a19442f62090e15f618b06a44439de5e3f9ccbf4d2b3396fdb7             8172 main/binary-amd64/Packages.gz
 -----BEGIN PGP SIGNATURE-----
 
-iQHJBAEBCgAzFiEEVJ5zybySKceG5Tji+9j8UseBfdIFAmqlqlwVHGplcnlkbGV1
-Y2tAZ21haWwuY29tAAoJEPvY/FLHgX3SWAAMAMOtZFp29mSDgYuy0Th+xVRy3X9F
-Ga7xRUmn4fIBhjYpf8QCjZcXaHOc6yOQeBuWE+zZ4s45Vny00K92mweORsYY8jzr
-BrEzu/ICSZZeXFHwJWYd8UpF4rD5E3sQjPvfgImLsyMnVov5XX7VD5a8ifidnlxT
-fKcNfX+gsZyJf5Esgq+pNHGNHgkFcfpiVKkRI+F297pa8IAXg5fzKOo6PkhmifMg
-3ztyP0oHP0/0LFvOaE1jkbbqxBE+DuRS43BxZfyaSHrj8KDKBucREoSAzI2+dLQT
-W0AgkWjmO6wd/RrDSrnyNSnYC/MCdBvnUARf5dSqgGfztjR9A5Pg0emBInKcpf1j
-b0JqAU/twmi3eW4qYYA7gZI5WjEQDe3iTiueeA0tDpY9gu7nXfsVqCAw3RKT0w9M
-ExPW52FPY2NZRcnr/3o/o83NNtpXJ4TnqDHhoWtcwWBWEoZKEzvhuwZNbKdm6Jfk
-4SwxxET152ysSbllAA2Q4qtMP2YDPZJN3G/b1Q==
-=s1RE
+iQHJBAEBCgAzFiEEVJ5zybySKceG5Tji+9j8UseBfdIFAmqlqqgVHGplcnlkbGV1
+Y2tAZ21haWwuY29tAAoJEPvY/FLHgX3SoTkMAJhIEoUxXXWSl8sWcUQKXSBagJUo
+wOvoMmHIw5ZJ82cDwHEh7gKL5fAusSH+np6gJVrsWdeBKifpq+4UcdxyYDc2Cm/7
+1Ya+yr8LSGOonIzyqvf79Siks0KL7qJthpDbV7caGuZFvvFFkoSoqq3nUkcTLy2r
+LGFr1yw4srgyf756ew9UfKBGe3NrdlfchHws4p4XS/myPgrHOhLKmaV5V19IVUnk
+GuYcEHjXd+Pthi/JHqBonac8pcW/9Ps327iIstveS8le3ggXCPnt8YFhR6kSUF3s
+ng6uv+yzWUi5mv9t2YzXSMbji/4gILv6jwrMjrrWkU1LZ1t6RLQP6/gQ26Q2C2vq
+EpMCtVYFUtkR/MhwRCRDkjq+JzZZLw/J1esKZVR3ReGBi2IG+YVM6FYywPPfwCp/
+s3J6ZkrBZ4epuEm7aUj1iq91kcNDDpvnCqfO5UlMRx2sSzFLGRXETf0bjr+512Q0
+rU4AuBkNgJMUryy9lHj+QZkl0nvBnEiHKfUEcg==
+=xijn
 -----END PGP SIGNATURE-----
