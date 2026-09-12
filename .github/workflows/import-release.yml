@@ -192,7 +192,21 @@ jobs:
             fi
             git fetch origin
             git reset --hard origin/master
-            if [ -n "$GPG_PASSPHRASE" ]; then IDLESCREEN_GPG_BIN=/tmp/gpg-wrapper CRATERIA_GPG_BIN=/tmp/gpg-wrapper cargo run --release --bin sign; else cargo run --release --bin sign; fi
+            # Same identity fallback as the sign step — the IDLESCREEN/CRATERIA
+            # GPG_NAME secrets may be unset; the retry must not die on it.
+            export IDLESCREEN_GPG_NAME="${IDLESCREEN_GPG_NAME:-${CRATERIA_GPG_NAME:-jerydleuck@gmail.com}}"
+            export CRATERIA_GPG_NAME="$IDLESCREEN_GPG_NAME"
+            # /tmp/gpg-wrapper was removed by the sign step — recreate it so a
+            # passphrase-protected key still signs non-interactively on retry.
+            if [ -n "$GPG_PASSPHRASE" ]; then
+              echo "$GPG_PASSPHRASE" > /tmp/gpg-passphrase.txt
+              chmod 600 /tmp/gpg-passphrase.txt
+              printf '#!/bin/bash\nexec gpg --pinentry-mode loopback --passphrase-file /tmp/gpg-passphrase.txt "$@"\n' > /tmp/gpg-wrapper
+              chmod +x /tmp/gpg-wrapper
+              IDLESCREEN_GPG_BIN=/tmp/gpg-wrapper CRATERIA_GPG_BIN=/tmp/gpg-wrapper cargo run --release --bin sign
+            else
+              cargo run --release --bin sign
+            fi
             git add -A
             git commit -m "Import ${DISPATCH_REPO} ${DISPATCH_TAG} (merged)" || true
           done
