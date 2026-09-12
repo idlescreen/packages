@@ -491,23 +491,6 @@ Description: Predator-prey firefly swarm
  Predator-prey firefly swarm. Official IdleScreen screensaver plugin.
 
 Package: idle-saver-hearth
-Version: 2.0.3-1
-Architecture: amd64
-Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 361
-Depends: libc6
-Filename: pool/main/idle-saver-hearth_2.0.3-1_amd64.deb
-Size: 154084
-MD5sum: 91fa4be3e8c17d642303c7cb21cd7c86
-SHA1: db1c6aca9e8e268af7ad81bd24aa880654ab9e91
-SHA256: 508c30afec80ee77fe367c9ae2a4b9e16da666d5e93010d5a7c76d49e2160ae2
-Section: utils
-Priority: optional
-Description: Cozy fireplace: rising embers, log glow, heat shimmer
- Cozy fireplace with rising embers and heat shimmer. Official IdleScreen
- screensaver plugin.
-
-Package: idle-saver-hearth
 Version: 2.2.0-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
@@ -536,6 +519,24 @@ Size: 176572
 MD5sum: 083bde349808273a4bb29b94afb246fc
 SHA1: 62ad5eb968e73bf49300465a59f963a1739a662c
 SHA256: a2af46c2b88f2c896f47ac3f87f2befedb04053c883cde0256c26c90fc591d19
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: Cozy fireplace: rising embers, log glow, heat shimmer
+ Cozy fireplace with rising embers and heat shimmer. Official IdleScreen
+ screensaver plugin.
+
+Package: idle-saver-hearth
+Version: 2.2.2-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 440
+Depends: libc6
+Filename: pool/main/idle-saver-hearth_2.2.2-1_amd64.deb
+Size: 191772
+MD5sum: e9c30a4a0eac2c76aa6185bbeeddb8d6
+SHA1: 709d289149b0ac552bfe748ecfd9105cc66b5e82
+SHA256: 601f35e6b519a9cd4ac265312b6583fdd921f0e2f3f840ad639ba636ae37bceb
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idlescreen
