@@ -19,7 +19,7 @@ concurrency:
 # rejected at the first step so a compromised PAT cannot push arbitrary
 # release payloads into our pool.
 env:
-  ALLOWED_REPOS: ${{ vars.IDLESCREEN_IMPORT_REPOS || 'idlescreen/idle,idlescreen/idle-cosmic,idlescreen/idle-tui,idlescreen/idle-studio,idlescreen/packages,idlescreen/idle-saver-beams,idlescreen/idle-saver-bursts,idlescreen/idle-saver-chaos,idlescreen/idle-saver-cosmos,idlescreen/idle-saver-glyphs,idlescreen/idle-saver-gnats,idlescreen/idle-saver-hearth,idlescreen/idle-saver-radar,idlescreen/idle-saver-ripple,idlescreen/idle-saver-storm' }}
+  ALLOWED_REPOS: ${{ vars.IDLESCREEN_IMPORT_REPOS || 'idlescreen/idle,idlescreen/idle-cosmic,idlescreen/idle-tui,idlescreen/idle-studio,idlescreen/render,idlescreen/packages,idlescreen/idle-savers' }}
 
 jobs:
   import:
