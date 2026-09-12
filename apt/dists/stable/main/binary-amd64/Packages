@@ -1,21 +1,4 @@
 Package: idle-cli
-Version: 3.5.3-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 2452
-Depends: idle-daemon (>= 3.5.0), libc6
-Filename: pool/main/idle-cli_3.5.3-1_amd64.deb
-Size: 847148
-MD5sum: 5111c170eca1370286288bc4fa0ac775
-SHA1: a053e3762c33be1b7aab0658fbe579af46f97c87
-SHA256: a3641871dae5af6de4f2414b39904904cab98bf4ec2396eaaa2a8113c83a1917
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: Command-line interface for the IdleScreen daemon
- CLI for controlling the Idle daemon over D-Bus (command: idlescreen).
-
-Package: idle-cli
 Version: 3.5.4-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -43,6 +26,23 @@ Size: 848536
 MD5sum: 115c84ef8814f1ccc51ad5b9c5b4862e
 SHA1: fc0f60551f998a52a64fbe49964d6a2181739978
 SHA256: 9b46fb21b8eb420934e29c059b14cd23e70503f4250618b70d27934d0ebc2587
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: Command-line interface for the IdleScreen daemon
+ CLI for controlling the Idle daemon over D-Bus (command: idlescreen).
+
+Package: idle-cli
+Version: 3.5.6-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 2455
+Depends: idle-daemon (>= 3.5.0), libc6
+Filename: pool/main/idle-cli_3.5.6-1_amd64.deb
+Size: 848196
+MD5sum: 7836f73bcad1faccdd727217e9418bc6
+SHA1: 8f3e1358c8e3f1049c746e5226e1d0714a60f10e
+SHA256: 900f9c2e329439417cfbfd0a78d9c3cd0f4993e6c98b70615915ce03a9217eab
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idlescreen
