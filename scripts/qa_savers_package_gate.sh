@@ -41,39 +41,31 @@ echo "=========================================="
 echo "Root: $ROOT"
 echo ""
 
+# Savers live in the idle-savers monorepo (consolidated from the ten
+# idle-saver-* repos). Members carry their own plugin manifests.
+SAVERS_WS="$ROOT/idle-savers"
 shopt -s nullglob
-savers=("$ROOT"/idle-saver-*/)
-if [[ ${#savers[@]} -eq 0 ]]; then
-  echo "FAIL: no idle-saver-* directories under $ROOT" >&2
+manifests=("$SAVERS_WS"/*/libscreensaver_*.idleplugin.toml)
+if [[ ${#manifests[@]} -eq 0 ]]; then
+  echo "FAIL: no saver manifests under $SAVERS_WS" >&2
   exit 1
 fi
 
-failed=0
-passed=0
+# Workspace Cargo.toml expects path idle/idle-api
+if [[ ! -e "$SAVERS_WS/idle" ]]; then
+  ln -sfn "$IDLE_API_SRC" "$SAVERS_WS/idle"
+fi
 
-for dir in "${savers[@]}"; do
-  name="$(basename "$dir")"
-  echo ">>> $name"
-  cd "$dir"
-  # Cargo.toml expects path idle/idle-api
-  if [[ ! -e idle ]]; then
-    ln -sfn ../idle idle
-  fi
-  if cargo test --quiet; then
-    echo "PASS: $name"
-    passed=$((passed + 1))
-  else
-    echo "FAIL: $name" >&2
-    failed=$((failed + 1))
-  fi
-  echo ""
-done
-
-echo "=========================================="
-echo "Savers gate: $passed passed, $failed failed (${#savers[@]} total)"
-if [[ "$failed" -gt 0 ]]; then
+echo ">>> idle-savers workspace (${#manifests[@]} savers)"
+cd "$SAVERS_WS"
+if cargo test --workspace --quiet; then
+  echo "=========================================="
+  echo "Savers gate: ${#manifests[@]} passed, 0 failed"
+  echo "SAVERS_PACKAGE_GATE_PASS"
+  exit 0
+else
+  echo "=========================================="
+  echo "Savers gate: workspace suite FAILED" >&2
   echo "SAVERS_PACKAGE_GATE_FAIL"
   exit 1
 fi
-echo "SAVERS_PACKAGE_GATE_PASS"
-exit 0
