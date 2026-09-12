@@ -747,6 +747,27 @@ Description: Meta package that hard-depends on all official IdleScreen saver plu
  Installs every official IdleScreen screensaver plugin (saver-*). Pulled in by
  idle-cosmic (not installed alone by end users).
 
+Package: idle-savers
+Version: 3.3.0-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 4
+Depends: idle-daemon, idle-saver-aurora, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
+Conflicts: idle-plugins-all (<< 2.0.0)
+Replaces: idlescreen-savers, idle-plugins-all
+Provides: idlescreen-savers, idle-plugins-all
+Filename: pool/main/idle-savers_3.3.0-1_amd64.deb
+Size: 1560
+MD5sum: 9530f8a1e85948eb1b313fdd9d452736
+SHA1: b9d8aae88ca72c0b511c441f5f2ea6693c49703e
+SHA256: acd86a46144420fe755ab0804695c0099a825f8b08735020b1b620c5a5813cb2
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idle
+Description: Meta package that hard-depends on all official IdleScreen saver plugins
+ Installs every official IdleScreen screensaver plugin (saver-*). Pulled in by
+ idle-cosmic (not installed alone by end users).
+
 Package: idle-studio
 Version: 0.3.3-1
 Architecture: amd64
