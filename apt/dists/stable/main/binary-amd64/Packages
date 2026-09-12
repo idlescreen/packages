@@ -122,25 +122,6 @@ Description: IdleScreen for COSMIC — product package (applet + pulls daemon an
  Installs the COSMIC panel applet and depends on idle-daemon.
 
 Package: idle-daemon
-Version: 3.5.4-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 11560
-Depends: dbus, fonts-dejavu-core, libc6
-Recommends: idle-cli, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
-Suggests: idle-cosmic
-Filename: pool/main/idle-daemon_3.5.4-1_amd64.deb
-Size: 2164600
-MD5sum: 15484c8a4fe8b4620bf993bbb2f5fb1e
-SHA1: 50534536f880b92ac35574a912e26b93a29e33be
-SHA256: ce74935929d55f311eb472d10801ba4c3bec3dc61cc51fa77d8ea93f39719bff
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: IdleScreen background idle daemon (Wayland screensaver host)
- IdleScreen background idle monitoring and screensaver host for Wayland.
-
-Package: idle-daemon
 Version: 3.5.5-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -172,6 +153,25 @@ Size: 1946068
 MD5sum: f261e67283b2fe0de0663ba6d0303a2e
 SHA1: 0d1817c80410a6066ff296cc9753f47ce0b3e132
 SHA256: 1e63bcc6e5e3fef716d141300e9abe7eba69c388fa8229abe68b757eac0be680
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: IdleScreen background idle daemon (Wayland screensaver host)
+ IdleScreen background idle monitoring and screensaver host for Wayland.
+
+Package: idle-daemon
+Version: 3.5.7-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 11610
+Depends: dbus, fonts-dejavu-core, libc6
+Recommends: idle-cli, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
+Suggests: idle-cosmic
+Filename: pool/main/idle-daemon_3.5.7-1_amd64.deb
+Size: 2164536
+MD5sum: 8509b287aac783cedbd7d35cb9028148
+SHA1: 629000abf206a67eec779d9b352936707a39bb7c
+SHA256: 319dbbd5480b0088521f1db763f30b59886e723ef5fda6078e80bf7dcf25b34e
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idlescreen
