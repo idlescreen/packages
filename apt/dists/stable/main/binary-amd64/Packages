@@ -922,24 +922,6 @@ Description: IdleScreen Studio product metapackage (offline render Director)
  Removing this package also removes idle-studio and render.
 
 Package: render
-Version: 0.3.2-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 20413
-Depends: ffmpeg, libc6
-Recommends: idle-savers
-Filename: pool/main/render_0.3.2-1_amd64.deb
-Size: 5031520
-MD5sum: bca2566f0e87eca0d7eaca0cfa6a35ea
-SHA1: 3168fc79aa0707f969a8a4c50faafc60fde50306
-SHA256: 9a95c323d046f7d679d1f91c3bcedfb1c31a3d2b290ff843bf4353de30c3ff46
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/render
-Description: IdleScreen offline export capability — simulation to AV1 video
- Offline IdleScreen effect renderer (saver math → AV1 via ffmpeg).
-
-Package: render
 Version: 0.3.3-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -969,6 +951,24 @@ Size: 5116092
 MD5sum: ca9278cb9c28d3e0102aacf0bb8c331c
 SHA1: 17b03e9e1bf35abdfa06a1bb6a7388cdfd0c96fd
 SHA256: f00aa080de893ea2d733fcc8178a70522b6dce5416c0ad2cd2c65b5bfec41ff4
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/render
+Description: IdleScreen offline export capability — simulation to AV1 video
+ Offline IdleScreen effect renderer (saver math → AV1 via ffmpeg).
+
+Package: render
+Version: 1.2.0-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 12176
+Depends: ffmpeg | ffmpeg-free | ffmpeg-full, libc6
+Recommends: idle-savers
+Filename: pool/main/render_1.2.0-1_amd64.deb
+Size: 1727688
+MD5sum: 6a7e4cdacfdfa0ea7a5ae31a2aebf7ed
+SHA1: ef7fc99960b33bfd2f8c800a8ebdc1b817c1635b
+SHA256: 772b808bf5ca9c41951469897cb07a5a9cc347233befe56cd5f3b0e4a8256a5b
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/render
