@@ -5,10 +5,10 @@
 # Run before building/signing saver RPMs for GitHub Pages.
 #
 # Layout expected (sibling checkouts):
-#   .../idlescreen/idle/              # idle-api path dependency
-#   .../idlescreen/idle-saver-beams/
-#   .../idlescreen/idle-saver-*/
-#   .../idlescreen/packages/          # this repo
+#   .../runtimescreen/runtime/              # idle-api path dependency
+#   .../runtimescreen/idle-saver-beams/
+#   .../runtimescreen/idle-saver-*/
+#   .../runtimescreen/packages/          # this repo
 #
 # Usage (from packages/ or anywhere):
 #   ./scripts/qa_savers_package_gate.sh
@@ -31,7 +31,7 @@ IDLE_API_SRC="$ROOT/idle"
 
 if [[ ! -d "$IDLE_API_SRC/idle-api" ]]; then
   echo "FAIL: idle-api not found at $IDLE_API_SRC/idle-api" >&2
-  echo "Clone idlescreen/idle next to packages and savers." >&2
+  echo "Clone idlescreen/runtime next to packages and savers." >&2
   exit 1
 fi
 
