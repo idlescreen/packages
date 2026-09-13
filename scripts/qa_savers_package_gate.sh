@@ -41,9 +41,9 @@ echo "=========================================="
 echo "Root: $ROOT"
 echo ""
 
-# Savers live in the idle-savers monorepo (consolidated from the ten
+# Savers live in the savers monorepo (consolidated from the ten
 # idle-saver-* repos). Members carry their own plugin manifests.
-SAVERS_WS="$ROOT/idle-savers"
+SAVERS_WS="$ROOT/savers"
 shopt -s nullglob
 manifests=("$SAVERS_WS"/*/libscreensaver_*.idleplugin.toml)
 if [[ ${#manifests[@]} -eq 0 ]]; then
@@ -56,7 +56,7 @@ if [[ ! -e "$SAVERS_WS/idle" ]]; then
   ln -sfn "$IDLE_API_SRC" "$SAVERS_WS/idle"
 fi
 
-echo ">>> idle-savers workspace (${#manifests[@]} savers)"
+echo ">>> savers workspace (${#manifests[@]} savers)"
 cd "$SAVERS_WS"
 if cargo test --workspace --quiet; then
   echo "=========================================="
