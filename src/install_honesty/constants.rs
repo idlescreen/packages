@@ -157,17 +157,9 @@ mod tests {
         assert!(!PRODUCT_STACK_ON_REMOVE.contains(&"idlescreen"));
     }
 
-    #[test]
-    fn remove_product_stack_sh_lists_match_const() {
-        let path = std::path::Path::new(env!("CARGO_MANIFEST_DIR"))
-            .join("metapackages/idlescreen/remove-product-stack.sh");
-        let s = std::fs::read_to_string(&path).expect("read remove-product-stack.sh");
-        for p in PRODUCT_STACK_ON_REMOVE {
-            assert!(s.contains(p), "remove-product-stack.sh must list {p}");
-        }
-        assert!(s.contains("idlescreen.repo"));
-        assert!(s.contains("idlescreen.list"));
-    }
+    /// The teardown script moved to the `idlescreen` repo (the router
+    /// package absorbed the metapackage at 4.0.0); its sync test moved with
+    /// it. The list constant stays here as the audit-side contract.
 
     #[test]
     fn remove_blurb_documents_stack_wipe() {
