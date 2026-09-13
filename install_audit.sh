@@ -97,15 +97,22 @@ _audit_signer_from_sig() {
 
 # Resolve a writable audit log path, creating the directory. Echoes the path.
 _audit_log_path() {
-    if mkdir -p "$AUDIT_SYS_DIR" 2>/dev/null && : >>"$AUDIT_SYS_LOG" 2>/dev/null; then
+    # NB: probe with `touch`, never `: >>file` — a failed redirect on the
+    # POSIX special builtin `:` aborts the whole (sub)shell before the `||`
+    # or `if` fallback can run, and the diagnostic escapes before a trailing
+    # `2>/dev/null` is applied.
+    if mkdir -p "$AUDIT_SYS_DIR" 2>/dev/null && touch "$AUDIT_SYS_LOG" 2>/dev/null; then
         chmod 0640 "$AUDIT_SYS_LOG" 2>/dev/null || true
         printf '%s' "$AUDIT_SYS_LOG"
         return 0
     fi
+    # Non-interactive sudo only: inside `$()` the tty is unreachable for a
+    # password prompt, so plain `sudo` fails silently (or blocks). `-n`
+    # rides already-cached credentials and fails fast otherwise.
     if command -v sudo >/dev/null 2>&1 &&
-        sudo mkdir -p "$AUDIT_SYS_DIR" 2>/dev/null &&
-        sudo touch "$AUDIT_SYS_LOG" 2>/dev/null; then
-        sudo chmod 0640 "$AUDIT_SYS_LOG" 2>/dev/null || true
+        sudo -n mkdir -p "$AUDIT_SYS_DIR" 2>/dev/null &&
+        sudo -n touch "$AUDIT_SYS_LOG" 2>/dev/null; then
+        sudo -n chmod 0640 "$AUDIT_SYS_LOG" 2>/dev/null || true
         printf '%s' "$AUDIT_SYS_LOG"
         return 0
     fi
@@ -114,7 +121,7 @@ _audit_log_path() {
     _fb_log="${_fallback}/install-audit.jsonl"
     # Must exist before the caller's `[ -w ]` check: -w is false for a path
     # that is merely creatable.
-    : >>"$_fb_log" 2>/dev/null || return 1
+    touch "$_fb_log" 2>/dev/null || return 1
     chmod 0640 "$_fb_log" 2>/dev/null || true
     printf '%s' "$_fb_log"
 }
@@ -205,7 +212,7 @@ audit_installed_plugins() {
             if [ -w "$_log" ]; then
                 printf '%s\n' "$_line" >>"$_log"
             elif command -v sudo >/dev/null 2>&1; then
-                printf '%s\n' "$_line" | sudo tee -a "$_log" >/dev/null 2>&1 || true
+                printf '%s\n' "$_line" | sudo -n tee -a "$_log" >/dev/null 2>&1 || true
             fi
             _count=$((_count + 1))
             case "$_line" in
