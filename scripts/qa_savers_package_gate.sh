@@ -5,10 +5,9 @@
 # Run before building/signing saver RPMs for GitHub Pages.
 #
 # Layout expected (sibling checkouts):
-#   .../runtimescreen/runtime/              # idle-api path dependency
-#   .../runtimescreen/idle-saver-beams/
-#   .../runtimescreen/idle-saver-*/
-#   .../runtimescreen/packages/          # this repo
+#   .../idlescreen/runtime/          # idle-api path dependency
+#   .../idlescreen/savers/           # saver workspace members
+#   .../idlescreen/packages/         # this repo
 #
 # Usage (from packages/ or anywhere):
 #   ./scripts/qa_savers_package_gate.sh
@@ -27,7 +26,7 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PACKAGES_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # packages/ is under idlescreen/; savers are siblings of packages/
 ROOT="$(cd "$PACKAGES_ROOT/.." && pwd)"
-IDLE_API_SRC="$ROOT/idle"
+IDLE_API_SRC="$ROOT/runtime"
 
 if [[ ! -d "$IDLE_API_SRC/idle-api" ]]; then
   echo "FAIL: idle-api not found at $IDLE_API_SRC/idle-api" >&2
@@ -51,9 +50,9 @@ if [[ ${#manifests[@]} -eq 0 ]]; then
   exit 1
 fi
 
-# Workspace Cargo.toml expects path idle/idle-api
-if [[ ! -e "$SAVERS_WS/idle" ]]; then
-  ln -sfn "$IDLE_API_SRC" "$SAVERS_WS/idle"
+# Workspace Cargo.toml expects path runtime/idle-api
+if [[ ! -e "$SAVERS_WS/runtime" ]]; then
+  ln -sfn "$IDLE_API_SRC" "$SAVERS_WS/runtime"
 fi
 
 echo ">>> savers workspace (${#manifests[@]} savers)"
