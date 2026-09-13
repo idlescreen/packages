@@ -1,7 +1,0 @@
-Package: idle-cosmic
-Version: 3.1.0
-Architecture: all
-Depends: idle-daemon, idle-savers, idle-tui
-Recommends: idle-cli
-Description: IdleScreen product for COSMIC
- Users install idle-cosmic, not idle-daemon.
