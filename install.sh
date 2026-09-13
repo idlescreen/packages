@@ -1,8 +1,8 @@
 #!/bin/sh
 # IdleScreen Installer
 # Usage:
-#   curl -fsSL https://idlescreen.github.io/packages/install.sh | sh
-#   curl -fsSL https://idlescreen.github.io/packages/install.sh -o install.sh && \
+#   curl -fsSL https://idlescreen.github.io/install.sh | sh
+#   curl -fsSL https://idlescreen.github.io/install.sh -o install.sh && \
 #       ./install.sh --verify && ./install.sh
 #
 # `--verify` prints the SHA-256 of this script plus any sibling files it
@@ -12,7 +12,7 @@
 # `--verify-self <hex>` exits non-zero unless THIS script's SHA-256 matches
 # the expected hex. Use for automated deploys to fail closed on a tampered
 # download. Example:
-#   curl -fsSL https://idlescreen.github.io/packages/install.sh -o install.sh && \
+#   curl -fsSL https://idlescreen.github.io/install.sh -o install.sh && \
 #       ./install.sh --verify-self 9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08 install.sh && \
 #       ./install.sh
 #

@@ -42,7 +42,7 @@ every shell file it would source. Recommended procedure:
 
 ```sh
 # Download the script.
-curl -fsSL https://idlescreen.github.io/packages/install.sh -o install.sh
+curl -fsSL https://idlescreen.github.io/install.sh -o install.sh
 
 # Print the hashes.
 ./install.sh --verify
