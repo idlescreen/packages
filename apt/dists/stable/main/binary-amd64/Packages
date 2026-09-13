@@ -880,29 +880,6 @@ Description: Optional TUI client for IdleScreen (idle-tui)
  Optional live TUI controller for IdleScreen.
 
 Package: idlescreen
-Version: 3.0.0-1
-Architecture: all
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 16
-Depends: idle-daemon (>= 3.0.0), idle-cli (>= 3.0.0), idle-savers, idle-tui (>= 3.0.0)
-Recommends: idle-cosmic (>= 3.0.0)
-Filename: pool/main/idlescreen_3.0.0-1_all.deb
-Size: 3000
-MD5sum: 3cd03b91ec2edc65fc1e840694f4762f
-SHA1: c645ba0655a2608bc4ffa334f41570ce989ffd2d
-SHA256: 5a9261652a1038932e8a6e75185d04a529c9d9380e39f619da30b42f899f1803
-Description: IdleScreen product metapackage for Wayland screensavers
- Installs the modular host stack: idle-daemon, idle-cli, idle-savers, idle-tui.
- On COSMIC Desktop, install idle-cosmic as well (or use install.sh which detects DE).
- .
- Removing this package also removes the product stack the installer seated
- (modules, official savers, idle-cosmic) and the APT source list drop-in.
- User config under ~/.config/idle is left in place.
- .
- Install:  sudo dnf install idlescreen   /   sudo apt install idlescreen
- Remove:   sudo dnf remove idlescreen    /   sudo apt remove idlescreen
-
-Package: idlescreen
 Version: 3.0.2-1
 Architecture: all
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -947,6 +924,32 @@ Description: IdleScreen product metapackage for Wayland screensavers
  .
  Install:  sudo dnf install idlescreen   /   sudo apt install idlescreen
  Remove:   sudo dnf remove idlescreen    /   sudo apt remove idlescreen
+
+Package: idlescreen
+Version: 4.0.0-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 440
+Depends: idle-cli (>= 4.0.0), idle-daemon (>= 3.5.8), idle-savers, idle-tui (>= 3.0.1), libc6
+Recommends: idle-cosmic (>= 3.0.2)
+Breaks: idle-cli (<< 4.0.0)
+Replaces: idle-cli (<< 4.0.0)
+Filename: pool/main/idlescreen_4.0.0-1_amd64.deb
+Size: 178980
+MD5sum: e400e9abbb362e78b92e1f1b41e32672
+SHA1: 0193d933c24f5e87d94b802ecd50747d81726009
+SHA256: e391f7d37530c10a51479e0fef080ad0538d00e84c10931dfffe8e937609430b
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: IdleScreen router — one front door for cli, tui, studio, cosmic, savers,
+ runtime
+ IdleScreen product package and router: pulls in the modular host stack and
+ provides `idlescreen` — `idlescreen <component>` execs component binaries
+ (cli, tui, studio, cosmic); `idlescreen <verb>` forwards daemon commands to
+ idle-cli; `idlescreen install` manages components via dnf/apt. Removing this
+ package removes the installed product stack; user config under ~/.config/idle
+ is left in place.
 
 Package: idlescreen-studio
 Version: 1.0.0-1
