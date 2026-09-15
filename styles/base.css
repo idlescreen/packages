@@ -1,0 +1,126 @@
+/* base.css — palette, page layout, identity elements */
+:root {
+    --bg-color: #0b0d0f;
+    --card-bg: rgba(20, 24, 28, 0.7);
+    --card-border: rgba(255, 255, 255, 0.05);
+    --text-primary: #f3f4f6;
+    --text-secondary: #9ca3af;
+    --accent-primary: #ff8541;
+    --accent-glow: rgba(255, 133, 65, 0.18);
+    --accent-glow-strong: rgba(255, 133, 65, 0.45);
+    --font-main: 'Outfit', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--bg-color);
+    color: var(--text-primary);
+    font-family: var(--font-main);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem 1.5rem;
+    overflow-x: hidden;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, rgba(11, 13, 15, 0) 70%);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 0;
+    pointer-events: none;
+}
+
+.container {
+    max-width: 680px;
+    width: 100%;
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 24px;
+    padding: 3rem 2.5rem;
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    text-align: center;
+    z-index: 1;
+    position: relative;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.logo-area {
+    font-size: 2.25rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    margin-bottom: 0.75rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    gap: 0.75rem;
+    width: 100%;
+}
+
+.logo-area span {
+    color: var(--accent-primary);
+    text-shadow: 0 0 15px var(--accent-glow-strong);
+}
+
+.logo-img {
+    width: 100%;
+    max-width: 720px;
+    border-radius: 10px;
+    display: block;
+}
+
+.logo-caption {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--text-secondary);
+    letter-spacing: 0.04em;
+}
+
+.subtitle {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.info-badge {
+    display: inline-block;
+    background: rgba(255, 133, 65, 0.1);
+    border: 1px solid rgba(255, 133, 65, 0.25);
+    color: var(--text-primary);
+    font-size: 0.85rem;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    margin-bottom: 2rem;
+    text-align: left;
+    line-height: 1.5;
+}
