@@ -147,18 +147,18 @@ Description: IdleScreen background idle daemon (Wayland screensaver host)
  IdleScreen background idle monitoring and screensaver host for Wayland.
 
 Package: idle-daemon
-Version: 3.5.8-1
+Version: 3.5.16-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 11610
+Installed-Size: 9660
 Depends: dbus, fonts-dejavu-core, libc6
-Recommends: idle-cli, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
+Recommends: idle-cli, idle-saver-aurora, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
 Suggests: idle-cosmic
-Filename: pool/main/idle-daemon_3.5.8-1_amd64.deb
-Size: 1950808
-MD5sum: 5a6cc2fc5edf5c861e9c782120188487
-SHA1: 35f86d54d050381a8bfe38a8c7b34e91ef089a4f
-SHA256: db4c18e67a6e1694070cb764f8da6f8ee842d786dd563cbee8651a555d5a7e0c
+Filename: pool/main/idle-daemon_3.5.16-1_amd64.deb
+Size: 1700560
+MD5sum: b9f2454bf0a927cf32841d5ee7e9f55b
+SHA1: 36acb602960f5100cd1605dd6f858c2b2c6f0114
+SHA256: 6f5a0cc5891e26aa51e3c4e2557d3a6c742416201942e21525930d4fa216cef5
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idlescreen
