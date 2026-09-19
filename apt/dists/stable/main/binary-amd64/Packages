@@ -815,23 +815,6 @@ Description: Meta package that hard-depends on all official IdleScreen saver plu
  idle-cosmic (not installed alone by end users).
 
 Package: idle-studio
-Version: 1.3.2-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 2693
-Depends: libc6, render
-Filename: pool/main/idle-studio_1.3.2-1_amd64.deb
-Size: 779448
-MD5sum: 99473ce283a438b79e57a744251b80fe
-SHA1: a32862897e9ff2c02b6ee0e797856dbd64850af1
-SHA256: b29144c913349807d41ab4ec57431a524127259b44578640ff0003a1467ce2e4
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/render
-Description: IdleScreen Studio — TUI Director for the render capability
- IdleScreen Studio — TUI Director for offline video renders.
-
-Package: idle-studio
 Version: 1.3.3-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -859,6 +842,23 @@ Size: 485140
 MD5sum: c1e74e47851fd1cb77f369f380147b23
 SHA1: 163653919d81f220c57a414334efb5fa61051342
 SHA256: 8caace98e51e72af152c5c292cf85a7851cb3aaf4a44228cfacb586803196cbc
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/studio
+Description: IdleScreen Studio — TUI Director for the render capability
+ IdleScreen Studio — TUI Director for offline video renders.
+
+Package: idle-studio
+Version: 1.3.5-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 1284
+Depends: libc6, render
+Filename: pool/main/idle-studio_1.3.5-1_amd64.deb
+Size: 485064
+MD5sum: 5311a77542e7c8e3759e00e0260a9850
+SHA1: d98e9dc42eabaf0836a7a08de10a52281ff77f15
+SHA256: 75d6f2935224a083bf0dd28bd014b7eec0b553d8323c23b773234eb2e60a33d3
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/studio
