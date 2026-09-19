@@ -50,7 +50,12 @@ fn collect_packages(dir_path: &Path, is_deb: bool) -> Result<Vec<(String, Packag
     Ok(out)
 }
 
-fn prune_directory(dir_path: &Path, keep: usize, is_deb: bool, is_dry_run: bool) -> Result<(), String> {
+fn prune_directory(
+    dir_path: &Path,
+    keep: usize,
+    is_deb: bool,
+    is_dry_run: bool,
+) -> Result<(), String> {
     if !dir_path.exists() {
         return Ok(());
     }

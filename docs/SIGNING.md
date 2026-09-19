@@ -29,8 +29,8 @@ repo.
 | Surface | Posture |
 |---------|---------|
 | APT `/etc/apt/keyrings/idlescreen-keyring.gpg` | written by `repo.sh` via `curl \| sudo tee` over TLS; no out-of-band fingerprint check yet — **residual**, see `TRUST.md` §"GitHub Pages compromise" |
-| RPM `/etc/pki/rpm-gpg/…` | **not installed by any script** — see `TRUST.md:67-68` (claim) vs `repo.sh` (gap) — **residual**, fix tracked |
-| `install.sh` bootstrap modules | when `IDLE_REQUIRE_MANIFEST_SIGNATURE=1` is set, every downloaded `*.sh` is verified against its sibling `*.sh.sig` (Sprint 06) |
+| RPM `/etc/pki/rpm-gpg/idlescreen-key.gpg` | installed by `repo.sh` (`curl` → `mv` → `rpm --import`); no out-of-band fingerprint check yet — **residual**, see `TRUST.md` |
+| `install.sh` bootstrap modules | when `IDLE_REQUIRE_MANIFEST_SIGNATURE` is set (any value — presence gate), every downloaded `*.sh` is verified against its sibling `*.sig` via `gpg --verify` (Sprint 06) |
 | Per-plugin manifest signature | host honors `IDLE_REQUIRE_MANIFEST_SIGNATURE`; install audit log records the effective enforcement state (Sprint 06) |
 
 ## Key rotation procedure
@@ -63,11 +63,10 @@ Every install records the effective manifest-signature state in
 {"signature":{"enforce":true,"present":true,"sha256":"…","signer":"…"}, …}
 ```
 
-If `enforce` is `false` but `present` is `true`, the operator has set
-`IDLE_REQUIRE_MANIFEST_SIGNATURE` to empty/`=0` (or any non-empty value
-that the host considers unset — the gate keys on `var_os().is_some()`).
-Document this in `DEPLOYMENT.md` and align the prose with the actual
-behaviour.
+If `enforce` is `false` but `present` is `true`, the host never saw the
+env var — the gate keys on `var_os().is_some()`, so even
+`IDLE_REQUIRE_MANIFEST_SIGNATURE=0` counts as *set* (enforcing). The
+presence-gate semantics are documented in `DEPLOYMENT.md` (runtime repo).
 
 ## Verification commands
 

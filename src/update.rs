@@ -66,23 +66,34 @@ fn run_createrepo() -> Result<(), String> {
 }
 
 fn sign_rpms() -> Result<(), String> {
-    let signing_key = resolve_signing_key(resolve_gpg_name_from_env().as_deref(), "jerydleuck@gmail.com");
+    let signing_key = resolve_signing_key(
+        resolve_gpg_name_from_env().as_deref(),
+        "jerydleuck@gmail.com",
+    );
     let rpm_pool = Path::new("rpm/pool");
-    if !rpm_pool.exists() { return Ok(()); }
+    if !rpm_pool.exists() {
+        return Ok(());
+    }
 
     let mut rpms = Vec::new();
     if let Ok(entries) = fs::read_dir(rpm_pool) {
         for entry in entries.flatten() {
-            if entry.path().extension().and_then(|s| s.to_str()) == Some("rpm") { rpms.push(entry.path()); }
+            if entry.path().extension().and_then(|s| s.to_str()) == Some("rpm") {
+                rpms.push(entry.path());
+            }
         }
     }
 
-    if rpms.is_empty() { return Ok(()); }
+    if rpms.is_empty() {
+        return Ok(());
+    }
 
     println!("Signing {} RPMs...", rpms.len());
     let mut cmd = Command::new("rpmsign");
     cmd.arg("--addsign").arg("--key-id").arg(&signing_key);
-    for rpm in &rpms { cmd.arg(rpm); }
+    for rpm in &rpms {
+        cmd.arg(rpm);
+    }
     run_cmd(&mut cmd)?;
     println!("Signed RPMs successfully.");
     Ok(())

@@ -14,7 +14,8 @@
 
 ## What the installer does NOT do
 
-- It does **not** run anything outside `dnf` / `apt-get` / `pacman`.
+- It does **not** run anything outside `dnf` / `apt-get` (Arch is
+  PKGBUILD-only and does not go through `install.sh` at all).
 - It does **not** contact any host other than the IdleScreen repo
   (`https://idlescreen.github.io/packages/`) and your distro's package
   mirrors.
@@ -83,23 +84,22 @@ First-install remains trust-on-first-use over TLS — the manifest's value
 is for re-verification, mirrors, and anyone cross-checking against a
 copy of the key they already hold.
 
-For automated deploys, hard-pin a specific release by setting
-`IDLESCREEN_VERSION=4.0.5` (or whatever the latest tagged release is) in
-the environment before invoking the installer.
-
 ## Package signing keys
 
 - RPM (DNF / Fedora / RHEL): signed by the GPG key at
-  `https://idlescreen.github.io/packages/idlescreen-keyring.gpg`. The
-  installer downloads + installs the keyring to `/etc/pki/rpm-gpg/`.
+  `https://idlescreen.github.io/packages/rpm/idlescreen-key.gpg`. The
+  installer downloads it to `/etc/pki/rpm-gpg/idlescreen-key.gpg` and
+  imports it with `rpm --import` (see `repo.sh`).
 - DEB (APT / Debian / Ubuntu): signed by the same key, downloaded to
   `/etc/apt/keyrings/idlescreen-keyring.gpg`. APT refuses unsigned
   packages from the IdleScreen repo by default.
-- Arch (experimental PKGBUILD): GPG signature verified via `pacman-key`.
+- Arch (experimental PKGBUILD in `arch/`): not covered by `install.sh`;
+  build with `makepkg -si`. Its GPG verification is on you — the
+  PKGBUILD tracks upstream source, not the signed channel.
 
 The private signing key is held only in GitHub Actions secrets
 (`GPG_PRIVATE_KEY`, `GPG_PASSPHRASE`). It is **never** committed to the
-repo. See `docs/SIGNING.md` (in the org repo) for the full SOP.
+repo. See `docs/SIGNING.md` (in this repo) for the full SOP.
 
 ## When verification FAILS
 

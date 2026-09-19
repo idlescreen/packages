@@ -88,6 +88,8 @@ No breaking schema changes; capabilities and ABI are unchanged.
 
 The project was renamed from `trance` to `idle` / `idlescreen` mid-2026.
 Cross-references in man pages and `trance-daemon` asset filenames were
-left as historical cruft; tracked as `idle-daemon/assets/trance-daemon.*`
-and `idle-cosmic/idlescreen-applet.1` (`TRANCE-APPLET`). In progress in
-Sprint 06.
+left as historical cruft; both were cleaned up in Sprint 06 —
+`idle-daemon/assets/` now ships only `idle-daemon.*` files and
+`cosmic/idlescreen-applet.1` documents `IDLE-APPLET`. The remaining
+`trance` mentions are intentional back-compat paths (legacy
+`~/.config/trance/` fallback, package `provides`/`replaces` lines).

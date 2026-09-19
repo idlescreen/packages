@@ -3,6 +3,123 @@
 
 use std::cmp::Ordering;
 
+/// Minimal strict semver 2.0 (`MAJOR.MINOR.PATCH[-pre][+build]`).
+///
+/// Ordering follows semver precedence: numeric identifiers sort before
+/// alphanumeric, a release sorts after any of its prereleases, and build
+/// metadata is ignored. Replaces the `semver` crate for the narrow
+/// parse-and-compare use here.
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct Semver {
+    major: u64,
+    minor: u64,
+    patch: u64,
+    pre: Vec<PreId>,
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+enum PreId {
+    Num(u64),
+    Alpha(String),
+}
+
+impl Semver {
+    fn parse(s: &str) -> Option<Self> {
+        let (head, build) = match s.split_once('+') {
+            Some((h, b)) => (h, Some(b)),
+            None => (s, None),
+        };
+        if let Some(b) = build {
+            if !b.split('.').all(|i| is_ident(i)) {
+                return None;
+            }
+        }
+        let (core, pre) = match head.split_once('-') {
+            Some((c, p)) => (c, Some(p)),
+            None => (head, None),
+        };
+        let mut parts = core.split('.');
+        let major = parse_num(parts.next()?)?;
+        let minor = parse_num(parts.next()?)?;
+        let patch = parse_num(parts.next()?)?;
+        if parts.next().is_some() {
+            return None;
+        }
+        let pre = match pre {
+            Some(p) => p
+                .split('.')
+                .map(|i| {
+                    if !is_ident(i) {
+                        return None;
+                    }
+                    if i.bytes().all(|b| b.is_ascii_digit()) {
+                        Some(PreId::Num(parse_num(i)?))
+                    } else {
+                        Some(PreId::Alpha(i.to_string()))
+                    }
+                })
+                .collect::<Option<Vec<_>>>()?,
+            None => Vec::new(),
+        };
+        Some(Self {
+            major,
+            minor,
+            patch,
+            pre,
+        })
+    }
+}
+
+/// Identifier char set shared by prerelease and build: `[0-9A-Za-z-]`, non-empty.
+fn is_ident(s: &str) -> bool {
+    !s.is_empty() && s.bytes().all(|b| b.is_ascii_alphanumeric() || b == b'-')
+}
+
+/// Strict numeric field: digits only, no leading zeros, fits in u64.
+fn parse_num(s: &str) -> Option<u64> {
+    if s.is_empty() || !s.bytes().all(|b| b.is_ascii_digit()) {
+        return None;
+    }
+    if s.len() > 1 && s.starts_with('0') {
+        return None;
+    }
+    s.parse().ok()
+}
+
+impl Ord for Semver {
+    fn cmp(&self, other: &Self) -> Ordering {
+        (self.major, self.minor, self.patch)
+            .cmp(&(other.major, other.minor, other.patch))
+            .then_with(|| match (self.pre.is_empty(), other.pre.is_empty()) {
+                (true, true) => Ordering::Equal,
+                (true, false) => Ordering::Greater,
+                (false, true) => Ordering::Less,
+                (false, false) => cmp_pre(&self.pre, &other.pre),
+            })
+    }
+}
+
+impl PartialOrd for Semver {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
+fn cmp_pre(a: &[PreId], b: &[PreId]) -> Ordering {
+    for (x, y) in a.iter().zip(b.iter()) {
+        let ord = match (x, y) {
+            (PreId::Num(x), PreId::Num(y)) => x.cmp(y),
+            (PreId::Num(_), PreId::Alpha(_)) => Ordering::Less,
+            (PreId::Alpha(_), PreId::Num(_)) => Ordering::Greater,
+            (PreId::Alpha(x), PreId::Alpha(y)) => x.cmp(y),
+        };
+        if ord != Ordering::Equal {
+            return ord;
+        }
+    }
+    a.len().cmp(&b.len())
+}
+
 /// Split a version-like string into alphanumeric runs (digits or letters).
 ///
 /// Non-alphanumeric separators are discarded. Empty input yields an empty list.
@@ -28,7 +145,7 @@ pub fn split_parts(s: &str) -> Vec<String> {
 /// numerically when both are numbers, else lexicographically. Longer part
 /// lists sort higher when a common prefix is equal.
 pub fn compare_versions(a: &str, b: &str) -> Ordering {
-    if let (Ok(av), Ok(bv)) = (semver::Version::parse(a), semver::Version::parse(b)) {
+    if let (Some(av), Some(bv)) = (Semver::parse(a), Semver::parse(b)) {
         return av.cmp(&bv);
     }
 
