@@ -68,22 +68,24 @@ jobs:
         run: |
           set -e
           # Refuse to clobber an existing pool file: download to a staging
-          # dir first, compare basenames against the pool, then move in.
+          # dir first, compare basenames against the pool, then copy in.
           # Either the dispatch is a legitimate new release (no overlap) or
           # the operator must intervene. This closes the silent-overwrite hole.
-          _tmp=$(mktemp -d)
-          trap 'rm -rf "$_tmp"' EXIT
-          mkdir -p "$_tmp/deb" "$_tmp/rpm"
+          # Staging lives outside the repo: the commit step's
+          # reset --hard retry path re-copies from here — copies inside
+          # the repo would be deleted by the reset once committed.
+          _staging="${RUNNER_TEMP}/import-staging"
+          mkdir -p "$_staging/deb" "$_staging/rpm"
 
           gh release download "${DISPATCH_TAG}" \
             --repo "${DISPATCH_REPO}" \
             --pattern "*.deb" \
-            --dir "$_tmp/deb" || true
+            --dir "$_staging/deb" || true
 
           gh release download "${DISPATCH_TAG}" \
             --repo "${DISPATCH_REPO}" \
             --pattern "*.rpm" \
-            --dir "$_tmp/rpm" || true
+            --dir "$_staging/rpm" || true
 
           _guard() {
             for f in "$1"/*; do
@@ -94,10 +96,10 @@ jobs:
               fi
             done
           }
-          _guard "$_tmp/deb" apt/pool/main
-          _guard "$_tmp/rpm" rpm/pool
-          mv "$_tmp/deb"/*.deb apt/pool/main/ 2>/dev/null || true
-          mv "$_tmp/rpm"/*.rpm rpm/pool/ 2>/dev/null || true
+          _guard "$_staging/deb" apt/pool/main
+          _guard "$_staging/rpm" rpm/pool
+          cp "$_staging/deb"/*.deb apt/pool/main/ 2>/dev/null || true
+          cp "$_staging/rpm"/*.rpm rpm/pool/ 2>/dev/null || true
 
       - name: Prune old versions from pool
         run: |
@@ -183,15 +185,29 @@ jobs:
           git diff-index --quiet HEAD || git commit -m "Import ${DISPATCH_REPO} ${DISPATCH_TAG}"
 
           # Bounded retry: when a concurrent import pushed first, reset to
-          # origin and regenerate the indexes over the merged pool (the new
-          # packages are untracked files — they survive reset --hard). The
-          # metadata is deterministic, so this converges instead of failing.
+          # origin and regenerate over the merged pool. The first commit
+          # made the pool files tracked, so reset --hard deletes them —
+          # re-copy from the staging dir outside the repo (skipping any
+          # basename the winning import already placed, preserving the
+          # no-clobber rule). The metadata is deterministic, so this
+          # converges instead of failing.
           for _attempt in 1 2 3; do
             if git push; then
               exit 0
             fi
             git fetch origin
             git reset --hard origin/master
+            for f in "${RUNNER_TEMP}/import-staging/deb"/*.deb; do
+              [ -e "$f" ] || continue
+              [ -e "apt/pool/main/$(basename "$f")" ] || cp "$f" apt/pool/main/
+            done
+            for f in "${RUNNER_TEMP}/import-staging/rpm"/*.rpm; do
+              [ -e "$f" ] || continue
+              [ -e "rpm/pool/$(basename "$f")" ] || cp "$f" rpm/pool/
+            done
+            # The newer remote may itself have pushed a package past the
+            # keep-3 limit — re-prune over the merged pool state.
+            cargo run --release --bin prune
             # Same identity fallback as the sign step — the IDLESCREEN/CRATERIA
             # GPG_NAME secrets may be unset; the retry must not die on it.
             export IDLESCREEN_GPG_NAME="${IDLESCREEN_GPG_NAME:-${CRATERIA_GPG_NAME:-jerydleuck@gmail.com}}"
