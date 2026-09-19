@@ -1,6 +1,6 @@
 # packages
 
-[![studio2201 Suite](https://img.shields.io/badge/studio2201-5%2F5%20Verified-2f6f5e?logo=shield)](https://studio2201.com/agents#badges)
+[![studio2201 gate](https://github.com/idlescreen/packages/actions/workflows/studio2201.yml/badge.svg)](https://github.com/idlescreen/packages/actions/workflows/studio2201.yml)
 
 The signed package channel — APT and RPM repos served at
 `idlescreen.github.io/packages`, fed by release imports from every product
