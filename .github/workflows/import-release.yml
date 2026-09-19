@@ -4,6 +4,13 @@ on:
   repository_dispatch:
     types:
       - new_release
+  # Catch-up path: repository_dispatch only holds one pending run, so a
+  # dispatch arriving while another is queued is dropped silently. The
+  # sweep below converges the pool to every product repo's latest release
+  # regardless of which trigger fired — a dropped dispatch self-heals here.
+  workflow_dispatch:
+  schedule:
+    - cron: '17 */6 * * *'
 
 permissions:
   contents: write
@@ -30,6 +37,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - name: Reject unexpected source repo
+        if: github.event_name == 'repository_dispatch'
         env:
           DISPATCH_REPO: ${{ github.event.client_payload.repo }}
           DISPATCH_TAG: ${{ github.event.client_payload.tag }}
@@ -61,6 +69,7 @@ jobs:
           sudo apt-get install -y dpkg-dev apt-utils createrepo-c rpm gpg
 
       - name: Download release assets (no clobber)
+        if: github.event_name == 'repository_dispatch'
         env:
           GH_TOKEN: ${{ github.token }}
           DISPATCH_REPO: ${{ github.event.client_payload.repo }}
@@ -100,6 +109,44 @@ jobs:
           _guard "$_staging/rpm" rpm/pool
           cp "$_staging/deb"/*.deb apt/pool/main/ 2>/dev/null || true
           cp "$_staging/rpm"/*.rpm rpm/pool/ 2>/dev/null || true
+
+      - name: Sweep latest releases for missing pool files
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ALLOWED_REPOS: ${{ env.ALLOWED_REPOS }}
+        run: |
+          set -e
+          # Heal dropped dispatches: for every allowed product repo, compare
+          # its latest release's .deb/.rpm asset names against the pool and
+          # pull whatever is absent. Basenames already in the pool or in the
+          # dispatch staging dir are skipped — the sweep never clobbers.
+          _staging="${RUNNER_TEMP}/import-staging"
+          mkdir -p "$_staging/deb" "$_staging/rpm" "$_staging/dl"
+          _repos="$(echo "${ALLOWED_REPOS}" | tr ',' ' ')"
+
+          for repo in ${_repos}; do
+            _tag=$(gh release view --repo "${repo}" --json tagName -q .tagName 2>/dev/null) || continue
+            [ -n "${_tag}" ] || continue
+            _names=$(gh release view --repo "${repo}" --json assets -q '.assets[].name')
+            for name in ${_names}; do
+              case "${name}" in
+                *.deb) _dst=apt/pool/main ; _sub=deb ;;
+                *.rpm) _dst=rpm/pool ; _sub=rpm ;;
+                *) continue ;;
+              esac
+              if [ -e "${_dst}/${name}" ] || [ -e "${_staging}/${_sub}/${name}" ]; then
+                continue
+              fi
+              echo "sweep: ${repo} ${_tag} missing ${name} — importing"
+              if gh release download "${_tag}" --repo "${repo}" \
+                  --pattern "${name}" --dir "${_staging}/dl"; then
+                mv "${_staging}/dl/${name}" "${_staging}/${_sub}/${name}"
+                cp "${_staging}/${_sub}/${name}" "${_dst}/"
+              else
+                echo "WARNING: sweep download failed for ${repo} ${_tag} ${name}" >&2
+              fi
+            done
+          done
 
       - name: Prune old versions from pool
         run: |
@@ -181,8 +228,13 @@ jobs:
         run: |
           git config --global user.name "github-actions[bot]"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          if [ -n "${DISPATCH_REPO}" ]; then
+            _msg="Import ${DISPATCH_REPO} ${DISPATCH_TAG}"
+          else
+            _msg="Pool sweep: catch-up import"
+          fi
           git add -A
-          git diff-index --quiet HEAD || git commit -m "Import ${DISPATCH_REPO} ${DISPATCH_TAG}"
+          git diff-index --quiet HEAD || git commit -m "${_msg}"
 
           # Bounded retry: when a concurrent import pushed first, reset to
           # origin and regenerate over the merged pool. The first commit
@@ -224,7 +276,7 @@ jobs:
               cargo run --release --bin sign
             fi
             git add -A
-            git commit -m "Import ${DISPATCH_REPO} ${DISPATCH_TAG} (merged)" || true
+            git commit -m "${_msg} (merged)" || true
           done
           echo "ERROR: push failed after 3 attempts" >&2
           exit 1

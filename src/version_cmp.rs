@@ -217,4 +217,21 @@ mod tests {
             assert_eq!(compare_versions(a, b), compare_versions(b, a).reverse());
         }
     }
+
+    #[test]
+    fn malformed_version_strings_never_panic() {
+        for v in [
+            "", ".", "..", "1", "1.", ".1", "1.2.3.4", "-1.0.0", "v1.0.0",
+            "1.0.0-", "1.0.0+", "1.0.0-alpha..1", "1.0.0--", "01.0.0", "1.02.3",
+            "1.2.3-0", "18446744073709551616.0.0", "99999999999999999999999999.0.0",
+            "a.b.c", "1.0.0-alpha.1.2.3.4.5", "\u{1F600}", "1.0.0-rc.1+build.5",
+            "x", "0.0.0", "10.20.30", "1.0.0-beta+exp.sha.5114f85", "3.2.4-1",
+        ] {
+            let _ = Semver::parse(v);
+            let _ = compare_versions(v, "1.0.0");
+            let _ = compare_versions("1.0.0", v);
+            let _ = compare_versions(v, v);
+            let _ = split_parts(v);
+        }
+    }
 }
