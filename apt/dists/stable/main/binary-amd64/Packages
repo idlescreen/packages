@@ -56,30 +56,6 @@ Description: Command-line interface for the IdleScreen daemon
  <verb>` routes here via the idlescreen router).
 
 Package: idle-cosmic
-Version: 3.2.3-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 25380
-Depends: idle-daemon, idle-tui, libc6
-Recommends: idle-cli, idle-tui, idle-saver-aurora, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
-Enhances: cosmic-session, cosmic-panel
-Conflicts: app-cosmic (<< 2.1.0), idlescreen-applet (<< 2.1.0), trance-applet (<< 2.0.0)
-Replaces: app-cosmic, idlescreen-applet, trance-applet, idlescreen-cosmic
-Provides: app-cosmic, idlescreen-applet, trance-applet, idlescreen-cosmic
-Filename: pool/main/idle-cosmic_3.2.3-1_amd64.deb
-Size: 6595872
-MD5sum: 57303d5e3d91c78cdba730170e5effca
-SHA1: 28de32ca48138e520ce51787f67f657c5079ef95
-SHA256: c87ec5f5790b72d7680f89aa2f50bb6582f5dcaca783e038c4c52ca98f4550c8
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/idle-cosmic
-Description: IdleScreen for COSMIC — product package (applet + pulls daemon and
- recommended savers)
- IdleScreen product for COSMIC Desktop.
- Installs the COSMIC panel applet and depends on idle-daemon.
-
-Package: idle-cosmic
 Version: 3.2.4-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -119,6 +95,30 @@ Size: 6251524
 MD5sum: c9798735042253ca88cfd51544e5ecf3
 SHA1: 368963dfd75854b085e081c13936e12b052a1241
 SHA256: 559811b8afad9997f1bf9ded8c55c3ffa39833f51beb31c111a17d25c8cc129d
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/cosmic
+Description: IdleScreen for COSMIC — product package (applet + pulls daemon and
+ recommended savers)
+ IdleScreen product for COSMIC Desktop.
+ Installs the COSMIC panel applet and depends on idle-daemon.
+
+Package: idle-cosmic
+Version: 3.2.6-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 24280
+Depends: idle-daemon, idle-tui, libc6
+Recommends: idle-cli, idle-tui, idle-saver-aurora, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
+Enhances: cosmic-session, cosmic-panel
+Conflicts: app-cosmic (<< 2.1.0), idlescreen-applet (<< 2.1.0), trance-applet (<< 2.0.0)
+Replaces: app-cosmic, idlescreen-applet, trance-applet, idlescreen-cosmic
+Provides: app-cosmic, idlescreen-applet, trance-applet, idlescreen-cosmic
+Filename: pool/main/idle-cosmic_3.2.6-1_amd64.deb
+Size: 6275820
+MD5sum: 6efda63006d05aebf0c5c0f81451d208
+SHA1: 9a4a4bf58fe0fe548fb94c603e40bf707a746a2b
+SHA256: 69d77e1bb5262a9faf76b65ba1769aaa8bcc8169c8a647fb73648d507762739f
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/cosmic
