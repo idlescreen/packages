@@ -1,6 +1,10 @@
 # packages
 
-[![studio2201 gate](https://github.com/idlescreen/packages/actions/workflows/studio2201.yml/badge.svg)](https://github.com/idlescreen/packages/actions/workflows/studio2201.yml)
+[![snip](https://img.shields.io/github/actions/workflow/status/idlescreen/packages/snip.yml?label=snip&logo=shield)](https://github.com/idlescreen/packages/actions/workflows/snip.yml)
+[![vigil](https://img.shields.io/github/actions/workflow/status/idlescreen/packages/vigil.yml?label=vigil&logo=shield)](https://github.com/idlescreen/packages/actions/workflows/vigil.yml)
+[![aegis](https://img.shields.io/github/actions/workflow/status/idlescreen/packages/aegis.yml?label=aegis&logo=shield)](https://github.com/idlescreen/packages/actions/workflows/aegis.yml)
+[![proven](https://img.shields.io/github/actions/workflow/status/idlescreen/packages/proven.yml?label=proven&logo=shield)](https://github.com/idlescreen/packages/actions/workflows/proven.yml)
+[![boneyard](https://img.shields.io/github/actions/workflow/status/idlescreen/packages/boneyard.yml?label=boneyard&logo=shield)](https://github.com/idlescreen/packages/actions/workflows/boneyard.yml)
 
 The signed package channel — APT and RPM repos served at
 `idlescreen.github.io/packages`, fed by release imports from every product
