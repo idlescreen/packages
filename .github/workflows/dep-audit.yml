@@ -1,0 +1,102 @@
+name: Dependency Audit
+
+# Weekly dependency-hygiene sweep across the org — cargo audit
+# (advisories, honoring each repo's .cargo/audit.toml ignores) and
+# cargo machete (unused deps, honoring Cargo.toml machete metadata)
+# for every product repo, plus Miri on runtime's std-only crates.
+#
+# A failure means a repo picked up a new advisory or an unused
+# dependency since the last manual audit — investigate the matrix
+# leg that went red. Scheduled runs file no tickets; the red run
+# is the signal.
+
+on:
+  schedule:
+    # Mondays 04:23 UTC — off the top-of-hour rush.
+    - cron: '23 4 * * 1'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: audit ${{ matrix.repo.name }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        repo:
+          - { name: runtime }
+          - { name: cli }
+          - { name: tui }
+          - { name: studio, runtime: true }
+          - { name: cosmic }
+          - { name: savers, runtime: true }
+          - { name: idlescreen }
+          - { name: packages }
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: idlescreen/${{ matrix.repo.name }}
+          path: repo
+
+      - name: Checkout runtime engine (path deps)
+        if: matrix.repo.runtime
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: idlescreen/runtime
+          path: repo/runtime
+
+      - name: Install Rust
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          cd repo
+          if [ -f rust-toolchain.toml ]; then rustup show; else rustup default stable; fi
+
+      - name: Install cargo-binstall
+        run: |
+          curl -L --proto '=https' --tlsv1.2 -sSf \
+            https://raw.githubusercontent.com/cargo-bins/cargo-binstall/main/install-from-binstall-release.sh | bash
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+
+      - name: Install audit tools
+        run: cargo binstall -y cargo-audit cargo-machete
+
+      - name: cargo audit
+        working-directory: repo
+        run: cargo audit
+
+      - name: cargo machete
+        working-directory: repo
+        run: cargo machete
+
+  miri:
+    name: miri (runtime std-only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: idlescreen/runtime
+          path: repo
+
+      - name: Install nightly Rust + Miri
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
+          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
+          rustup toolchain install nightly --profile minimal --component miri,rust-src
+
+      - name: Miri — pure-std crates
+        working-directory: repo
+        run: cargo +nightly miri test -p idle-err -p idle-log
+
+      - name: Miri — RawWaker paths in idle-runner
+        working-directory: repo
+        # spin_block_on + waker_clone filters cover the pure-std waker
+        # tests; block_on_future_* spin real tokio runtimes, which Miri
+        # cannot execute.
+        run: |
+          cargo +nightly miri test -p idle-runner spin_block_on
+          cargo +nightly miri test -p idle-runner waker_clone
