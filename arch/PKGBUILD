@@ -1,6 +1,6 @@
 # PKGBUILD for Arch Linux / AUR
 pkgname=idle-cosmic
-pkgver=3.2.5
+pkgver=3.2.6
 pkgrel=1
 pkgdesc="IdleScreen for COSMIC Desktop"
 arch=('x86_64')

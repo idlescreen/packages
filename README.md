@@ -1,5 +1,7 @@
 # packages
 
+[![studio2201 Suite](https://img.shields.io/badge/studio2201-5%2F5%20Verified-2f6f5e?logo=shield)](https://studio2201.com/agents#badges)
+
 The signed package channel — APT and RPM repos served at
 `idlescreen.github.io/packages`, fed by release imports from every product
 repo. Part of [IdleScreen](https://idlescreen.github.io) — modular Wayland
