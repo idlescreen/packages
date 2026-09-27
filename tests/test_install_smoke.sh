@@ -134,6 +134,24 @@ else
     fail=$((fail + 1))
 fi
 
+# 4b. IDLESCREEN_REPO_BASE must actually reach the DNF baseurl.
+#     repo.sh used to reassign REPO_BASE unconditionally when sourced, so the
+#     override worked for bootstrap downloads but was discarded for the written
+#     .repo — and this test passed anyway because it separately redirected
+#     RPM_GPG_DIR / YUM_REPOS_D. Assert the baseurl itself.
+if [ -f "$TMP/yum.repos.d/idlescreen.repo" ]; then
+    if grep -q "^baseurl=file://$SCRIPT_DIR/rpm$" "$TMP/yum.repos.d/idlescreen.repo"; then
+        echo "ok: IDLESCREEN_REPO_BASE reached the DNF baseurl"
+    else
+        echo "FAIL: .repo baseurl did not honour IDLESCREEN_REPO_BASE (got:)"
+        grep '^baseurl=' "$TMP/yum.repos.d/idlescreen.repo" | sed 's/^/    /'
+        fail=$((fail + 1))
+    fi
+else
+    echo "FAIL: expected .repo at $TMP/yum.repos.d/idlescreen.repo"
+    fail=$((fail + 1))
+fi
+
 # 5. Negative: forged RPM signing key (wrong fingerprint) must refuse
 #    BEFORE the package-manager stage — fail closed on a poisoned origin.
 : > "$LOG"
