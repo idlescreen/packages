@@ -1,6 +1,10 @@
 # shellcheck shell=sh
 # Repo logic
-REPO_BASE="https://idlescreen.github.io/packages"
+# `install.sh` reads IDLESCREEN_REPO_BASE and exports it so bootstrap downloads
+# can be redirected. This file previously overwrote the value unconditionally,
+# so the DNF baseurl and the APT source silently ignored the override — the
+# smoke test only passed because it separately redirected RPM_GPG_DIR/YUM_REPOS_D.
+REPO_BASE="${IDLESCREEN_REPO_BASE:-https://idlescreen.github.io/packages}"
 
 # Fingerprint of the IdleScreen RPM signing key (rpm/idlescreen-key.gpg).
 # Pinned so the DNF trust anchor is verified the same way the APT keyring is.
