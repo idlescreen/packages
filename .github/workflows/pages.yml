@@ -36,7 +36,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
       - name: Setup Pages
-        uses: actions/configure-pages@v6
+        uses: actions/configure-pages@45bfe0192ca1faeb007ade9deae92b16b8254a0d # v6
         with:
           enablement: true
 
@@ -57,8 +57,14 @@ jobs:
             > checksums.sha256
 
           if [ -z "$GPG_PRIVATE_KEY" ]; then
-            echo "no GPG_PRIVATE_KEY — publishing unsigned manifest" >&2
-            exit 0
+            # Fail closed. TRUST.md states unconditionally that "Every Pages
+            # deploy publishes checksums.sha256 ... plus a detached signature",
+            # and install.sh's documented trust model depends on that
+            # manifest existing. Exiting 0 here made a deploy with no signing
+            # key look like a successful deploy, silently withdrawing the
+            # verification path the docs tell users to rely on.
+            echo "::error::GPG_PRIVATE_KEY is not set — refusing to publish an unsigned manifest"
+            exit 1
           fi
           _name="${IDLESCREEN_GPG_NAME:-${CRATERIA_GPG_NAME:-jerydleuck@gmail.com}}"
           mkdir -p ~/.gnupg && chmod 700 ~/.gnupg
@@ -81,10 +87,10 @@ jobs:
 
       # Full tree: install scripts, apt/, rpm/ (pool + repodata), index.html
       - name: Upload Artifact
-        uses: actions/upload-pages-artifact@v5
+        uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5
         with:
           path: '.'
 
       - name: Deploy to GitHub Pages
         id: deployment
-        uses: actions/deploy-pages@v5
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5
