@@ -97,6 +97,27 @@
     border-color: rgba(255, 133, 65, 0.3);
 }
 
+/* Explanatory copy under a command box — trust-model caveats, out-of-band
+   verification steps, distro notes. Not a command; never copyable. */
+.step-note {
+    margin-top: 0.6rem;
+    font-size: 0.78rem;
+    line-height: 1.55;
+    color: var(--text-secondary);
+}
+
+.step-note code {
+    font-family: var(--font-mono);
+    font-size: 0.92em;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.1em 0.35em;
+    border-radius: 4px;
+}
+
+.step-note a {
+    color: var(--accent-primary);
+}
+
 .command {
     font-family: var(--font-mono);
     font-size: 0.85rem;

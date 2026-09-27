@@ -34,25 +34,27 @@
             <div class="section-title">Debian / Ubuntu / Pop!_OS Setup</div>
             <div class="steps">
                 <div class="step-item">
-                    <div class="step-label">Step 1: Install GPG Keyring & Add APT Repository</div>
+                    <div class="step-label">Step 1: Download the installer and print its SHA-256</div>
                     <div class="installer-box">
-                        <div class="command" id="apt1Cmd">sudo mkdir -p /etc/apt/keyrings && curl -fsSL https://idlescreen.github.io/packages/apt/idlescreen-keyring.gpg | sudo tee /etc/apt/keyrings/idlescreen-keyring.gpg >/dev/null && echo "deb [signed-by=/etc/apt/keyrings/idlescreen-keyring.gpg] https://idlescreen.github.io/packages/apt stable main" | sudo tee /etc/apt/sources.list.d/idlescreen.list >/dev/null</div>
+                        <div class="command" id="apt1Cmd">curl -fsSL https://idlescreen.github.io/install.sh -o install.sh &amp;&amp; chmod +x install.sh &amp;&amp; ./install.sh --verify</div>
                         <button class="copy-btn" onclick="copyCommand('apt1Cmd', this)">Copy</button>
                     </div>
+                    <div class="step-note">Compare the printed hashes against an out-of-band copy from the <a href="https://github.com/idlescreen/packages/releases" rel="noopener">signed release</a> before continuing. If they do not match, stop.</div>
                 </div>
 
                 <div class="step-item">
-                    <div class="step-label">Step 2: Update Package Database</div>
+                    <div class="step-label">Step 2: Install</div>
                     <div class="installer-box">
-                        <div class="command" id="apt2Cmd">sudo apt update</div>
+                        <div class="command" id="apt2Cmd">./install.sh</div>
                         <button class="copy-btn" onclick="copyCommand('apt2Cmd', this)">Copy</button>
                     </div>
+                    <div class="step-note">The installer detects your distribution, verifies the signing-key fingerprint before import, and writes the APT source from pinned content. It never fetches a <code>.list</code> or keyring into place unchecked.</div>
                 </div>
 
                 <div class="step-item">
-                    <div class="step-label">Step 3: Install Package & Run</div>
+                    <div class="step-label">Step 3: Launch</div>
                     <div class="installer-box">
-                        <div class="command" id="apt3Cmd">sudo apt install idlescreen && idlescreen tui</div>
+                        <div class="command" id="apt3Cmd">idlescreen tui</div>
                         <button class="copy-btn" onclick="copyCommand('apt3Cmd', this)">Copy</button>
                     </div>
                 </div>
@@ -64,18 +66,28 @@
             <div class="section-title">Fedora / RHEL Setup</div>
             <div class="steps">
                 <div class="step-item">
-                    <div class="step-label">Step 1: Install DNF Repository File</div>
+                    <div class="step-label">Step 1: Download the installer and print its SHA-256</div>
                     <div class="installer-box">
-                        <div class="command" id="dnf1Cmd">sudo curl -fsSL https://idlescreen.github.io/packages/rpm/idlescreen.repo -o /etc/yum.repos.d/idlescreen.repo</div>
+                        <div class="command" id="dnf1Cmd">curl -fsSL https://idlescreen.github.io/install.sh -o install.sh &amp;&amp; chmod +x install.sh &amp;&amp; ./install.sh --verify</div>
                         <button class="copy-btn" onclick="copyCommand('dnf1Cmd', this)">Copy</button>
                     </div>
+                    <div class="step-note">Compare the printed hashes against an out-of-band copy from the <a href="https://github.com/idlescreen/packages/releases" rel="noopener">signed release</a> before continuing. If they do not match, stop.</div>
                 </div>
 
                 <div class="step-item">
-                    <div class="step-label">Step 2: Refresh DNF Metadata & Install Package</div>
+                    <div class="step-label">Step 2: Install</div>
                     <div class="installer-box">
-                        <div class="command" id="dnf2Cmd">sudo dnf check-update; sudo dnf install idlescreen && idlescreen tui</div>
+                        <div class="command" id="dnf2Cmd">./install.sh</div>
                         <button class="copy-btn" onclick="copyCommand('dnf2Cmd', this)">Copy</button>
+                    </div>
+                    <div class="step-note">The installer verifies the signing-key fingerprint before <code>rpm --import</code> and writes the DNF <code>.repo</code> from pinned content. Do not hand-place a downloaded <code>.repo</code> into <code>/etc/yum.repos.d</code> — a fetched repo file lets a compromised origin swap both the trust anchor and the base URL.</div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-label">Step 3: Launch</div>
+                    <div class="installer-box">
+                        <div class="command" id="dnf3Cmd">idlescreen tui</div>
+                        <button class="copy-btn" onclick="copyCommand('dnf3Cmd', this)">Copy</button>
                     </div>
                 </div>
             </div>
@@ -86,18 +98,28 @@
             <div class="section-title">Arch Linux Setup</div>
             <div class="steps">
                 <div class="step-item">
-                    <div class="step-label">Step 1: Clone Package Manifests</div>
+                    <div class="step-label">Step 1: Download the installer and print its SHA-256</div>
                     <div class="installer-box">
-                        <div class="command" id="arch1Cmd">git clone https://github.com/idlescreen/packages.git && cd packages/arch</div>
+                        <div class="command" id="arch1Cmd">curl -fsSL https://idlescreen.github.io/install.sh -o install.sh &amp;&amp; chmod +x install.sh &amp;&amp; ./install.sh --verify</div>
                         <button class="copy-btn" onclick="copyCommand('arch1Cmd', this)">Copy</button>
                     </div>
+                    <div class="step-note">Compare the printed hashes against an out-of-band copy from the <a href="https://github.com/idlescreen/packages/releases" rel="noopener">signed release</a> before continuing. If they do not match, stop.</div>
                 </div>
 
                 <div class="step-item">
-                    <div class="step-label">Step 2: Build & Install</div>
+                    <div class="step-label">Step 2: Install</div>
                     <div class="installer-box">
-                        <div class="command" id="arch2Cmd"># Experimental: applet PKGBUILD only — not a full install. Prefer Fedora/Debian install.sh</div>
+                        <div class="command" id="arch2Cmd">./install.sh</div>
                         <button class="copy-btn" onclick="copyCommand('arch2Cmd', this)">Copy</button>
+                    </div>
+                    <div class="step-note">No Arch repository is published yet. The <code>arch/</code> directory in the source repository contains an applet PKGBUILD only — it is not a full product install, so use <code>install.sh</code>.</div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-label">Step 3: Launch</div>
+                    <div class="installer-box">
+                        <div class="command" id="arch3Cmd">idlescreen tui</div>
+                        <button class="copy-btn" onclick="copyCommand('arch3Cmd', this)">Copy</button>
                     </div>
                 </div>
             </div>
