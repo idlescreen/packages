@@ -34,6 +34,39 @@ jobs:
     - name: Run install.sh smoke test (mock package manager)
       run: bash tests/test_install_smoke.sh
 
+    - name: Published site teaches only the verified install path
+      # The page is the primary human path. It once piped a fetched keyring
+      # into /etc/apt/keyrings with no fingerprint check and curl'd a remote
+      # .repo into /etc/yum.repos.d — precisely what repo.sh refuses to do
+      # because a fetched repo file can swap both the trust anchor and the
+      # baseurl. Only a warning mention is allowed now.
+      run: |
+        if grep -nE 'tee +/etc/apt/keyrings|yum\.repos\.d/idlescreen\.repo|sources\.list\.d/idlescreen\.list' index.html; then
+          echo "::error::index.html hand-places a trust anchor — point users at install.sh instead"
+          exit 1
+        fi
+        grep -q 'install.sh --verify' index.html \
+          || { echo "::error::index.html does not teach the --verify path"; exit 1; }
+        echo "index.html points at the fingerprint-verifying installer only"
+
+    - name: install-studio.sh installs only published packages
+      # `idlescreen-studio` is not in either index; the old script imported the
+      # key and wrote /etc sources as root and then exited 1 every time.
+      run: |
+        bash -n install-studio.sh
+        _pkgs=$(grep '^STUDIO_PKGS=' install-studio.sh | cut -d'"' -f2)
+        if [ -z "$_pkgs" ]; then
+          echo "::error::could not read STUDIO_PKGS from install-studio.sh"
+          exit 1
+        fi
+        for pkg in $_pkgs; do
+          if ! grep -q "^Package: ${pkg}$" apt/dists/stable/main/binary-amd64/Packages; then
+            echo "::error::install-studio.sh requests an unpublished package: ${pkg}"
+            exit 1
+          fi
+        done
+        echo "every requested studio package is published"
+
     - name: Run --verify-self edge cases
       run: bash tests/test_verify_self_edge.sh
 
