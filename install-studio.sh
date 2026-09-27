@@ -3,11 +3,12 @@
 # Usage: curl -fsSL https://idlescreen.github.io/packages/install-studio.sh | sh
 #
 # Install story:
+#   0. Pre-flight: confirm every package we are about to ask for is actually
+#      published — before touching /etc or the rpm keyring as root.
 #   1. Write the IdleScreen package channel (DNF or APT).
-#   2. Install metapackage idlescreen-studio (pulls idle-studio + render).
-#   3. Install idle-savers when available (plugins).
-#   4. Confirm render, idle-studio, ffmpeg, plugins.
-# Remove: sudo dnf remove idlescreen-studio  (also removes idle-studio + render)
+#   2. Install idle-studio + render, then idle-savers when available.
+#   3. Confirm render, idle-studio, ffmpeg, plugins.
+# Remove: sudo dnf remove idle-studio render   (or apt remove ...)
 # SPDX-License-Identifier: Apache-2.0
 
 set -eu
@@ -30,11 +31,17 @@ warn() { say " ${YELLOW}!${RESET} $*"; }
 err()  { say " ${YELLOW}ERROR:${RESET} $*"; }
 step() { say ""; say " ${CYAN}${BOLD}$*${RESET}"; }
 
-REPO_BASE="https://idlescreen.github.io/packages"
-# Product metapackage (Requires idle-studio + render).
-META="idlescreen-studio"
+REPO_BASE="${IDLESCREEN_REPO_BASE:-https://idlescreen.github.io/packages}"
+# The Studio stack. NOTE: this used to be a single metapackage
+# `idlescreen-studio`, which is NOT published in either index (apt `Packages`
+# or rpm `repodata/*-primary.xml.gz` — both list 19 names, none of them that
+# one). The old script therefore imported the key, wrote /etc sources as root,
+# and then exited 1 at the install step — every run left a half-installed
+# machine. These are the real, published names.
+STUDIO_PKGS="idle-studio render"
 # Plugins for effect names.
 SAVERS="idle-savers"
+ALL_PKGS="$STUDIO_PKGS $SAVERS"
 
 # Pinned signing-key fingerprints — the package-channel trust anchors are
 # verified out-of-band so a compromised Pages origin cannot swap them.
@@ -50,6 +57,34 @@ need_cmd() {
 
 is_dnf() { command -v dnf >/dev/null 2>&1 || [ -x /usr/bin/dnf ]; }
 is_apt() { command -v apt-get >/dev/null 2>&1 || [ -x /usr/bin/apt-get ]; }
+
+# Confirm every package we are about to request is actually published, BEFORE
+# any root mutation. The index is the same 19-package set for both formats, so
+# reading the APT one is enough to catch a name that was never built.
+#
+# A fetch failure is a warning, not a hard stop: the install below will fail
+# cleanly on its own. A name that is definitely missing is fatal, because
+# otherwise we would import a key and write /etc sources for an install that
+# cannot succeed.
+preflight_packages() {
+    need_cmd curl
+    _idx=$(mktemp)
+    if ! curl -fsSL "${REPO_BASE}/apt/dists/stable/main/binary-amd64/Packages" -o "$_idx"; then
+        warn "could not fetch the package index for a pre-flight check — continuing"
+        rm -f "$_idx"
+        return 0
+    fi
+    for _p in $ALL_PKGS; do
+        if ! grep -q "^Package: ${_p}\$" "$_idx"; then
+            err "package is not published in the IdleScreen channel: ${_p}"
+            say "  ${DIM}index: ${REPO_BASE}/apt/dists/stable/main/binary-amd64/Packages${RESET}"
+            rm -f "$_idx"
+            exit 1
+        fi
+    done
+    rm -f "$_idx"
+    ok "pre-flight · all target packages are published"
+}
 
 have_ffmpeg() {
     [ -x /usr/bin/ffmpeg ] || command -v ffmpeg >/dev/null 2>&1
@@ -84,10 +119,10 @@ ensure_ffmpeg() {
 main() {
     say ""
     say "${ORANGE}${BOLD}IdleScreen Studio installer${RESET}"
-    say "${DIM}  installs metapackage ${META} (idle-studio + render)${RESET}"
+    say "${DIM}  installs ${STUDIO_PKGS} and ${SAVERS}${RESET}"
     say "${DIM}  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
 
-    step "[1/4]  Package manager"
+    step "[1/5]  Package manager"
     if is_dnf; then
         PKG=dnf
         ok "DNF · RPM host"
@@ -99,7 +134,11 @@ main() {
         exit 1
     fi
 
-    step "[2/4]  IdleScreen package channel"
+    step "[2/5]  Pre-flight"
+    # Before anything below runs as root.
+    preflight_packages
+
+    step "[3/5]  IdleScreen package channel"
     if [ "$PKG" = "dnf" ]; then
         need_cmd curl
         need_cmd sudo
@@ -136,7 +175,7 @@ main() {
         ok "repo → /etc/yum.repos.d/idlescreen.repo"
         say "  ${DIM}baseurl ${REPO_BASE}/rpm · package gpgcheck=1 · repo_gpgcheck=1${RESET}"
         sudo dnf clean all --repo=idlescreen >/dev/null 2>&1 || true
-        sudo rm -rf /var/cache/libdnf5/idlescreen-* 2>/dev/null || true
+        sudo dnf clean metadata --repo=idlescreen >/dev/null 2>&1 || true
         sudo dnf makecache --refresh --repo=idlescreen >/dev/null 2>&1 \
             || sudo dnf --setopt=idlescreen.metadata_expire=0 makecache --repo=idlescreen >/dev/null 2>&1 \
             || warn "metadata refresh soft-failed — install will still try the channel"
@@ -167,22 +206,22 @@ main() {
         ok "APT index updated"
     fi
 
-    step "[3/4]  Packages"
-    say "  ${DIM}installing:${RESET} ${BOLD}${META}${RESET}  (pulls idle-studio + render)"
+    step "[4/5]  Packages"
+    say "  ${DIM}installing:${RESET} ${BOLD}${STUDIO_PKGS}${RESET}"
     say "  ${DIM}plugins:${RESET}   ${SAVERS}"
     if [ "$PKG" = "dnf" ]; then
-        if ! sudo dnf install --refresh --setopt=idlescreen.metadata_expire=0 "$META" $SAVERS; then
-            if ! sudo dnf install --refresh --setopt=idlescreen.metadata_expire=0 "$META"; then
-                err "dnf could not install: $META"
-                say "  ${DIM}If checksum errors: sudo dnf clean all && sudo rm -rf /var/cache/libdnf5/idlescreen-*${RESET}"
+        if ! sudo dnf install --refresh --setopt=idlescreen.metadata_expire=0 $ALL_PKGS; then
+            if ! sudo dnf install --refresh --setopt=idlescreen.metadata_expire=0 $STUDIO_PKGS; then
+                err "dnf could not install: ${STUDIO_PKGS}"
+                say "  ${DIM}If checksum errors: sudo dnf clean all --repo=idlescreen${RESET}"
                 exit 1
             fi
             warn "idle-savers not installed this run — effect names need plugins on disk"
         fi
     else
-        if ! sudo apt-get install -y "$META" $SAVERS; then
-            if ! sudo apt-get install -y "$META"; then
-                err "apt-get could not install: $META"
+        if ! sudo apt-get install -y $ALL_PKGS; then
+            if ! sudo apt-get install -y $STUDIO_PKGS; then
+                err "apt-get could not install: ${STUDIO_PKGS}"
                 exit 1
             fi
             warn "idle-savers not installed this run — effect names need plugins on disk"
@@ -190,12 +229,14 @@ main() {
     fi
     ensure_ffmpeg || true
 
-    step "[4/4]  Check"
-    if rpm -q idlescreen-studio >/dev/null 2>&1 || dpkg-query -W idlescreen-studio >/dev/null 2>&1; then
-        ok "metapackage idlescreen-studio present"
-    else
-        warn "metapackage idlescreen-studio not queried (ok if check tools differ)"
-    fi
+    step "[5/5]  Check"
+    for _p in $STUDIO_PKGS; do
+        if rpm -q "$_p" >/dev/null 2>&1 || dpkg-query -W "$_p" >/dev/null 2>&1; then
+            ok "package ${_p} present"
+        else
+            warn "package ${_p} not queried (ok if check tools differ)"
+        fi
+    done
     if command -v render >/dev/null 2>&1; then
         ok "render → $(command -v render)"
     else
@@ -231,11 +272,11 @@ main() {
     say "  ${DIM}open${RESET}     ${CYAN}idle-studio${RESET}"
     say "  ${DIM}export${RESET}   ${CYAN}render -e beams --duration 10s -o ~/Videos/beams.mkv${RESET}"
     if [ "$PKG" = "dnf" ]; then
-        say "  ${DIM}remove${RESET}   ${CYAN}sudo dnf remove idlescreen-studio${RESET}"
-        say "            ${DIM}# also removes idle-studio + render${RESET}"
+        say "  ${DIM}remove${RESET}   ${CYAN}sudo dnf remove ${STUDIO_PKGS}${RESET}"
+        say "            ${DIM}# also removes idle-savers if you drop it${RESET}"
     else
-        say "  ${DIM}remove${RESET}   ${CYAN}sudo apt remove idlescreen-studio${RESET}"
-        say "            ${DIM}# also removes idle-studio + render${RESET}"
+        say "  ${DIM}remove${RESET}   ${CYAN}sudo apt remove ${STUDIO_PKGS}${RESET}"
+        say "            ${DIM}# also removes idle-savers if you drop it${RESET}"
     fi
     say "  ${DIM}docs${RESET}     https://idlescreen.github.io/#studio"
     say "  ${DIM}pkgs${RESET}     ${REPO_BASE}/"
