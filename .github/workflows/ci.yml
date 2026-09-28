@@ -91,7 +91,11 @@ jobs:
       # key and wrote /etc sources as root and then exited 1 every time.
       run: |
         bash -n install-studio.sh
-        _pkgs=$(grep '^STUDIO_PKGS=' install-studio.sh | cut -d'"' -f2)
+        # STUDIO_PKGS moved into install-studio-lib/00-color.sh when the
+        # driver was split per RULES.md §1. Read it from wherever it is
+        # actually defined, so this check keeps working across the split
+        # instead of failing on a file that no longer holds it.
+        _pkgs=$(grep -h '^STUDIO_PKGS=' install-studio.sh install-studio-lib/*.sh | head -1 | cut -d'"' -f2)
         if [ -z "$_pkgs" ]; then
           echo "::error::could not read STUDIO_PKGS from install-studio.sh"
           exit 1
