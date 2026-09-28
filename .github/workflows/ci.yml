@@ -12,6 +12,10 @@ permissions:
 jobs:
   shell-checks:
     runs-on: ubuntu-latest
+    # A hung installer step or a wedged smoke test must fail the build,
+    # not burn a runner for the 6-hour default. See runtime's
+    # `apply_commands_drains_channel_until_empty` incident.
+    timeout-minutes: 15
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
@@ -38,15 +42,14 @@ jobs:
         done
 
     - name: 16-256 line cap (one function per page)
-      # RULES.md §1: every owned source is between 16 and 256 lines.
-      # The upper bound catches whole-function files that should be
-      # inlined or folded into a sibling; the lower bound catches
-      # whole-function files that should be inlined or folded into a
-      # sibling. Excluded: tests/ (shell fixtures), .github/
-      # (workflows), target/ (build artefacts), idlescreen.github.io
-      # (a separate repo's docs that this repo's CI chases).
+      # RULES.md §1: every owned Rust source is between 16 and 256
+      # lines. Rust-only — the cap does not govern `.sh` (shellcheck
+      # below is the quality lint for those) and there are no `.c`/`.h`
+      # sources in this repo. The lower bound catches whole-function
+      # files that should be folded into a sibling; the upper bound
+      # catches pages doing two or more things.
       run: |
-        over=$(find . \( -name '*.sh' -o -name '*.rs' -o -name '*.c' -o -name '*.h' \) \
+        over=$(find . -name '*.rs' \
             -not -path './target/*' -not -path './tests/*' \
             -not -path './.git/*' -not -path './.github/*' \
             -not -path './idlescreen.github.io/*' \
