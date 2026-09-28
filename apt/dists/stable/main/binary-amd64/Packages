@@ -1,23 +1,4 @@
 Package: idle-cli
-Version: 4.0.4-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 3820
-Depends: idle-daemon (>= 3.5.0), libc6
-Recommends: idlescreen
-Filename: pool/main/idle-cli_4.0.4-1_amd64.deb
-Size: 1068828
-MD5sum: d21fb7162a95b60958df1ae51c54576a
-SHA1: 4755a80dae2095264f1113207113a0060e404878
-SHA256: d32ed78925d9bdcb70c815ae018cdffe38cd14806a9184f4dc4a698577943071
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/cli
-Description: Command-line interface for the IdleScreen daemon
- CLI for controlling the Idle daemon over D-Bus (binary: idle-cli; `idlescreen
- <verb>` routes here via the idlescreen router).
-
-Package: idle-cli
 Version: 4.0.5-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -48,6 +29,25 @@ Size: 1070104
 MD5sum: bd975fd4dcd786d3212a7309d589b904
 SHA1: bb24bd98757bdb0d960a1a2591bdd95a84cf7647
 SHA256: 1726f3696feef2cbbd079409a1385b341a8a7ca332ce2fb30c0ae1ab2213fa7b
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/cli
+Description: Command-line interface for the IdleScreen daemon
+ CLI for controlling the Idle daemon over D-Bus (binary: idle-cli; `idlescreen
+ <verb>` routes here via the idlescreen router).
+
+Package: idle-cli
+Version: 4.0.7-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 3824
+Depends: idle-daemon (>= 3.5.0), libc6
+Recommends: idlescreen
+Filename: pool/main/idle-cli_4.0.7-1_amd64.deb
+Size: 1070920
+MD5sum: 99a5a975c8aa0f510591d810c2f23bce
+SHA1: 0ee50e881d26221214c9ef5c986d5306fa816254
+SHA256: ad57a08db74fd33efef5d1613ea7b966fc6c30d4319c9faa38762d54578094f9
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/cli
@@ -833,23 +833,6 @@ Description: Meta package that hard-depends on all official IdleScreen saver plu
  idle-cosmic (not installed alone by end users).
 
 Package: idle-studio
-Version: 1.3.4-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 1282
-Depends: libc6, render
-Filename: pool/main/idle-studio_1.3.4-1_amd64.deb
-Size: 485140
-MD5sum: c1e74e47851fd1cb77f369f380147b23
-SHA1: 163653919d81f220c57a414334efb5fa61051342
-SHA256: 8caace98e51e72af152c5c292cf85a7851cb3aaf4a44228cfacb586803196cbc
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/studio
-Description: IdleScreen Studio — TUI Director for the render capability
- IdleScreen Studio — TUI Director for offline video renders.
-
-Package: idle-studio
 Version: 1.3.5-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -877,6 +860,23 @@ Size: 484772
 MD5sum: 2b0ac5498922dd541e9820cd136c5d4c
 SHA1: 34347a7eb03c55b5f1165a2159533ddeabddc433
 SHA256: 7e893b1e1580ede6eeb2fc7078ce81eaf89ab874687bb09bfa87d8fdf91efa86
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/studio
+Description: IdleScreen Studio — TUI Director for the render capability
+ IdleScreen Studio — TUI Director for offline video renders.
+
+Package: idle-studio
+Version: 1.3.7-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 882
+Depends: libc6, render
+Filename: pool/main/idle-studio_1.3.7-1_amd64.deb
+Size: 354940
+MD5sum: dceb40ebf55e81d174c1df1826a81c1d
+SHA1: 0602a32926b27bd1e0203efb2662a05813d66109
+SHA256: d578bd6ee2d946743e32767b3ae07370a064bed2d88fbffe6da1610cfc7d56e8
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/studio
@@ -944,32 +944,6 @@ Description: Optional TUI client for IdleScreen (idle-tui)
  Optional live TUI controller for IdleScreen.
 
 Package: idlescreen
-Version: 4.0.0-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 440
-Depends: idle-cli (>= 4.0.0), idle-daemon (>= 3.5.8), idle-savers, idle-tui (>= 3.0.1), libc6
-Recommends: idle-cosmic (>= 3.0.2)
-Breaks: idle-cli (<< 4.0.0)
-Replaces: idle-cli (<< 4.0.0)
-Filename: pool/main/idlescreen_4.0.0-1_amd64.deb
-Size: 178980
-MD5sum: e400e9abbb362e78b92e1f1b41e32672
-SHA1: 0193d933c24f5e87d94b802ecd50747d81726009
-SHA256: e391f7d37530c10a51479e0fef080ad0538d00e84c10931dfffe8e937609430b
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: IdleScreen router — one front door for cli, tui, studio, cosmic, savers,
- runtime
- IdleScreen product package and router: pulls in the modular host stack and
- provides `idlescreen` — `idlescreen <component>` execs component binaries
- (cli, tui, studio, cosmic); `idlescreen <verb>` forwards daemon commands to
- idle-cli; `idlescreen install` manages components via dnf/apt. Removing this
- package removes the installed product stack; user config under ~/.config/idle
- is left in place.
-
-Package: idlescreen
 Version: 4.0.1-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -1009,6 +983,32 @@ Size: 179112
 MD5sum: e506b25049037536a6efadbc50754976
 SHA1: 92e48fce007d6780845b7014a7b7834ab855ed55
 SHA256: 3e331039c2ebeb881ecd609d8feeca6af94557de68b3afce4fb29cc502de365b
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: IdleScreen router — one front door for cli, tui, studio, cosmic, savers,
+ runtime
+ IdleScreen product package and router: pulls in the modular host stack and
+ provides `idlescreen` — `idlescreen <component>` execs component binaries
+ (cli, tui, studio, cosmic); `idlescreen <verb>` forwards daemon commands to
+ idle-cli; `idlescreen install` manages components via dnf/apt. Removing this
+ package removes the installed product stack; user config under ~/.config/idle
+ is left in place.
+
+Package: idlescreen
+Version: 4.0.3-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 440
+Depends: idle-cli (>= 4.0.0), idle-daemon (>= 3.5.8), idle-savers, idle-tui (>= 3.0.1), libc6
+Recommends: idle-cosmic (>= 3.0.2)
+Breaks: idle-cli (<< 4.0.0)
+Replaces: idle-cli (<< 4.0.0)
+Filename: pool/main/idlescreen_4.0.3-1_amd64.deb
+Size: 178960
+MD5sum: 4983cee580a2e4fd5faff9c645850826
+SHA1: 0507760bea2c7cf8a15148084a64466cd5254aa6
+SHA256: ee561a09ec75d0f92af32a8d488565e447ef9894be60446b2cb741e87c57c377
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idlescreen
