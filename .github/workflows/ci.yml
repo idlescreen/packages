@@ -27,6 +27,36 @@ jobs:
         shellcheck ui.sh
         shellcheck detect.sh
         shellcheck repo.sh
+        # Per RULES.md §1 the install-studio driver sources a chain of
+        # helpers under install-studio-lib/. shellcheck each one
+        # separately because they're not exec'd at install time — the
+        # top-level script only `set -eu`s them via dot-source, so a
+        # shellcheck failure in a sibling must surface as a CI failure.
+        shellcheck install-studio.sh
+        for f in install-studio-lib/*.sh; do
+          shellcheck "$f"
+        done
+
+    - name: 16-256 line cap (one function per page)
+      # RULES.md §1: every owned source is between 16 and 256 lines.
+      # The upper bound catches whole-function files that should be
+      # inlined or folded into a sibling; the lower bound catches
+      # whole-function files that should be inlined or folded into a
+      # sibling. Excluded: tests/ (shell fixtures), .github/
+      # (workflows), target/ (build artefacts), idlescreen.github.io
+      # (a separate repo's docs that this repo's CI chases).
+      run: |
+        over=$(find . \( -name '*.sh' -o -name '*.rs' -o -name '*.c' -o -name '*.h' \) \
+            -not -path './target/*' -not -path './tests/*' \
+            -not -path './.git/*' -not -path './.github/*' \
+            -not -path './idlescreen.github.io/*' \
+            | xargs wc -l \
+            | awk '$1 > 256 || $1 < 16 {print}')
+        if [ -n "$over" ]; then
+          echo "Files outside 16-256 line range:"
+          echo "$over"
+          exit 1
+        fi
 
     - name: Run audit JSON-escape test (F-202 regression)
       run: bash tests/test_audit_json_escape.sh
