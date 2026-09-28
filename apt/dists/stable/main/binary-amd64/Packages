@@ -128,25 +128,6 @@ Description: IdleScreen for COSMIC — product package (applet + pulls daemon an
  Installs the COSMIC panel applet and depends on idle-daemon.
 
 Package: idle-daemon
-Version: 3.5.21-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 16529
-Depends: dbus, fonts-dejavu-core, libc6
-Recommends: idle-cli, idle-saver-aurora, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
-Suggests: idle-cosmic
-Filename: pool/main/idle-daemon_3.5.21-1_amd64.deb
-Size: 5171004
-MD5sum: 5b6f0a0b9b827f74fd3baf726aba6547
-SHA1: 2a0003f29bca5788454867a6f996b72b6efb9262
-SHA256: 4e1e49226016bb7cde4b8b222802e35a2230ba55a0707acb6c8b2fd8d7ede2d9
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: IdleScreen background idle daemon (Wayland screensaver host)
- IdleScreen background idle monitoring and screensaver host for Wayland.
-
-Package: idle-daemon
 Version: 3.5.22-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -178,6 +159,25 @@ Size: 5171904
 MD5sum: 35b19bbbf61084cda8952cc9fb84e458
 SHA1: eba1aa46268877712f96c38d2a88bcc1ee76725c
 SHA256: 0f1766590188a81ab4ef3bce151a913eae2e0b1fcc8401b63a33d01812ac3d17
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: IdleScreen background idle daemon (Wayland screensaver host)
+ IdleScreen background idle monitoring and screensaver host for Wayland.
+
+Package: idle-daemon
+Version: 3.5.25-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 16529
+Depends: dbus, fonts-dejavu-core, libc6
+Recommends: idle-cli, idle-saver-aurora, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
+Suggests: idle-cosmic
+Filename: pool/main/idle-daemon_3.5.25-1_amd64.deb
+Size: 5169144
+MD5sum: 2d02a7d5cab955a07a09e6f2f5d5997c
+SHA1: 04b9a5e46106f24e91efab828ca709d4e34aa6e1
+SHA256: a46f567aefa2237225359b13b8e407696f1864f5b99217dd8280fae3a7b4ae44
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idlescreen
@@ -884,26 +884,6 @@ Description: IdleScreen Studio — TUI Director for the render capability
  IdleScreen Studio — TUI Director for offline video renders.
 
 Package: idle-tui
-Version: 3.2.6-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 4073
-Depends: idle-daemon, libc6
-Conflicts: app-tui (<< 2.1.0), idlescreen-tui (<< 2.1.0), trance-tui (<< 2.0.0)
-Replaces: app-tui, idlescreen-tui, trance-tui
-Provides: app-tui, idlescreen-tui, trance-tui
-Filename: pool/main/idle-tui_3.2.6-1_amd64.deb
-Size: 1172380
-MD5sum: ef58677d566d0041eb4f023f36e73c88
-SHA1: 4abed059f9e99bcd4300bebc6f31d76c8c4ee17d
-SHA256: 42fba716b14af99d94bf832d97962fa266dc26e8f63378af19ab6675bcbfd2ad
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/tui
-Description: Optional TUI client for IdleScreen (idle-tui)
- Optional live TUI controller for IdleScreen.
-
-Package: idle-tui
 Version: 3.2.7-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -937,6 +917,26 @@ Size: 1171688
 MD5sum: eb3d3cc89ddbf04ef072cc9c3c5c3181
 SHA1: 3fc9d6782963dcb284dd2df03aefa39feca16a36
 SHA256: 3cfcfb2e39de004c1b537c1fd7806bcf281aac38da98a7071cf5a169c3797747
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/tui
+Description: Optional TUI client for IdleScreen (idle-tui)
+ Optional live TUI controller for IdleScreen.
+
+Package: idle-tui
+Version: 3.2.9-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 4071
+Depends: idle-daemon, libc6
+Conflicts: app-tui (<< 2.1.0), idlescreen-tui (<< 2.1.0), trance-tui (<< 2.0.0)
+Replaces: app-tui, idlescreen-tui, trance-tui
+Provides: app-tui, idlescreen-tui, trance-tui
+Filename: pool/main/idle-tui_3.2.9-1_amd64.deb
+Size: 1171684
+MD5sum: b77727faa0bf84f22c7f7ba5e6515158
+SHA1: 1cb9c149b8d1f3afcdb14f2cba2805fd314464e1
+SHA256: 480b47070a8d6773f71243b1896521c743ee20f8568fb86df2c0acc998b00997
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/tui
