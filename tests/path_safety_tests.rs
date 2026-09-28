@@ -1,3 +1,4 @@
+// perf: T3 · metric: test-only page, not compiled into the shipped binary · check: test
 //! Property tests for pool path construction and path-safety — std-only.
 
 use idlescreen_packages::{

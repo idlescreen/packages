@@ -1,3 +1,4 @@
+// perf: T3 · metric: test-only page, not compiled into the shipped binary · check: test
 //! Property tests for GPG identity helpers and rpmmacros generation — std-only.
 
 use idlescreen_packages::{

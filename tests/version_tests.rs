@@ -1,3 +1,4 @@
+// perf: T3 · metric: test-only page, not compiled into the shipped binary · check: test
 //! Property tests for version splitting and comparison (std-only, deterministic).
 
 use idlescreen_packages::{compare_versions, split_parts};

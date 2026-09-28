@@ -1,3 +1,4 @@
+// perf: T3 · metric: contains unsafe; cost depends on what the caller passes in · check: test
 //! Pool path construction and path-safety helpers for package tooling.
 // SPDX-License-Identifier: Apache-2.0
 

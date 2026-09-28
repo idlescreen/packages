@@ -1,3 +1,4 @@
+// perf: T3 · metric: spawns a subprocess; cost is dominated by fork/exec, not by this page · check: review
 //! IdleScreen installer — same product matrix as `install.sh`.
 //! User-facing text must not overclaim.
 // SPDX-License-Identifier: Apache-2.0

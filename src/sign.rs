@@ -1,3 +1,4 @@
+// perf: T3 · metric: spawns a subprocess; cost is dominated by fork/exec, not by this page · check: test
 //! Sign all RPMs in the pool and refresh repository metadata.
 // SPDX-License-Identifier: Apache-2.0
 

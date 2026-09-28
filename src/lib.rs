@@ -1,3 +1,4 @@
+// perf: T3 · metric: crate root; holds re-exports and wiring, not hot-path logic · check: review
 //! Shared library for IdleScreen package repository maintenance tools.
 //!
 //! Crate/lib: `idlescreen-packages` / `idlescreen_packages`. Product brand and

@@ -1,3 +1,4 @@
+// perf: T3 · metric: spawns a subprocess; cost is dominated by fork/exec, not by this page · check: test
 //! Per-step repository update helpers.
 //!
 //! Each step in the package-repository update pipeline lives in its

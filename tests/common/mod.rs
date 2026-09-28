@@ -1,3 +1,4 @@
+// perf: T3 · metric: iterative; cost scales with its input, not with a fixed bound · check: review
 //! Deterministic std-only generators replacing `proptest` strategies.
 //!
 //! Each test seeds its own `Rng` and loops a fixed case count, so runs are

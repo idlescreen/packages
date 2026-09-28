@@ -1,3 +1,4 @@
+// perf: T3 · metric: spawns a subprocess; cost is dominated by fork/exec, not by this page · check: test
 //! `sign_apt_release` step: produce `Release.gpg` + `InRelease` from
 //! `apt/dists/stable/Release`.
 
