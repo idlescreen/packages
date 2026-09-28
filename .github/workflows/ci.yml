@@ -31,12 +31,16 @@ jobs:
         shellcheck ui.sh
         shellcheck detect.sh
         shellcheck repo.sh
-        # Per RULES.md §1 the install-studio driver sources a chain of
-        # helpers under install-studio-lib/. shellcheck each one
-        # separately because they're not exec'd at install time — the
-        # top-level script only `set -eu`s them via dot-source, so a
-        # shellcheck failure in a sibling must surface as a CI failure.
-        shellcheck install-studio.sh
+        # Per RULES.md §1 the install-studio driver dot-sources a chain
+        # of helpers under install-studio-lib/. Those are linted
+        # separately — they are not exec'd at install time, so a
+        # shellcheck failure in a sibling still has to surface here.
+        #
+        # `-x` is required on the driver: without it shellcheck refuses
+        # to follow the `source` lines and reports SC1091 "not following"
+        # for every helper, which fails the build without ever looking at
+        # a helper's body.
+        shellcheck -x install-studio.sh
         for f in install-studio-lib/*.sh; do
           shellcheck "$f"
         done
