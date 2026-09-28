@@ -128,25 +128,6 @@ Description: IdleScreen for COSMIC — product package (applet + pulls daemon an
  Installs the COSMIC panel applet and depends on idle-daemon.
 
 Package: idle-daemon
-Version: 3.5.22-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 16529
-Depends: dbus, fonts-dejavu-core, libc6
-Recommends: idle-cli, idle-saver-aurora, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
-Suggests: idle-cosmic
-Filename: pool/main/idle-daemon_3.5.22-1_amd64.deb
-Size: 5170132
-MD5sum: 14a64d6a88f28c372aed4f23f25a6aa2
-SHA1: 18d7009559913a92bcc2df1c80d736065ce3203f
-SHA256: 950381cffcf5cab9d0514636ddcf13b8dcd149be5b8b9c8d612a43080bd76491
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: IdleScreen background idle daemon (Wayland screensaver host)
- IdleScreen background idle monitoring and screensaver host for Wayland.
-
-Package: idle-daemon
 Version: 3.5.24-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -178,6 +159,25 @@ Size: 5169144
 MD5sum: 2d02a7d5cab955a07a09e6f2f5d5997c
 SHA1: 04b9a5e46106f24e91efab828ca709d4e34aa6e1
 SHA256: a46f567aefa2237225359b13b8e407696f1864f5b99217dd8280fae3a7b4ae44
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: IdleScreen background idle daemon (Wayland screensaver host)
+ IdleScreen background idle monitoring and screensaver host for Wayland.
+
+Package: idle-daemon
+Version: 3.5.26-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 16529
+Depends: dbus, fonts-dejavu-core, libc6
+Recommends: idle-cli, idle-saver-aurora, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
+Suggests: idle-cosmic
+Filename: pool/main/idle-daemon_3.5.26-1_amd64.deb
+Size: 5171960
+MD5sum: 9d5b01a0c3c9e87e3bf47cdf57b669cf
+SHA1: fd96bc60345e3fb1d16bffca9da906c2bf8eac7b
+SHA256: ddbcee6e68a7676d9393cb744d4bc01807a06ee51d28ef0dba43d010cc779c7e
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idlescreen
