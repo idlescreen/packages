@@ -15,6 +15,7 @@ pub mod paths;
 pub mod prune_core;
 pub mod sign_macros;
 pub mod sweep;
+pub mod update_steps;
 pub mod version_cmp;
 
 pub use install_honesty::{

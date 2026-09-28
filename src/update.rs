@@ -1,195 +1,20 @@
-//! Rebuild APT and RPM repository indexes and sign metadata.
 // SPDX-License-Identifier: Apache-2.0
 
-use idlescreen_packages::sign_macros::{
-    resolve_gpg_bin_from_env, resolve_gpg_name_from_env, resolve_signing_key,
-};
-use idlescreen_packages::sweep::sweep_loose_packages;
+//! `update` binary: top-level orchestrator for the package repository.
+//!
+//! Per RULES.md §2, each step lives in its own page under
+//! `update_steps::*`. This file is just the entry: print the banner,
+//! create the directory skeleton, then call the steps in the order
+//! the publish contract requires.
+
 use std::fs;
 use std::path::Path;
-use std::process::Command;
 
-fn run_cmd(cmd: &mut Command) -> Result<(), String> {
-    let status = cmd.status().map_err(|e| e.to_string())?;
-    if !status.success() {
-        return Err(format!("Command failed with exit status: {status}"));
-    }
-    Ok(())
-}
-
-fn dearmor_key() -> Result<(), String> {
-    println!("Regenerating binary GPG keyring...");
-    let gpg_file = fs::File::create("apt/idlescreen-keyring.gpg").map_err(|e| e.to_string())?;
-    let key_file = fs::File::open("apt/idlescreen-key.gpg").map_err(|e| e.to_string())?;
-
-    let status = Command::new("gpg")
-        .arg("--dearmor")
-        .stdin(key_file)
-        .stdout(gpg_file)
-        .status()
-        .map_err(|e| e.to_string())?;
-
-    if !status.success() {
-        return Err(format!("gpg --dearmor failed with status: {status}"));
-    }
-    // Root copy for any installers still using the historical root URL.
-    let _ = fs::copy("apt/idlescreen-keyring.gpg", "idlescreen-keyring.gpg");
-    Ok(())
-}
-
-fn run_createrepo() -> Result<(), String> {
-    let local_check = Command::new("which").arg("createrepo_c").output();
-    let has_local = local_check.map(|o| o.status.success()).unwrap_or(false);
-
-    if has_local {
-        println!("Running createrepo_c...");
-        let _ = fs::remove_dir_all("rpm/repodata");
-        run_cmd(Command::new("createrepo_c").arg(".").current_dir("rpm"))?;
-    } else {
-        let nix_check = Command::new("which").arg("nix-shell").output();
-        let has_nix = nix_check.map(|o| o.status.success()).unwrap_or(false);
-        if has_nix {
-            println!("Running createrepo_c via nix-shell...");
-            run_cmd(
-                Command::new("nix-shell")
-                    .args(["-p", "createrepo_c", "--run", "createrepo_c --update ."])
-                    .current_dir("rpm"),
-            )?;
-        } else {
-            return Err(
-                "createrepo_c and nix-shell not found; refusing to skip RPM repository indexing"
-                    .into(),
-            );
-        }
-    }
-    Ok(())
-}
-
-fn sign_rpms() -> Result<(), String> {
-    let signing_key = resolve_signing_key(
-        resolve_gpg_name_from_env().as_deref(),
-        "jerydleuck@gmail.com",
-    );
-    let rpm_pool = Path::new("rpm/pool");
-    if !rpm_pool.exists() {
-        return Ok(());
-    }
-
-    let mut rpms = Vec::new();
-    if let Ok(entries) = fs::read_dir(rpm_pool) {
-        for entry in entries.flatten() {
-            if entry.path().extension().and_then(|s| s.to_str()) == Some("rpm") {
-                rpms.push(entry.path());
-            }
-        }
-    }
-
-    if rpms.is_empty() {
-        return Ok(());
-    }
-
-    println!("Signing {} RPMs...", rpms.len());
-    let mut cmd = Command::new("rpmsign");
-    cmd.arg("--addsign").arg("--key-id").arg(&signing_key);
-    for rpm in &rpms {
-        cmd.arg(rpm);
-    }
-    run_cmd(&mut cmd)?;
-    println!("Signed RPMs successfully.");
-    Ok(())
-}
-
-fn sign_rpm_metadata() -> Result<(), String> {
-    let signing_key = resolve_signing_key(
-        resolve_gpg_name_from_env().as_deref(),
-        "jerydleuck@gmail.com",
-    );
-    let gpg_bin = resolve_gpg_bin_from_env();
-    if !Path::new("rpm/repodata/repomd.xml").exists() {
-        return Ok(());
-    }
-    println!("Signing RPM repomd.xml...");
-    let key_check = Command::new(&gpg_bin)
-        .args(["--list-secret-keys", &signing_key])
-        .output();
-    let Ok(output) = key_check else {
-        return Err(format!(
-            "Could not run {gpg_bin} to check keys; refusing unsigned RPM metadata"
-        ));
-    };
-    if !output.status.success() {
-        return Err(format!(
-            "GPG signing key '{signing_key}' not found; refusing to publish unsigned RPM metadata"
-        ));
-    }
-    let _ = fs::remove_file("rpm/repodata/repomd.xml.asc");
-    run_cmd(
-        Command::new(&gpg_bin)
-            .args([
-                "--batch",
-                "--yes",
-                "--default-key",
-                &signing_key,
-                "--detach-sign",
-                "--armor",
-                "repodata/repomd.xml",
-            ])
-            .current_dir("rpm"),
-    )?;
-    println!("Signed RPM repomd.xml successfully.");
-    Ok(())
-}
-
-/// Sign APT `Release` into `Release.gpg` and `InRelease`.
-///
-/// Refuses to succeed when the signing key is missing — never leave unsigned
-/// APT metadata as a successful update outcome.
-fn sign_apt_release(signing_key: &str, gpg_bin: &str) -> Result<(), String> {
-    let key_check = Command::new(gpg_bin)
-        .args(["--list-secret-keys", signing_key])
-        .output()
-        .map_err(|e| format!("Could not run {gpg_bin} to check keys: {e}"))?;
-
-    if !key_check.status.success() {
-        return Err(format!(
-            "GPG signing key '{signing_key}' not found; refusing to publish unsigned APT Release"
-        ));
-    }
-
-    let _ = fs::remove_file("apt/dists/stable/Release.gpg");
-    let _ = fs::remove_file("apt/dists/stable/InRelease");
-
-    run_cmd(
-        Command::new(gpg_bin)
-            .args([
-                "--batch",
-                "--yes",
-                "--default-key",
-                signing_key,
-                "-abs",
-                "-o",
-                "dists/stable/Release.gpg",
-                "dists/stable/Release",
-            ])
-            .current_dir("apt"),
-    )?;
-    run_cmd(
-        Command::new(gpg_bin)
-            .args([
-                "--batch",
-                "--yes",
-                "--default-key",
-                signing_key,
-                "--clearsign",
-                "-o",
-                "dists/stable/InRelease",
-                "dists/stable/Release",
-            ])
-            .current_dir("apt"),
-    )?;
-    println!("Signed Release files successfully.");
-    Ok(())
-}
+use idlescreen_packages::sign_macros::{resolve_gpg_bin_from_env, resolve_gpg_name_from_env, resolve_signing_key};
+use idlescreen_packages::sweep::sweep_loose_packages;
+use idlescreen_packages::update_steps::{
+    dearmor_key, run_createrepo, sign_apt_release, sign_rpm_metadata, sign_rpms,
+};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("==========================================");
@@ -207,14 +32,14 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let packages_path = "apt/dists/stable/main/binary-amd64/Packages";
     let packages_file = fs::File::create(packages_path)?;
     run_cmd(
-        Command::new("dpkg-scanpackages")
+        std::process::Command::new("dpkg-scanpackages")
             .args(["--multiversion", "pool/main"])
             .stdout(packages_file)
             .current_dir("apt"),
     )?;
 
     run_cmd(
-        Command::new("gzip")
+        std::process::Command::new("gzip")
             .args(["-k", "-f", "dists/stable/main/binary-amd64/Packages"])
             .current_dir("apt"),
     )?;
@@ -222,7 +47,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let release_path = "apt/dists/stable/Release";
     let release_file = fs::File::create(release_path)?;
     run_cmd(
-        Command::new("apt-ftparchive")
+        std::process::Command::new("apt-ftparchive")
             .args([
                 "-o",
                 "APT::FTPArchive::Release::Origin=IdleScreen",
@@ -260,5 +85,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("Update complete!");
     println!("==========================================");
 
+    Ok(())
+}
+
+/// Local copy of the `run_cmd` helper used here. Kept private to
+/// the binary so the per-step library files don't need to re-export
+/// it just for this orchestrator.
+fn run_cmd(cmd: &mut std::process::Command) -> Result<(), Box<dyn std::error::Error>> {
+    let status = cmd.status()?;
+    if !status.success() {
+        return Err(format!("Command failed with exit status: {status}").into());
+    }
     Ok(())
 }
