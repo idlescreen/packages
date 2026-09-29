@@ -13,15 +13,15 @@ path = "src/lib.rs"
 
 [[bin]]
 name = "update"
-path = "src/update.rs"
+path = "src/bin/update.rs"
 
 [[bin]]
 name = "prune"
-path = "src/prune.rs"
+path = "src/bin/prune.rs"
 
 [[bin]]
 name = "sign"
-path = "src/sign.rs"
+path = "src/bin/sign.rs"
 
 [[bin]]
 name = "install"

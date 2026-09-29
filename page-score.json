@@ -1,8 +1,29 @@
 {
  "repo": "packages",
- "rev": "5b91484",
- "dirty": false,
+ "rev": "5161ca4",
+ "dirty": true,
  "pages": [
+  {
+   "path": "./src/bin/prune.rs",
+   "lines": 192,
+   "bin_bytes": null,
+   "heat_pct": null,
+   "reach": 0
+  },
+  {
+   "path": "./src/bin/sign.rs",
+   "lines": 213,
+   "bin_bytes": null,
+   "heat_pct": null,
+   "reach": 0
+  },
+  {
+   "path": "./src/bin/update.rs",
+   "lines": 97,
+   "bin_bytes": null,
+   "heat_pct": null,
+   "reach": 0
+  },
   {
    "path": "./src/install_bin/deploy.rs",
    "lines": 127,
@@ -116,13 +137,6 @@
    "reach": 2
   },
   {
-   "path": "./src/prune.rs",
-   "lines": 192,
-   "bin_bytes": null,
-   "heat_pct": null,
-   "reach": 0
-  },
-  {
    "path": "./src/sign_macros.rs",
    "lines": 157,
    "bin_bytes": null,
@@ -130,25 +144,11 @@
    "reach": 5
   },
   {
-   "path": "./src/sign.rs",
-   "lines": 213,
-   "bin_bytes": null,
-   "heat_pct": null,
-   "reach": 0
-  },
-  {
    "path": "./src/sweep.rs",
    "lines": 85,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 2
-  },
-  {
-   "path": "./src/update.rs",
-   "lines": 97,
-   "bin_bytes": null,
-   "heat_pct": null,
-   "reach": 0
   },
   {
    "path": "./src/update_steps/dearmor_key.rs",
