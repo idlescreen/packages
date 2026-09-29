@@ -1,4 +1,3 @@
-// perf: T3 · metric: spawns a subprocess; cost is dominated by fork/exec, not by this page · check: test
 //! `sign_rpms` step: GPG-sign every `.rpm` in `rpm/pool/`.
 
 use std::fs;

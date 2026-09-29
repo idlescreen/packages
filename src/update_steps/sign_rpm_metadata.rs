@@ -1,4 +1,3 @@
-// perf: T3 · metric: spawns a subprocess; cost is dominated by fork/exec, not by this page · check: test
 //! `sign_rpm_metadata` step: GPG-detach-sign `rpm/repodata/repomd.xml`.
 
 use std::fs;

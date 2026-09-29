@@ -1,9 +1,7 @@
-// perf: T3 · metric: spawns a subprocess; cost is dominated by fork/exec, not by this page · check: test
 //! Per-step repository update helpers.
 //!
 //! Each step in the package-repository update pipeline lives in its
-//! own file per RULES.md §2 (one function per page). This module
-//! re-exports them so the `update` binary can call them through
+//! own file. This module re-exports them so the `update` binary can call them through
 //! `idlescreen_packages::update_steps::*` without caring about
 //! the per-file layout.
 

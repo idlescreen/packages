@@ -1,4 +1,3 @@
-// perf: T3 · metric: spawns a subprocess; cost is dominated by fork/exec, not by this page · check: test
 //! `sign_apt_release` step: produce `Release.gpg` + `InRelease` from
 //! `apt/dists/stable/Release`.
 
@@ -65,8 +64,6 @@ pub fn sign_apt_release(signing_key: &str, gpg_bin: &str) -> Result<(), String> 
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-
     #[test]
     fn refuses_to_sign_without_keyring() {
         // Pin the failure-mode message so a CI log scan catches

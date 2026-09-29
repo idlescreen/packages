@@ -1,4 +1,3 @@
-// perf: T3 · metric: spawns a subprocess; cost is dominated by fork/exec, not by this page · check: test
 //! `run_createrepo` step: regenerate the RPM metadata index.
 //!
 //! Tries `createrepo_c` on `PATH` first; falls back to a nix-shell

@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-// perf: T3 · metric: iterative; cost scales with its input, not with a fixed bound · check: test
 
 /// Strip simple CSI ANSI sequences for width measurement.
 pub fn strip_ansi(s: &str) -> String {

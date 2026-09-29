@@ -1,4 +1,3 @@
-// perf: T3 · metric: test-only page, not compiled into the shipped binary · check: test
 //! Property tests for GPG identity helpers and rpmmacros generation — std-only.
 
 use idlescreen_packages::{
@@ -44,7 +43,7 @@ fn prop_macros_contain_fields() {
     for _ in 0..CASES {
         let name = safe_macro_field(&mut rng);
         let bin = safe_macro_field(&mut rng);
-        let path = rng.opt(|r| safe_macro_field(r));
+        let path = rng.opt(safe_macro_field);
         let content = build_rpmmacros(&name, &bin, path.as_deref());
         assert!(content.contains("%_signature gpg\n"));
         let name_line = format!("%_gpg_name {name}\n");
@@ -71,7 +70,7 @@ fn prop_macros_contain_fields() {
 fn prop_resolve_signing_key() {
     let mut rng = Rng::new(0x6B1_0004);
     for _ in 0..CASES {
-        let env = rng.opt(|r| non_empty_line(r));
+        let env = rng.opt(non_empty_line);
         let default = non_empty_line(&mut rng);
         let got = resolve_signing_key(env.as_deref(), &default);
         match &env {
