@@ -8,7 +8,9 @@
 use std::fs;
 use std::path::Path;
 
-use idlescreen_packages::sign_macros::{resolve_gpg_bin_from_env, resolve_gpg_name_from_env, resolve_signing_key};
+use idlescreen_packages::sign_macros::{
+    resolve_gpg_bin_from_env, resolve_gpg_name_from_env, resolve_signing_key,
+};
 use idlescreen_packages::sweep::sweep_loose_packages;
 use idlescreen_packages::update_steps::{
     dearmor_key, run_createrepo, sign_apt_release, sign_rpm_metadata, sign_rpms,

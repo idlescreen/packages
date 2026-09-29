@@ -1,6 +1,6 @@
 {
  "repo": "packages",
- "rev": "c00983d",
+ "rev": "8f7abd9",
  "dirty": true,
  "pages": [
   {
@@ -19,7 +19,7 @@
   },
   {
    "path": "./src/bin/update.rs",
-   "lines": 97,
+   "lines": 100,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 0
@@ -89,7 +89,7 @@
   },
   {
    "path": "./src/install_honesty/mod.rs",
-   "lines": 25,
+   "lines": 26,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 0
@@ -152,49 +152,49 @@
   },
   {
    "path": "./src/update_steps/dearmor_key.rs",
-   "lines": 68,
+   "lines": 69,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 1
   },
   {
    "path": "./src/update_steps/mod.rs",
-   "lines": 55,
+   "lines": 56,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 0
   },
   {
    "path": "./src/update_steps/run_createrepo.rs",
-   "lines": 75,
+   "lines": 76,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 1
   },
   {
    "path": "./src/update_steps/sign_apt_release.rs",
-   "lines": 81,
-   "bin_bytes": null,
-   "heat_pct": null,
-   "reach": 1
-  },
-  {
-   "path": "./src/update_steps/sign_rpm_metadata.rs",
-   "lines": 97,
-   "bin_bytes": null,
-   "heat_pct": null,
-   "reach": 1
-  },
-  {
-   "path": "./src/update_steps/sign_rpms.rs",
    "lines": 82,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 1
   },
   {
+   "path": "./src/update_steps/sign_rpm_metadata.rs",
+   "lines": 98,
+   "bin_bytes": null,
+   "heat_pct": null,
+   "reach": 1
+  },
+  {
+   "path": "./src/update_steps/sign_rpms.rs",
+   "lines": 81,
+   "bin_bytes": null,
+   "heat_pct": null,
+   "reach": 1
+  },
+  {
    "path": "./src/version_cmp.rs",
-   "lines": 235,
+   "lines": 257,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 2

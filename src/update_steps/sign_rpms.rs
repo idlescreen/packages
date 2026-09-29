@@ -62,10 +62,8 @@ mod tests {
         // content yet. We exercise in an isolated tempdir so the
         // packages repo's own layout doesn't accidentally satisfy
         // the precondition.
-        let tmp = std::env::temp_dir().join(format!(
-            "idlescreen-sign-rpms-test-{}",
-            std::process::id()
-        ));
+        let tmp =
+            std::env::temp_dir().join(format!("idlescreen-sign-rpms-test-{}", std::process::id()));
         let _ = std::fs::remove_dir_all(&tmp);
         std::fs::create_dir_all(&tmp).expect("tempdir must be creatable");
         let prev = std::env::current_dir().ok();
