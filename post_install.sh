@@ -26,7 +26,18 @@ awaken_daemon() {
     story_line "Ensuring ${HOME}/.config/idle exists (daemon config dir)…"
     mkdir -p "${HOME}/.config/idle" "${HOME}/.config/idlescreen"
     # Leftover atomic-write temps confuse nothing useful and clutter the dir.
-    rm -f "${HOME}/.config/idle"/config.tmp.* 2>/dev/null || true
+    rm -f "${HOME}/.config/idle"/config.tmp.* "${HOME}/.config/idlescreen"/config.tmp.* 2>/dev/null || true
+
+    # Preserve existing user configuration across runs and updates:
+    # never clobber existing user or system config files.
+    if [ -f "${HOME}/.config/idlescreen/config.yaml" ] && [ ! -f "${HOME}/.config/idle/config.yaml" ]; then
+        cp -p "${HOME}/.config/idlescreen/config.yaml" "${HOME}/.config/idle/config.yaml" 2>/dev/null || true
+    elif [ -f "${HOME}/.config/idle/config.yaml" ] && [ ! -f "${HOME}/.config/idlescreen/config.yaml" ]; then
+        cp -p "${HOME}/.config/idle/config.yaml" "${HOME}/.config/idlescreen/config.yaml" 2>/dev/null || true
+    elif [ -f "/etc/idlescreen/config.yaml" ]; then
+        [ -f "${HOME}/.config/idlescreen/config.yaml" ] || cp -p "/etc/idlescreen/config.yaml" "${HOME}/.config/idlescreen/config.yaml" 2>/dev/null || true
+        [ -f "${HOME}/.config/idle/config.yaml" ] || cp -p "/etc/idlescreen/config.yaml" "${HOME}/.config/idle/config.yaml" 2>/dev/null || true
+    fi
 
     _fix_dbus_activation_file
 

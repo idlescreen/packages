@@ -54,13 +54,31 @@ fn ensure_config_dirs() {
         return;
     };
     let idle_cfg = format!("{home}/.config/idle");
+    let idlescreen_cfg = format!("{home}/.config/idlescreen");
     let _ = std::fs::create_dir_all(&idle_cfg);
-    let _ = std::fs::create_dir_all(format!("{home}/.config/idlescreen"));
-    if let Ok(entries) = std::fs::read_dir(&idle_cfg) {
-        for e in entries.flatten() {
-            if e.file_name().to_string_lossy().starts_with("config.tmp.") {
-                let _ = std::fs::remove_file(e.path());
+    let _ = std::fs::create_dir_all(&idlescreen_cfg);
+    for dir in [&idle_cfg, &idlescreen_cfg] {
+        if let Ok(entries) = std::fs::read_dir(dir) {
+            for e in entries.flatten() {
+                if e.file_name().to_string_lossy().starts_with("config.tmp.") {
+                    let _ = std::fs::remove_file(e.path());
+                }
             }
+        }
+    }
+    let idle_file = std::path::Path::new(&idle_cfg).join("config.yaml");
+    let idlescreen_file = std::path::Path::new(&idlescreen_cfg).join("config.yaml");
+    let etc_file = std::path::Path::new("/etc/idlescreen/config.yaml");
+    if idlescreen_file.is_file() && !idle_file.exists() {
+        let _ = std::fs::copy(&idlescreen_file, &idle_file);
+    } else if idle_file.is_file() && !idlescreen_file.exists() {
+        let _ = std::fs::copy(&idle_file, &idlescreen_file);
+    } else if etc_file.is_file() {
+        if !idlescreen_file.exists() {
+            let _ = std::fs::copy(etc_file, &idlescreen_file);
+        }
+        if !idle_file.exists() {
+            let _ = std::fs::copy(etc_file, &idle_file);
         }
     }
 }
