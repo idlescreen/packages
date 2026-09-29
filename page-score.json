@@ -1,6 +1,6 @@
 {
  "repo": "packages",
- "rev": "f8c4f2a",
+ "rev": "c00983d",
  "dirty": true,
  "pages": [
   {
@@ -201,7 +201,7 @@
   },
   {
    "path": "./tests/generators/mod.rs",
-   "lines": 12,
+   "lines": 16,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 0
