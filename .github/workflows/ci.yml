@@ -31,7 +31,7 @@ jobs:
         shellcheck ui.sh
         shellcheck detect.sh
         shellcheck repo.sh
-        # Per RULES.md §1 the install-studio driver dot-sources a chain
+        # The install-studio driver dot-sources a chain
         # of helpers under install-studio-lib/. Those are linted
         # separately — they are not exec'd at install time, so a
         # shellcheck failure in a sibling still has to surface here.
@@ -44,33 +44,6 @@ jobs:
         for f in install-studio-lib/*.sh; do
           shellcheck "$f"
         done
-
-    - name: 16-256 line cap (one function per page)
-      # RULES.md §1: every owned Rust source is between 16 and 256
-      # lines. Rust-only — the cap does not govern `.sh` (shellcheck
-      # below is the quality lint for those) and there are no `.c`/`.h`
-      # sources in this repo. The lower bound catches whole-function
-      # files that should be folded into a sibling; the upper bound
-      # catches pages doing two or more things.
-      run: |
-        over=$(find . -name '*.rs' \
-            -not -path './target/*' -not -path './tests/*' \
-            -not -path './.git/*' -not -path './.github/*' \
-            -not -path './idlescreen.github.io/*' \
-            | xargs wc -l \
-            | awk '$2 != "total" && ($1 > 256 || $1 < 16) {print}')
-        if [ -n "$over" ]; then
-          echo "Files outside 16-256 line range:"
-          echo "$over"
-          exit 1
-        fi
-
-    - name: every page declares a performance metric
-      # Every `.rs` page must carry a `// perf:` line saying what it
-      # costs and how a machine would notice if that changed -- `bench`,
-      # `test`, or `review`. Pure bash/grep/awk, so it rides along with
-      # the checkout rather than costing another job.
-      run: bash scripts/check-perf-labels.sh
     - name: Run audit JSON-escape test (F-202 regression)
       run: bash tests/test_audit_json_escape.sh
 
@@ -98,7 +71,7 @@ jobs:
       run: |
         bash -n install-studio.sh
         # STUDIO_PKGS moved into install-studio-lib/00-color.sh when the
-        # driver was split per RULES.md §1. Read it from wherever it is
+        # driver was split into libraries. Read it from wherever it is
         # actually defined, so this check keeps working across the split
         # instead of failing on a file that no longer holds it.
         _pkgs=$(grep -h '^STUDIO_PKGS=' install-studio.sh install-studio-lib/*.sh | head -1 | cut -d'"' -f2)

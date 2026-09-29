@@ -1,4 +1,3 @@
-// perf: T3 · metric: touches the filesystem; dominated by syscall latency, not by this page's logic · check: test
 //! Move loose package files from a root directory into apt/rpm pools.
 // SPDX-License-Identifier: Apache-2.0
 

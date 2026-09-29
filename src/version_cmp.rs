@@ -1,4 +1,3 @@
-// perf: T3 · metric: allocates on the call path; cost scales with allocation count · check: test
 //! Version string comparison for package prune ordering.
 // SPDX-License-Identifier: Apache-2.0
 
@@ -30,10 +29,8 @@ impl Semver {
             Some((h, b)) => (h, Some(b)),
             None => (s, None),
         };
-        if let Some(b) = build {
-            if !b.split('.').all(|i| is_ident(i)) {
-                return None;
-            }
+        if build.is_some_and(|b| !b.split('.').all(is_ident)) {
+            return None;
         }
         let (core, pre) = match head.split_once('-') {
             Some((c, p)) => (c, Some(p)),

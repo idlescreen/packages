@@ -1,4 +1,3 @@
-// perf: T3 · metric: test-only page, not compiled into the shipped binary · check: test
 //! Property tests for deb/rpm filename parsing — std-only, deterministic.
 
 use idlescreen_packages::{parse_deb_filename, parse_rpm_filename};

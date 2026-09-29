@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-// perf: T3 · metric: spawns a subprocess; cost is dominated by fork/exec, not by this page · check: review
 
 //! Host identity: package manager, desktop, OS label.
 

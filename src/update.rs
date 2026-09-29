@@ -1,10 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
-// perf: T3 · metric: spawns a subprocess; cost is dominated by fork/exec, not by this page · check: review
 
 //! `update` binary: top-level orchestrator for the package repository.
-//!
-//! Per RULES.md §2, each step lives in its own page under
-//! `update_steps::*`. This file is just the entry: print the banner,
+//! Each step lives in its own page under `update_steps::*`. This file is just the entry: print the banner,
 //! create the directory skeleton, then call the steps in the order
 //! the publish contract requires.
 

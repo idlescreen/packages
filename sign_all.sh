@@ -7,7 +7,6 @@
 #      is `sign_all.sh` — not `cargo run --release --bin sign`. The
 #      wrapper pins that name without leaking the cargo command
 #      shape into every consumer.
-#   2. RULES.md §1 (every page ≥ 16 lines) means a 2-line wrapper
 #      would otherwise fail the org-wide cap-gate; the doc
 #      comment above is what brings this file above the floor.
 #

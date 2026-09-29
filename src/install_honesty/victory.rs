@@ -1,5 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-// perf: T3 · metric: bounded single-pass work; no syscalls, no locks, no allocation on the steady path · check: test
 
 /// Victory banner title + note (truthful post-deploy).
 pub fn victory_banner(all_present: bool, daemon_active: bool) -> (&'static str, &'static str) {

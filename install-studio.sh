@@ -2,7 +2,6 @@
 # IdleScreen Studio installer
 # Usage: curl -fsSL https://idlescreen.github.io/packages/install-studio.sh | sh
 #
-# Per RULES.md §2 (one function per page), the install pipeline is
 # broken into focused sibling files under `install-studio-lib/`.
 # This top-level script is just the entry: it sources the helpers
 # in order and dispatches `main`.
@@ -21,7 +20,6 @@
 set -eu
 
 # Source helpers in load order. Each file owns one focused
-# responsibility per RULES.md §2.
 . "$(dirname "$0")/install-studio-lib/00-color.sh"
 . "$(dirname "$0")/install-studio-lib/10-preflight.sh"
 . "$(dirname "$0")/install-studio-lib/20-ffmpeg.sh"

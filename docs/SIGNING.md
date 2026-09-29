@@ -24,7 +24,7 @@ The private key never enters the repository. It lives only in GitHub
 Actions secrets (`GPG_PRIVATE_KEY`, `GPG_PASSPHRASE`) on the `packages`
 repo.
 
-## Trust-surface posture (per RULES §1.4 default-deny)
+## Trust-surface posture (default-deny)
 
 | Surface | Posture |
 |---------|---------|

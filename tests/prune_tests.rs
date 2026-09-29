@@ -1,4 +1,3 @@
-// perf: T3 · metric: test-only page, not compiled into the shipped binary · check: test
 //! Property tests for prune selection (keep newest N per package) — std-only.
 
 use idlescreen_packages::{PackageFile, compare_versions, group_by_name, select_to_remove};
