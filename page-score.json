@@ -1,7 +1,7 @@
 {
  "repo": "packages",
- "rev": "35d566a",
- "dirty": false,
+ "rev": "84d7228",
+ "dirty": true,
  "pages": [
   {
    "path": "./src/bin/prune.rs",
@@ -54,7 +54,7 @@
   },
   {
    "path": "./src/install_bin/start_daemon.rs",
-   "lines": 151,
+   "lines": 164,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 1

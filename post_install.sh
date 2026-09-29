@@ -28,15 +28,26 @@ awaken_daemon() {
     # Leftover atomic-write temps confuse nothing useful and clutter the dir.
     rm -f "${HOME}/.config/idle"/config.tmp.* "${HOME}/.config/idlescreen"/config.tmp.* 2>/dev/null || true
 
+    _sys_cfg=""
+    if [ -f "/etc/idlescreen/config.yaml" ]; then
+        _sys_cfg="/etc/idlescreen/config.yaml"
+    elif [ -f "/etc/idle/config.yaml" ]; then
+        _sys_cfg="/etc/idle/config.yaml"
+    fi
+
     # Preserve existing user configuration across runs and updates:
     # never clobber existing user or system config files.
-    if [ -f "${HOME}/.config/idlescreen/config.yaml" ] && [ ! -f "${HOME}/.config/idle/config.yaml" ]; then
-        cp -p "${HOME}/.config/idlescreen/config.yaml" "${HOME}/.config/idle/config.yaml" 2>/dev/null || true
-    elif [ -f "${HOME}/.config/idle/config.yaml" ] && [ ! -f "${HOME}/.config/idlescreen/config.yaml" ]; then
-        cp -p "${HOME}/.config/idle/config.yaml" "${HOME}/.config/idlescreen/config.yaml" 2>/dev/null || true
-    elif [ -f "/etc/idlescreen/config.yaml" ]; then
-        [ -f "${HOME}/.config/idlescreen/config.yaml" ] || cp -p "/etc/idlescreen/config.yaml" "${HOME}/.config/idlescreen/config.yaml" 2>/dev/null || true
-        [ -f "${HOME}/.config/idle/config.yaml" ] || cp -p "/etc/idlescreen/config.yaml" "${HOME}/.config/idle/config.yaml" 2>/dev/null || true
+    if [ -f "${HOME}/.config/idlescreen/config.yaml" ]; then
+        if [ ! -f "${HOME}/.config/idle/config.yaml" ]; then
+            cp -p "${HOME}/.config/idlescreen/config.yaml" "${HOME}/.config/idle/config.yaml" 2>/dev/null || true
+        fi
+    elif [ -f "${HOME}/.config/idle/config.yaml" ]; then
+        if [ ! -f "${HOME}/.config/idlescreen/config.yaml" ]; then
+            cp -p "${HOME}/.config/idle/config.yaml" "${HOME}/.config/idlescreen/config.yaml" 2>/dev/null || true
+        fi
+    elif [ -n "$_sys_cfg" ]; then
+        [ -f "${HOME}/.config/idlescreen/config.yaml" ] || cp -p "$_sys_cfg" "${HOME}/.config/idlescreen/config.yaml" 2>/dev/null || true
+        [ -f "${HOME}/.config/idle/config.yaml" ] || cp -p "$_sys_cfg" "${HOME}/.config/idle/config.yaml" 2>/dev/null || true
     fi
 
     _fix_dbus_activation_file
