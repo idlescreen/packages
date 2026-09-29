@@ -150,17 +150,12 @@ pub fn compare_versions(a: &str, b: &str) -> Ordering {
     let a_parts = split_parts(a);
     let b_parts = split_parts(b);
     for (ap, bp) in a_parts.iter().zip(b_parts.iter()) {
-        match (ap.parse::<u64>(), bp.parse::<u64>()) {
-            (Ok(an), Ok(bn)) => {
-                if an != bn {
-                    return an.cmp(&bn);
-                }
-            }
-            _ => {
-                if ap != bp {
-                    return ap.cmp(bp);
-                }
-            }
+        let ord = match (ap.parse::<u64>(), bp.parse::<u64>()) {
+            (Ok(an), Ok(bn)) => an.cmp(&bn),
+            _ => ap.cmp(bp),
+        };
+        if ord != Ordering::Equal {
+            return ord;
         }
     }
     a_parts.len().cmp(&b_parts.len())
@@ -169,7 +164,6 @@ pub fn compare_versions(a: &str, b: &str) -> Ordering {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use std::cmp::Ordering;
 
     #[test]
     fn split_parts_empty() {

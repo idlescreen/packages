@@ -1,6 +1,6 @@
 {
  "repo": "packages",
- "rev": "84d7228",
+ "rev": "a525f0c",
  "dirty": true,
  "pages": [
   {
@@ -194,7 +194,7 @@
   },
   {
    "path": "./src/version_cmp.rs",
-   "lines": 257,
+   "lines": 251,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 2
