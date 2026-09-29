@@ -19,6 +19,9 @@ jobs:
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
 
+    - name: Validate page-score.json
+      run: qa/page_score_check.sh
+
     - name: Install shellcheck
       run: sudo apt-get update && sudo apt-get install -y shellcheck
 
