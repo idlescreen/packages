@@ -1,7 +1,7 @@
 {
  "repo": "packages",
- "rev": "4e3fe3c",
- "dirty": true,
+ "rev": "5b91484",
+ "dirty": false,
  "pages": [
   {
    "path": "./src/install_bin/deploy.rs",
