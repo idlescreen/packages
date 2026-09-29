@@ -2,8 +2,8 @@
 
 use idlescreen_packages::{parse_deb_filename, parse_rpm_filename};
 
-mod common;
-use common::{Rng, arch_deb, arch_rpm, pkg_name, rel_num, version_seg};
+mod generators;
+use generators::{Rng, arch_deb, arch_rpm, pkg_name, rel_num, version_seg};
 
 const CASES: usize = 512;
 

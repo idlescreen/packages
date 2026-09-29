@@ -4,8 +4,8 @@ use idlescreen_packages::{
     build_rpmmacros, gpg_name_is_valid, resolve_gpg_bin, resolve_signing_key,
 };
 
-mod common;
-use common::{Rng, any_text, gpg_id, maybe_spaces, non_empty_line, safe_macro_field};
+mod generators;
+use generators::{Rng, any_text, gpg_id, maybe_spaces, non_empty_line, safe_macro_field};
 
 const CASES: usize = 512;
 

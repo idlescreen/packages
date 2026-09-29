@@ -6,8 +6,8 @@ use idlescreen_packages::{
 use std::ffi::OsStr;
 use std::path::{Path, PathBuf};
 
-mod common;
-use common::{Rng, safe_segment};
+mod generators;
+use generators::{Rng, safe_segment};
 
 const CASES: usize = 512;
 

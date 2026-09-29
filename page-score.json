@@ -1,6 +1,6 @@
 {
  "repo": "packages",
- "rev": "9704e9c",
+ "rev": "f8c4f2a",
  "dirty": true,
  "pages": [
   {
@@ -200,11 +200,25 @@
    "reach": 2
   },
   {
-   "path": "./tests/common/mod.rs",
-   "lines": 193,
+   "path": "./tests/generators/mod.rs",
+   "lines": 12,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 0
+  },
+  {
+   "path": "./tests/generators/rng.rs",
+   "lines": 55,
+   "bin_bytes": null,
+   "heat_pct": null,
+   "reach": 2
+  },
+  {
+   "path": "./tests/generators/values.rs",
+   "lines": 146,
+   "bin_bytes": null,
+   "heat_pct": null,
+   "reach": 1
   },
   {
    "path": "./tests/package_parse_tests.rs",

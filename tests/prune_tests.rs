@@ -4,8 +4,8 @@ use idlescreen_packages::{PackageFile, compare_versions, group_by_name, select_t
 use std::collections::{HashMap, HashSet};
 use std::path::PathBuf;
 
-mod common;
-use common::{Rng, pkg_name, semver_core};
+mod generators;
+use generators::{Rng, pkg_name, semver_core};
 
 const CASES: usize = 256;
 

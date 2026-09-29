@@ -3,8 +3,8 @@
 use idlescreen_packages::{compare_versions, split_parts};
 use std::cmp::Ordering;
 
-mod common;
-use common::{Rng, any_text, version_string, version_token};
+mod generators;
+use generators::{Rng, any_text, version_string, version_token};
 
 const CASES: usize = 512;
 
