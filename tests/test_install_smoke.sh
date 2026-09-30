@@ -37,7 +37,15 @@ printf '%s fake %s %s\n' "$(date +%s)" "$cmd" "$*" >> "$LOG_FILE"
 case "$cmd" in
     rpm)        printf 'fake-pkg-1.0-1\n'; exit 0 ;;
     dpkg-query) printf 'Package: fake-pkg\nVersion: 1.0\n'; exit 0 ;;
-    curl)       cat >/dev/null; exit 0 ;;
+    curl)
+        while [ $# -gt 0 ]; do
+            case "$1" in
+                -o) [ -n "${2:-}" ] && : > "$2"; shift 2 ;;
+                *) shift ;;
+            esac
+        done
+        exit 0
+        ;;
     dnf)        printf 'fake-dnf-ok\n'; exit 0 ;;
     apt-get)    printf 'fake-apt-ok\n'; exit 0 ;;
     systemctl)  exit 0 ;;

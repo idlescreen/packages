@@ -60,7 +60,8 @@ HOME_DIR2="$TMP/home2"
 mkdir -p "$HOME_DIR2/.config/idle"
 echo "custom_setting: preserved_idle" > "$HOME_DIR2/.config/idle/config.yaml"
 
-PATH="$MOCKBIN:/usr/bin:/bin" HOME="$HOME_DIR2" awaken_daemon >/dev/null 2>&1 || true
+output_log="$TMP/awaken.log"
+PATH="$MOCKBIN:/usr/bin:/bin" HOME="$HOME_DIR2" awaken_daemon >"$output_log" 2>&1 || true
 
 content2=$(cat "$HOME_DIR2/.config/idle/config.yaml")
 if [ "$content2" != "custom_setting: preserved_idle" ]; then
@@ -70,6 +71,11 @@ fi
 synced_idlescreen=$(cat "$HOME_DIR2/.config/idlescreen/config.yaml")
 if [ "$synced_idlescreen" != "custom_setting: preserved_idle" ]; then
     echo "FAIL: ~/.config/idlescreen/config.yaml was not synced from idle! content=$synced_idlescreen"
+    exit 1
+fi
+
+if ! grep -q "Preserving existing configuration" "$output_log"; then
+    echo "FAIL: awaken_daemon did not emit preservation notice!"
     exit 1
 fi
 

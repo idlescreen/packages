@@ -28,8 +28,18 @@ awaken_daemon() {
     # Leftover atomic-write temps confuse nothing useful and clutter the dir.
     rm -f "${HOME}/.config/idle"/config.tmp.* "${HOME}/.config/idlescreen"/config.tmp.* 2>/dev/null || true
 
+    for _cfg in "${HOME}/.config/idlescreen/config.yaml" \
+                "${HOME}/.config/idle/config.yaml" \
+                "/etc/xdg/idlescreen/config.yaml"; do
+        if [ -f "$_cfg" ]; then
+            story_line "Preserving existing configuration at ${_cfg}…"
+        fi
+    done
+
     _sys_cfg=""
-    if [ -f "/etc/idlescreen/config.yaml" ]; then
+    if [ -f "/etc/xdg/idlescreen/config.yaml" ]; then
+        _sys_cfg="/etc/xdg/idlescreen/config.yaml"
+    elif [ -f "/etc/idlescreen/config.yaml" ]; then
         _sys_cfg="/etc/idlescreen/config.yaml"
     elif [ -f "/etc/idle/config.yaml" ]; then
         _sys_cfg="/etc/idle/config.yaml"

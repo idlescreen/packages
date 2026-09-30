@@ -68,9 +68,22 @@ fn ensure_config_dirs() {
     }
     let idle_file = std::path::Path::new(&idle_cfg).join("config.yaml");
     let idlescreen_file = std::path::Path::new(&idlescreen_cfg).join("config.yaml");
+    let etc_xdg_idlescreen = std::path::Path::new("/etc/xdg/idlescreen/config.yaml");
     let etc_idlescreen = std::path::Path::new("/etc/idlescreen/config.yaml");
     let etc_idle = std::path::Path::new("/etc/idle/config.yaml");
-    let sys_file = if etc_idlescreen.is_file() {
+
+    for p in [&idlescreen_file, &idle_file, etc_xdg_idlescreen] {
+        if p.is_file() {
+            story_line(&format!(
+                "Preserving existing configuration: {}",
+                p.display()
+            ));
+        }
+    }
+
+    let sys_file = if etc_xdg_idlescreen.is_file() {
+        Some(etc_xdg_idlescreen)
+    } else if etc_idlescreen.is_file() {
         Some(etc_idlescreen)
     } else if etc_idle.is_file() {
         Some(etc_idle)
