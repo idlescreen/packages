@@ -37,25 +37,6 @@ Description: Command-line interface for the IdleScreen daemon
  <verb>` routes here via the idlescreen router).
 
 Package: idle-cli
-Version: 4.0.8-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 3824
-Depends: idle-daemon (>= 3.5.0), libc6
-Recommends: idlescreen
-Filename: pool/main/idle-cli_4.0.8-1_amd64.deb
-Size: 1069796
-MD5sum: 04a7c6db9a1b10b146aa40e9eea7000c
-SHA1: 9eab7303c862c723cabed8f1844204be38fe9eb5
-SHA256: c7dfe6a38b71150fef51a4f1215928688e1ec2ee88925f2f7e0da8ac44d78db3
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/cli
-Description: Command-line interface for the IdleScreen daemon
- CLI for controlling the Idle daemon over D-Bus (binary: idle-cli; `idlescreen
- <verb>` routes here via the idlescreen router).
-
-Package: idle-cli
 Version: 4.0.9-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -145,25 +126,6 @@ Description: IdleScreen for COSMIC — product package (applet + pulls daemon an
  recommended savers)
  IdleScreen product for COSMIC Desktop.
  Installs the COSMIC panel applet and depends on idle-daemon.
-
-Package: idle-daemon
-Version: 3.5.26-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 16529
-Depends: dbus, fonts-dejavu-core, libc6
-Recommends: idle-cli, idle-saver-aurora, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
-Suggests: idle-cosmic
-Filename: pool/main/idle-daemon_3.5.26-1_amd64.deb
-Size: 5171960
-MD5sum: 9d5b01a0c3c9e87e3bf47cdf57b669cf
-SHA1: fd96bc60345e3fb1d16bffca9da906c2bf8eac7b
-SHA256: ddbcee6e68a7676d9393cb744d4bc01807a06ee51d28ef0dba43d010cc779c7e
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: IdleScreen background idle daemon (Wayland screensaver host)
- IdleScreen background idle monitoring and screensaver host for Wayland.
 
 Package: idle-daemon
 Version: 3.5.27-1
