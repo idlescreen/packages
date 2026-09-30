@@ -79,4 +79,20 @@ if ! grep -q "Preserving existing configuration" "$output_log"; then
     exit 1
 fi
 
+# Fresh home seeded from system config if present
+if [ -f "/etc/xdg/idlescreen/config.yaml" ] || [ -f "/etc/idlescreen/config.yaml" ]; then
+    HOME_DIR3="$TMP/home3"
+    mkdir -p "$HOME_DIR3"
+    output_log3="$TMP/awaken3.log"
+    PATH="$MOCKBIN:/usr/bin:/bin" HOME="$HOME_DIR3" awaken_daemon >"$output_log3" 2>&1 || true
+    if [ ! -f "$HOME_DIR3/.config/idlescreen/config.yaml" ] && [ ! -f "$HOME_DIR3/.config/idle/config.yaml" ]; then
+        echo "FAIL: system config was not seeded into empty user home!"
+        exit 1
+    fi
+    if ! grep -q "Preserving existing configuration" "$output_log3"; then
+        echo "FAIL: awaken_daemon did not emit preservation notice for system config!"
+        exit 1
+    fi
+fi
+
 echo "all config preservation checks passed"

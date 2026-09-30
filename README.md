@@ -41,6 +41,14 @@ The installer writes the repo config + GPG key, then installs the
 `idlescreen` product package — the router that pulls the whole stack.
 See `TRUST.md` for the trust model and signature verification.
 
+## Configuration & Preservation
+
+The IdleScreen installer preserves existing user and system configurations without clobbering:
+- User configs: `~/.config/idlescreen/config.yaml` and `~/.config/idle/config.yaml`
+- System defaults: `/etc/xdg/idlescreen/config.yaml`, `/etc/idlescreen/config.yaml`, and `/etc/idle/config.yaml`
+
+Existing files are preserved completely across installs, upgrades, and channel re-syncs.
+
 ## License
 
 Apache-2.0 · © 2026 IdleScreen

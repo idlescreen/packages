@@ -30,7 +30,9 @@ awaken_daemon() {
 
     for _cfg in "${HOME}/.config/idlescreen/config.yaml" \
                 "${HOME}/.config/idle/config.yaml" \
-                "/etc/xdg/idlescreen/config.yaml"; do
+                "/etc/xdg/idlescreen/config.yaml" \
+                "/etc/idlescreen/config.yaml" \
+                "/etc/idle/config.yaml"; do
         if [ -f "$_cfg" ]; then
             story_line "Preserving existing configuration at ${_cfg}…"
         fi

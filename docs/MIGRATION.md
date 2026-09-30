@@ -93,3 +93,9 @@ left as historical cruft; both were cleaned up in Sprint 06 —
 `cosmic/idlescreen-applet.1` documents `IDLE-APPLET`. The remaining
 `trance` mentions are intentional back-compat paths (legacy
 `~/.config/trance/` fallback, package `provides`/`replaces` lines).
+
+## 2026-09-30 — configuration preservation & `/etc/xdg/idlescreen` discovery
+
+The installer safely preserves user configuration files in `~/.config/idlescreen/config.yaml`
+and `~/.config/idle/config.yaml` without clobbering existing settings. System configuration
+discovery supports `/etc/xdg/idlescreen/config.yaml` as a candidate path.

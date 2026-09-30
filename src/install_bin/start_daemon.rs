@@ -72,7 +72,13 @@ fn ensure_config_dirs() {
     let etc_idlescreen = std::path::Path::new("/etc/idlescreen/config.yaml");
     let etc_idle = std::path::Path::new("/etc/idle/config.yaml");
 
-    for p in [&idlescreen_file, &idle_file, etc_xdg_idlescreen] {
+    for p in [
+        &idlescreen_file,
+        &idle_file,
+        etc_xdg_idlescreen,
+        etc_idlescreen,
+        etc_idle,
+    ] {
         if p.is_file() {
             story_line(&format!(
                 "Preserving existing configuration: {}",
