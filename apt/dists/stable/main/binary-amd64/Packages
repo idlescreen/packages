@@ -18,6 +18,25 @@ Description: Command-line interface for the IdleScreen daemon
  <verb>` routes here via the idlescreen router).
 
 Package: idle-cli
+Version: 4.0.11-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 3989
+Depends: idle-daemon (>= 3.5.0), libc6
+Recommends: idlescreen
+Filename: pool/main/idle-cli_4.0.11-1_amd64.deb
+Size: 1076380
+MD5sum: 5013f89c24c0ee1fb99c912921ec977e
+SHA1: 6e8c7ff4f313260b7ac58d0987b3c772fd9ab2d6
+SHA256: 8c58c1f49cf03d5f7638015160e5a39d10b4b8bdf9e4cb07a8ad13fdc7b91fd2
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/cli
+Description: Command-line interface for the IdleScreen daemon
+ CLI for controlling the Idle daemon over D-Bus (binary: idle-cli; `idlescreen
+ <verb>` routes here via the idlescreen router).
+
+Package: idle-cli
 Version: 4.0.8-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -178,6 +197,25 @@ Size: 5172020
 MD5sum: d2a6d7a3cdc909c15879ec58ed114f54
 SHA1: 00de4c827c05713ccdef857ef09245229c903ced
 SHA256: 9239d5b65711592fb6423b784fa5c7a81f83f5a2598d731550d06c9e400ec4a9
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: IdleScreen background idle daemon (Wayland screensaver host)
+ IdleScreen background idle monitoring and screensaver host for Wayland.
+
+Package: idle-daemon
+Version: 3.5.29-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 17351
+Depends: dbus, fonts-dejavu-core, libc6
+Recommends: idle-cli, idle-saver-aurora, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
+Suggests: idle-cosmic
+Filename: pool/main/idle-daemon_3.5.29-1_amd64.deb
+Size: 5403412
+MD5sum: bfe2e93e6e36e2fd8f074aadd7e113ad
+SHA1: 589f03d29245f07825fc0a6692ec33e67fb05817
+SHA256: 3d24ab42292362f3ede1fc6df1664e7bb95c415cbfd537d65c8da76703ba2d23
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idlescreen

@@ -8,13 +8,16 @@ use crate::sign_macros::{resolve_gpg_name_from_env, resolve_signing_key};
 
 use super::run_cmd;
 
-/// Sign every `.rpm` file under `rpm/pool/` with the configured
-/// GPG key. No-op when the pool is empty or missing — the first
-/// publish of a new repository, or an RPM-cleanup pass, both
-/// legitimately produce a zero-file pool.
-///
-/// Refuses to fail silently: a non-zero `rpmsign` exit propagates
-/// so unsigned RPMs never reach the public pool.
+fn is_signed(path: &Path) -> bool {
+    Command::new("rpm")
+        .args(["-Kv", &path.to_string_lossy()])
+        .output()
+        .map(|o| String::from_utf8_lossy(&o.stdout).contains("signature"))
+        .unwrap_or(false)
+}
+
+/// Sign every unsigned `.rpm` file under `rpm/pool/` with the configured
+/// GPG key. No-op when the pool is empty, missing, or all RPMs already signed.
 pub fn sign_rpms() -> Result<(), String> {
     let signing_key = resolve_signing_key(
         resolve_gpg_name_from_env().as_deref(),
@@ -28,19 +31,21 @@ pub fn sign_rpms() -> Result<(), String> {
     let mut rpms = Vec::new();
     if let Ok(entries) = fs::read_dir(rpm_pool) {
         for entry in entries.flatten() {
-            if entry.path().extension().and_then(|s| s.to_str()) == Some("rpm") {
-                rpms.push(entry.path());
+            let p = entry.path();
+            if p.extension().and_then(|s| s.to_str()) == Some("rpm") && !is_signed(&p) {
+                rpms.push(p);
             }
         }
     }
 
     if rpms.is_empty() {
+        println!("All RPMs in pool are already signed.");
         return Ok(());
     }
 
     println!("Signing {} RPMs...", rpms.len());
     let mut cmd = Command::new("rpmsign");
-    cmd.arg("--addsign").arg("--key-id").arg(&signing_key);
+    cmd.arg("--resign").arg("--key-id").arg(&signing_key);
     for rpm in &rpms {
         cmd.arg(rpm);
     }

@@ -1,6 +1,6 @@
 {
  "repo": "packages",
- "rev": "ef3ff2c",
+ "rev": "e45c4d6",
  "dirty": true,
  "pages": [
   {
@@ -187,7 +187,7 @@
   },
   {
    "path": "./src/update_steps/sign_rpms.rs",
-   "lines": 81,
+   "lines": 86,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 1
