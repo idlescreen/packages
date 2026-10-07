@@ -14,6 +14,7 @@ pub const COSMIC_EXTRA: &str = "idle-cosmic";
 
 /// Official saver plugins pulled by `idle-savers` (and wiped when idlescreen is removed).
 pub const OFFICIAL_SAVERS: &[&str] = &[
+    "idle-saver-ascii",
     "idle-saver-aurora",
     "idle-saver-beams",
     "idle-saver-bursts",
@@ -34,6 +35,7 @@ pub const PRODUCT_STACK_ON_REMOVE: &[&str] = &[
     "idle-tui",
     "idle-cli",
     "idle-savers",
+    "idle-saver-ascii",
     "idle-saver-aurora",
     "idle-saver-beams",
     "idle-saver-bursts",

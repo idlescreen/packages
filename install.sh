@@ -136,9 +136,9 @@ if [ ! -f "$SCRIPT_DIR/ui.sh" ]; then
         _expected_hash=""
         case "$f" in
             "ui.sh") _expected_hash="af4ba64b19c76a0dcfaf9b9536ed9551a708efe2c8fa4980e9603dc292e2851c" ;;
-            "detect.sh") _expected_hash="74bfc7fc66a3554e324e9cc2684e5e1da7767a6622a238a0514655ae9ad59d93" ;;
-            "repo.sh") _expected_hash="1e4510fe98042ae93008202a23a0b92fa10c2c0300457db2786883fabdc6303c" ;;
-            "install_core.sh") _expected_hash="18856b9a53482fd1092e9096cb0bdbb90d5dcedfdccb343ed7bb64d34fa1263f" ;;
+            "detect.sh") _expected_hash="6206b4997e5a11a461de3d35a66775b42d7ad4c9879734a7fec8cefe4aeb7f05" ;;
+            "repo.sh") _expected_hash="910e261bb58968972b30d17908a9646c7fd1fbeb36aaf3e4c8a6885ab8009996" ;;
+            "install_core.sh") _expected_hash="e6e812033771844da6f94eccd39a5e519df6aaae0633cc7129a1bbb10da07e58" ;;
             "install_audit.sh") _expected_hash="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
             "post_install.sh") _expected_hash="dbd7b548164ce14b61958e0cc114142cb4fe813257114a0917a3383a78068dc6" ;;
             *) echo "install: unknown module $f" >&2; exit 1 ;;
@@ -206,15 +206,8 @@ main() {
 
     if [ -z "$PKG_MGR" ]; then
         say ""
-        if [ "$OS_ID" = "arch" ] || [ "$OS_LIKE" = "arch" ]; then
-            err "Arch Linux is not natively supported by this script yet."
-            dim "  Please build from source using the PKGBUILD:"
-            dim "  ${REPO_BASE}/arch/PKGBUILD"
-        else
-            err "No supported package manager (need DNF or APT)."
-            dim "  Arch users: see ${REPO_BASE}/  → arch/"
-        fi
-        dim "  Manual:     ${REPO_BASE}/"
+        err "No supported package manager (need DNF, APT or PACMAN)."
+        dim "  Manual installs: ${REPO_BASE}/"
         exit 1
     fi
 
@@ -223,6 +216,8 @@ main() {
     # --- Phase 2: repo ---
     if [ "$PKG_MGR" = "dnf" ]; then
         setup_repo_dnf
+    elif [ "$PKG_MGR" = "pacman" ]; then
+        setup_repo_pacman
     else
         setup_repo_apt
     fi

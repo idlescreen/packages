@@ -26,20 +26,60 @@
 
 </div>
 
-The signed package channel — APT and RPM repos served at
+The signed package channel — APT, RPM and pacman repos served at
 `idlescreen.github.io/packages`, fed by release imports from every product
 repo. Part of [IdleScreen](https://idlescreen.github.io) — modular Wayland
 screensavers for Linux.
 
 ## Install
 
+The web installer detects your package manager and configures the right
+channel. It is the only path that writes the trust anchor for you.
+
 ```sh
 curl -fsSL https://idlescreen.github.io/install.sh | sh
 ```
 
-The installer writes the repo config + GPG key, then installs the
-`idlescreen` product package — the router that pulls the whole stack.
-See `TRUST.md` for the trust model and signature verification.
+Verify the download before you run it:
+
+```sh
+curl -fsSL https://idlescreen.github.io/install.sh -o install.sh
+./install.sh --verify     # print SHA-256 of the installer and its modules
+```
+
+Then, by channel:
+
+| Channel | Command |
+|---|---|
+| **Web installer** | `curl -fsSL https://idlescreen.github.io/install.sh | sh` |
+| **DNF / RPM** | `./install.sh` (writes `/etc/yum.repos.d/idlescreen.repo`) |
+| **APT / DEB** | `./install.sh` (writes `/etc/apt/sources.list.d/idlescreen.list`) |
+| **pacman / Arch** | `./install.sh` (writes `/etc/xdg/idlescreen/idlescreen.db`) |
+
+Once a channel is configured, the product package is a one-liner:
+
+```sh
+dnf install idlescreen        # Fedora, Nobara, RHEL family
+apt-get install idlescreen    # Debian, Ubuntu, Mint, Pop!_OS, elementary
+pacman -S idlescreen          # Arch, EndeavourOS, Garuda, CachyOS
+```
+
+### Arch without the binary channel
+
+The pacman channel is served from a signed dylib database, so `install.sh`
+needs `arch/idlescreen.db.tar.gz` published for the current release. If it is
+not yet there, build from source instead:
+
+```sh
+git clone https://github.com/idlescreen/packages
+cd packages/arch/idlescreen
+makepkg -si
+```
+
+That PKGBUILD compiles the runtime, CLI, TUI and saver crates from their
+release tags and produces `idle-daemon`, `idle-cli`, `idle-tui`,
+`idle-savers` and the `idlescreen` metapackage. It is a full source build —
+expect tens of minutes.
 
 ## Configuration & Preservation
 

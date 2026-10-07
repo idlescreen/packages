@@ -48,6 +48,14 @@ case "$cmd" in
         ;;
     dnf)        printf 'fake-dnf-ok\n'; exit 0 ;;
     apt-get)    printf 'fake-apt-ok\n'; exit 0 ;;
+    pacman)
+        case "$1" in
+            -Q)  printf 'fake-pkg 1.0-1\n'; exit 0 ;;
+            -Si) printf 'Version : 1.0-1\n'; exit 0 ;;
+            *)   printf 'fake-pacman-ok\n'; exit 0 ;;
+        esac
+        ;;
+    tar)        exit 0 ;;
     systemctl)  exit 0 ;;
     pkexec)     exit 0 ;;
     gtk-update-icon-cache) exit 0 ;;
@@ -179,6 +187,51 @@ if grep -qE 'fake dnf |fake apt-get ' "$LOG" 2>/dev/null; then
     fail=$((fail + 1))
 else
     echo "ok: forged RPM key fingerprint refuses before dnf/apt"
+fi
+
+# 6. Arch/pacman path. detect_pkg_mgr checks pacman first precisely so this
+#    is reachable on a runner that also has apt-get on PATH.
+MOCKBIN_ARCH="$TMP/bin-arch"
+mkdir -p "$MOCKBIN_ARCH"
+LOG_ARCH="$TMP/install-arch.log"
+: > "$LOG_ARCH"
+for cmd in pacman tar curl sudo systemctl pkexec gtk-update-icon-cache update-desktop-database; do
+    ln -sfn "$MOCKBIN/_dispatch" "$MOCKBIN_ARCH/$cmd"
+done
+cp -f "$MOCKBIN/gpg" "$MOCKBIN_ARCH/gpg"
+(
+    cd "$SCRIPT_DIR"
+    PATH="$MOCKBIN_ARCH:/usr/bin:/bin" \
+    FAKE_LOG_FILE="$LOG_ARCH" \
+    IDLESCREEN_OS_ID="arch" \
+    IDLESCREEN_REPO_BASE="file://$SCRIPT_DIR" \
+    IDLESCREEN_PACMAN_XDG_D="$TMP/xdg-idlescreen" \
+    IDLESCREEN_PACMAN_KEY_D="$TMP/pacman-keys" \
+    XDG_RUNTIME_DIR="$TMP/xdg" \
+    HOME="$TMP/home-arch" \
+    XDG_CONFIG_HOME="$TMP/home-arch/.config" \
+    XDG_DATA_HOME="$TMP/home-arch/.local/share" \
+    XDG_STATE_HOME="$TMP/home-arch/.local/state" \
+    timeout 30 sh install.sh >/dev/null 2>&1 || true
+)
+if grep -q 'fake pacman ' "$LOG_ARCH" 2>/dev/null; then
+    echo "ok: install.sh reached the pacman stage"
+else
+    echo "FAIL: install.sh never called pacman (log:)"
+    head -10 "$LOG_ARCH" | sed 's/^/    /'
+    fail=$((fail + 1))
+fi
+if grep -qE 'fake dnf |fake apt-get ' "$LOG_ARCH" 2>/dev/null; then
+    echo "FAIL: pacman host also took the dnf/apt branch"
+    fail=$((fail + 1))
+else
+    echo "ok: pacman host did not fall through to dnf/apt"
+fi
+if [ -f "$TMP/pacman-keys/idlescreen-key.gpg" ]; then
+    echo "ok: pacman trust anchor written to the configured key dir"
+else
+    echo "FAIL: pacman key not written to $TMP/pacman-keys/idlescreen-key.gpg"
+    fail=$((fail + 1))
 fi
 
 if [ "$fail" -eq 0 ]; then

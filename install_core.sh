@@ -34,6 +34,11 @@ survey_modules() {
                 _inst=$(rpm_installed_ver "$_pkg")
                 _cand=$(rpm_available_ver "$_pkg")
             fi
+        elif [ "$PKG_MGR" = "pacman" ]; then
+            if pacman -Q "$_pkg" >/dev/null 2>&1; then
+                _inst=$(pacman_installed_ver "$_pkg")
+                _cand=$(pacman_candidate_ver "$_pkg")
+            fi
         else
             if dpkg-query -W "$_pkg" >/dev/null 2>&1; then
                 _inst=$(apt_installed_ver "$_pkg")
@@ -72,7 +77,7 @@ survey_modules() {
         say "  ${CYAN}${BOLD}Survey: ${INSTALL_COUNT} missing module(s)${RESET} — will attempt install."
     fi
     if [ "$UPGRADE_COUNT" -eq 0 ] && [ "$INSTALL_COUNT" -eq 0 ]; then
-        say "  ${GREEN}${BOLD}Survey: planned modules look current${RESET} — will still re-sync (dnf/apt may no-op)."
+        say "  ${GREEN}${BOLD}Survey: planned modules look current${RESET} — will still re-sync (dnf/apt/pacman may no-op)."
     fi
     say "  ${BOLD}Will request:${RESET} ${CYAN}${_pkgs}${RESET}"
     pause 0.5
@@ -148,6 +153,46 @@ install_packages() {
             err "Planned packages missing after dnf install — aborting"
             exit 1
         fi
+    elif [ "$PKG_MGR" = "pacman" ]; then
+        if [ -n "${UPGRADE_PKGS:-}" ]; then
+            story_line "Raising outdated IdleScreen modules to the current channel…"
+            # shellcheck disable=SC2086
+            if ! sudo pacman -Syu --noconfirm $UPGRADE_PKGS; then
+                warn "pacman -Syu soft-failed — continuing with full install…"
+            fi
+        fi
+        if [ -n "${INSTALL_PKGS:-}" ]; then
+            story_line "Seating new IdleScreen modules…"
+            # shellcheck disable=SC2086
+            if ! sudo pacman -S --needed --noconfirm $INSTALL_PKGS; then
+                warn "Partial install failed — retrying core set…"
+            fi
+        fi
+        story_line "Re-syncing the full IdleScreen set against the channel…"
+        # shellcheck disable=SC2086
+        if ! sudo pacman -S --needed --noconfirm $_pkgs; then
+            err "pacman install failed for planned set: $_pkgs"
+            exit 1
+        fi
+        story_line "Verifying pacman database…"
+        if ! pacman -Q idle-daemon idle-cli >/dev/null 2>&1; then
+            err "idle-daemon / idle-cli missing after install"
+            exit 1
+        fi
+        say ""
+        _missing=0
+        for _pkg in $_pkgs; do
+            if pacman -Q "$_pkg" >/dev/null 2>&1; then
+                ok "$(pacman -Q "$_pkg")"
+            else
+                err "$_pkg not present after deploy"
+                _missing=1
+            fi
+        done
+        if [ "$_missing" -ne 0 ]; then
+            err "Planned packages missing after pacman install — aborting"
+            exit 1
+        fi
     elif [ "$PKG_MGR" = "apt" ]; then
         if [ -n "${UPGRADE_PKGS:-}" ]; then
             story_line "Raising outdated IdleScreen modules to the current channel…"
@@ -208,6 +253,12 @@ install_packages() {
     for _pkg in $_pkgs; do
         if [ "$PKG_MGR" = "dnf" ]; then
             if rpm -q "$_pkg" >/dev/null 2>&1; then
+                PRESENT_COUNT=$((PRESENT_COUNT + 1))
+            else
+                MISSING_AFTER="${MISSING_AFTER} ${_pkg}"
+            fi
+        elif [ "$PKG_MGR" = "pacman" ]; then
+            if pacman -Q "$_pkg" >/dev/null 2>&1; then
                 PRESENT_COUNT=$((PRESENT_COUNT + 1))
             else
                 MISSING_AFTER="${MISSING_AFTER} ${_pkg}"

@@ -1,0 +1,189 @@
+# shellcheck shell=bash
+# Maintainer: IdleScreen <jerydleuck@gmail.com>
+# SPDX-License-Identifier: Apache-2.0
+#
+# makepkg supplies $srcdir, $pkgdir, $startdir and $BUILDDIR.
+# shellcheck disable=SC2154
+#
+# Split-package PKGBUILD for IdleScreen on Arch Linux and derivatives.
+#
+# Build strategy: source. IdleScreen is four independent cargo workspaces
+# (runtime, cli, savers, tui) wired together by path dependencies — the same
+# arrangement `savers/bootstrap.sh` handles in CI, where `savers/runtime` is a
+# symlink to a sibling `runtime` clone. This PKGBUILD reproduces that layout in
+# a build staging directory.
+#
+# Once the release pipeline publishes `.pkg.tar.zst` assets, `source` can be
+# swapped for those tarballs and `build()` for an extract; the package() bodies
+# and file layouts stay identical.
+pkgbase=idlescreen
+
+pkgname=idlescreen
+pkgver=3.5.29
+pkgrel=1
+pkgdesc="Modular Wayland idle host and procedural screensaver plugins"
+arch=('x86_64')
+url="https://idlescreen.github.io"
+license=('Apache-2.0')
+
+# Pinned to the release the RPM/DEB channel currently serves. Bump together
+# with the packaging metadata in runtime/ and savers/.
+_runtime_ref=3.5.29
+_cli_ref=4.0.11
+_savers_ref=2.4.9
+_tui_ref=3.2.7
+_idlescreen_ref=4.0.6
+
+source=(
+    "runtime::git+https://github.com/idlescreen/runtime#tag=$_runtime_ref"
+    "cli::git+https://github.com/idlescreen/cli#tag=$_cli_ref"
+    "savers::git+https://github.com/idlescreen/savers#tag=$_savers_ref"
+    "tui::git+https://github.com/idlescreen/tui#tag=$_tui_ref"
+    "idlescreen::git+https://github.com/idlescreen/idlescreen#tag=$_idlescreen_ref"
+)
+sha256sums=('SKIP' 'SKIP' 'SKIP' 'SKIP' 'SKIP')
+
+makedepends=(
+    'git'
+    'rust'
+    'pkgconf'
+    'dbus'
+    'wayland'
+    'libxkbcommon'
+    'openssl'
+    'libudev'
+)
+
+# Everything the daemon and its plugins dlopen at runtime.
+depends=(
+    'glibc'
+    'dbus'
+    'fontconfig'
+    'freetype2'
+)
+
+# Protobuf output is optional; these are the XDG pieces a real desktop needs.
+optdepends=(
+    'cosmic-session: COSMIC panel applet'
+)
+
+_rtdir="$srcdir/runtime"
+_stagedir="$srcdir/.stage"
+
+prepare() {
+    cd "$_rtdir" || return 1
+
+    # `savers` declares `idle-api = { path = "runtime/idle-api" }`, so the
+    # engine link MUST be named `runtime` inside the savers tree.
+    if [ ! -e "$srcdir/savers/runtime" ]; then
+        ln -s "$_rtdir" "$srcdir/savers/runtime"
+    fi
+
+    cargo fetch --locked
+}
+
+# build_all compiles every workspace once; the package_* functions then stage
+# from the shared artifacts. Recompiling per subpackage would multiply a
+# ~30 minute build by six.
+_build_runtime() {
+    cd "$_rtdir" || return 1
+    cargo build --release --locked -p idle-daemon
+}
+
+_build_cli() {
+    cd "$srcdir/cli" || return 1
+    cargo build --release --locked -p idle-cli
+}
+
+_build_tui() {
+    cd "$srcdir/tui" || return 1
+    cargo build --release --locked -p idle-tui
+}
+
+_build_savers() {
+    cd "$srcdir/savers" || return 1
+    cargo build --release --locked \
+        -p idle-saver-ascii \
+        -p idle-saver-aurora \
+        -p idle-saver-beams \
+        -p idle-saver-bursts \
+        -p idle-saver-chaos \
+        -p idle-saver-cosmos \
+        -p idle-saver-glyphs \
+        -p idle-saver-gnats \
+        -p idle-saver-hearth \
+        -p idle-saver-radar \
+        -p idle-saver-ripple \
+        -p idle-saver-storm
+}
+
+build() {
+    _build_runtime
+    _build_cli
+    _build_tui
+    _build_savers
+}
+
+# _install_saver copies one built plugin plus its manifest into the plugin dir.
+_install_saver() {
+    local saver="$1"
+    install -Dm755 "$srcdir/savers/target/release/libscreensaver_${saver}.so" \
+        "$pkgdir/usr/lib/idlescreen/screensavers/libscreensaver_${saver}.so"
+    install -Dm644 "$srcdir/savers/${saver}/libscreensaver_${saver}.idleplugin.toml" \
+        "$pkgdir/usr/lib/idlescreen/screensavers/libscreensaver_${saver}.idleplugin.toml"
+}
+
+package_idle-daemon() {
+    pkgname=idle-daemon
+    pkgdesc="IdleScreen host daemon: idle detection, presentation, and session-lock handling"
+    depends=("${depends[@]}")
+    install -Dm755 "$_rtdir/target/release/idle-daemon" \
+        "$pkgdir/usr/bin/idle-daemon"
+    install -Dm644 "$_rtdir/runtime/idle-daemon/assets/idle-daemon.service" \
+        "$pkgdir/usr/lib/systemd/user/idle-daemon.service"
+    install -Dm644 "$_rtdir/runtime/idle-daemon/assets/io.github.idlescreen.Idle.service" \
+        "$pkgdir/usr/share/dbus-1/services/io.github.idlescreen.Idle.service"
+    # NOTE: org.freedesktop.ScreenSaver.service is NOT installed here. The
+    # runtime implements that bus name but publishes no activation file, so a
+    # portal Inhibit arriving before the daemon starts still fails. Adding the
+    # file is a runtime change, not a packaging one — see the packaging TODO.
+}
+
+package_idle-cli() {
+    pkgname=idle-cli
+    pkgdesc="IdleScreen command line controller"
+    depends=("${depends[@]}" 'idle-daemon')
+    install -Dm755 "$srcdir/cli/target/release/idle-cli" \
+        "$pkgdir/usr/bin/idle-cli"
+}
+
+package_idle-tui() {
+    pkgname=idle-tui
+    pkgdesc="IdleScreen terminal UI for live saver configuration"
+    depends=("${depends[@]}" 'idle-daemon' 'idle-cli')
+    install -Dm755 "$srcdir/tui/target/release/idle-tui" \
+        "$pkgdir/usr/bin/idle-tui"
+}
+
+package_idle-savers() {
+    pkgname=idle-savers
+    pkgdesc="All official IdleScreen screensaver plugins"
+    depends=("${depends[@]}" 'idle-daemon')
+    local s
+    for s in ascii aurora beams bursts chaos cosmos glyphs gnats hearth radar ripple storm; do
+        _install_saver "$s"
+    done
+}
+
+package_idlescreen() {
+    pkgname=idlescreen
+    pkgdesc="IdleScreen metapackage"
+    depends=(
+        'idle-daemon'
+        'idle-cli'
+        'idle-savers'
+        'idle-tui'
+    )
+    install -Dm755 "$srcdir/idlescreen/target/release/idlescreen" \
+        "$pkgdir/usr/bin/idlescreen"
+}

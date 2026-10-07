@@ -5,7 +5,7 @@ OS_NAME="Unknown Linux"
 OS_LIKE=""
 OS_VERSION=""
 ARCH="$(uname -m 2>/dev/null || echo unknown)"
-PKG_MGR=""          # dnf | apt
+PKG_MGR=""          # dnf | apt | pacman
 PKG_HOST_LABEL=""
 DE_ID="unknown"     # cosmic | gnome | kde | hyprland | sway | other
 DE_LABEL="Unknown"
@@ -20,10 +20,35 @@ read_os_release() {
         OS_LIKE="${ID_LIKE:-}"
         OS_VERSION="${VERSION_ID:-}"
     fi
+    # Test/CI override so the mock-package-manager smoke test can exercise the
+    # Arch branch on a runner whose own /etc/os-release is something else.
+    if [ -n "${IDLESCREEN_OS_ID:-}" ]; then
+        OS_ID="${IDLESCREEN_OS_ID}"
+    fi
+}
+
+is_arch_family() {
+    case "$OS_ID" in
+        arch|endeavouros|garuda|cachyos|manjaro|artix|arcolinux|msys2|vanilla) return 0 ;;
+    esac
+    [ "$OS_LIKE" = "arch" ] && return 0
+    return 1
 }
 
 detect_pkg_mgr() {
-    if command -v dnf >/dev/null 2>&1 || [ -x /usr/bin/dnf ]; then
+    # os-release decides, not PATH order: a Fedora host that happens to have
+    # pacman installed must still install with dnf. The bare-pacman fallback
+    # below only fires when neither dnf nor apt-get exists at all.
+    if is_arch_family; then
+        PKG_MGR="pacman"
+        case "$OS_ID" in
+            arch)         PKG_HOST_LABEL="PACMAN · Arch" ;;
+            endeavouros)  PKG_HOST_LABEL="PACMAN · EndeavourOS" ;;
+            garuda)       PKG_HOST_LABEL="PACMAN · Garuda" ;;
+            cachyos)      PKG_HOST_LABEL="PACMAN · CachyOS" ;;
+            *)            PKG_HOST_LABEL="PACMAN · Arch family" ;;
+        esac
+    elif command -v dnf >/dev/null 2>&1 || [ -x /usr/bin/dnf ]; then
         PKG_MGR="dnf"
         case "$OS_ID" in
             fedora)   PKG_HOST_LABEL="DNF · Fedora" ;;
@@ -44,6 +69,13 @@ detect_pkg_mgr() {
     else
         PKG_MGR=""
         PKG_HOST_LABEL="unsupported"
+    fi
+
+    # No dnf/apt and no Arch-family os-release, but pacman is present: an
+    # Arch host with an unusual /etc/os-release. Trust the binary.
+    if [ -z "$PKG_MGR" ] && command -v pacman >/dev/null 2>&1; then
+        PKG_MGR="pacman"
+        PKG_HOST_LABEL="PACMAN · ${OS_NAME}"
     fi
 }
 

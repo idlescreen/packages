@@ -13,6 +13,8 @@ RPM_KEY_FPR="3D2D670DBD9BD94D7B2D23D356ED99E8C0243160"
 # System dirs; env-overridable for the mock-package-manager smoke test.
 RPM_GPG_DIR="${IDLESCREEN_RPM_GPG_DIR:-/etc/pki/rpm-gpg}"
 YUM_REPOS_D="${IDLESCREEN_YUM_REPOS_D:-/etc/yum.repos.d}"
+PACMAN_XDG_D="${IDLESCREEN_PACMAN_XDG_D:-/etc/xdg/idlescreen}"
+PACMAN_KEY_D="${IDLESCREEN_PACMAN_KEY_D:-/etc/pacman.d/idlescreen}"
 
 setup_repo_dnf() {
     step "[2/5]  Opening the package gate  ·  RPM repository"
@@ -114,6 +116,70 @@ setup_repo_apt() {
     ok "APT index updated with IdleScreen source"
 }
 
+setup_repo_pacman() {
+    step "[2/5]  Opening the package gate  ·  PACMAN repository"
+    story_line "Fetching + fingerprint-checking the IdleScreen signing key…"
+    pause 0.3
+    _tmp_key=$(mktemp)
+    if ! curl -fsSL "${REPO_BASE}/rpm/idlescreen-key.gpg" -o "$_tmp_key"; then
+        err "Could not download signing key from ${REPO_BASE}/rpm/idlescreen-key.gpg"
+        rm -f "$_tmp_key"
+        exit 1
+    fi
+    # Same pinned fingerprint the DNF trust anchor uses — one key, one pin.
+    if ! gpg --show-keys --with-colons "$_tmp_key" 2>/dev/null \
+        | awk -F: '/^fpr:/ {print $10}' | grep -qx "$RPM_KEY_FPR"; then
+        err "Signing key fingerprint mismatch! ($RPM_KEY_FPR not present in key file)"
+        rm -f "$_tmp_key"
+        exit 1
+    fi
+
+    # pacman resolves dylib sync databases from /etc/xdg/<repo>/<repo>.db.
+    # The database is downloaded, signature-checked against the pinned key,
+    # then unpacked — pacman never reads an unsigned DB.
+    story_line "Downloading the signed pacman sync database…"
+    _tmp_db=$(mktemp)
+    _tmp_sig=$(mktemp)
+    if ! curl -fsSL "${REPO_BASE}/arch/idlescreen.db.tar.gz" -o "$_tmp_db" \
+        || ! curl -fsSL "${REPO_BASE}/arch/idlescreen.db.tar.gz.sig" -o "$_tmp_sig"; then
+        err "Could not download the pacman sync database from ${REPO_BASE}/arch/"
+        err "Arch packages may not be published for this release yet."
+        rm -f "$_tmp_key" "$_tmp_db" "$_tmp_sig"
+        exit 1
+    fi
+
+    _gh=$(mktemp -d)
+    chmod 700 "$_gh"
+    cp "$_tmp_key" "$_gh/idlescreen.gpg"
+    if ! gpg --homedir "$_gh" --batch --no-tty --verify "$_tmp_sig" "$_tmp_db" >/dev/null 2>&1; then
+        err "pacman sync database signature verification FAILED"
+        rm -rf "$_gh"; rm -f "$_tmp_key" "$_tmp_db" "$_tmp_sig"
+        exit 1
+    fi
+    ok "Sync database signature verified against pinned key"
+
+    sudo mkdir -p "$PACMAN_KEY_D" "$PACMAN_XDG_D"
+    sudo cp "$_tmp_key" "$PACMAN_KEY_D/idlescreen-key.gpg"
+    sudo chmod 644 "$PACMAN_KEY_D/idlescreen-key.gpg"
+    ok "Key → ${BOLD}${PACMAN_KEY_D}/idlescreen-key.gpg${RESET} (fingerprint verified)"
+
+    story_line "Unpacking the sync database…"
+    sudo tar -xzf "$_tmp_db" -C "$PACMAN_XDG_D"
+    sudo mv -f "$PACMAN_XDG_D/idlescreen.db" "$PACMAN_XDG_D/idlescreen.db.tmp" 2>/dev/null || true
+    sudo rm -f "$PACMAN_XDG_D/idlescreen.db.tmp"
+    ok "Sync database → ${BOLD}${PACMAN_XDG_D}/idlescreen.db${RESET}"
+
+    story_line "Refreshing pacman metadata…"
+    if sudo pacman -Sy --noconfirm >/dev/null 2>&1; then
+        ok "pacman metadata refreshed"
+    else
+        warn "Could not refresh pacman metadata — install will still try the channel"
+    fi
+
+    rm -rf "$_gh"
+    rm -f "$_tmp_key" "$_tmp_db" "$_tmp_sig"
+}
+
 version_is_older() {
     _a="$1"
     _b="$2"
@@ -160,6 +226,14 @@ rpm_available_ver() {
         return 0
     fi
     printf ''
+}
+
+pacman_installed_ver() {
+    pacman -Q "$1" 2>/dev/null | awk '{print $2}'
+}
+
+pacman_candidate_ver() {
+    pacman -Si "$1" 2>/dev/null | awk '/^Version/ {print $3; exit}'
 }
 
 apt_installed_ver() {

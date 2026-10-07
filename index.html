@@ -19,7 +19,7 @@
         <p class="subtitle">Step-by-step instructions to install the IdleScreen repository & packages for your OS.</p>
 
         <div class="info-badge">
-            ⚡ <strong>Install:</strong> product metapackage <code>idlescreen</code> (pulls <code>idle-daemon idle-cli idle-savers idle-tui</code>) · <code>dnf/apt remove idlescreen</code> wipes the product stack (2.6+) · (+ <code>idle-cosmic</code> on COSMIC)<br>
+            ⚡ <strong>Install:</strong> product metapackage <code>idlescreen</code> (pulls <code>idle-daemon idle-cli idle-savers idle-tui</code>) · <code>dnf/apt/pacman remove idlescreen</code> wipes the product stack (2.6+) · (+ <code>idle-cosmic</code> on COSMIC)<br>
             🪐 <strong>COSMIC DE Only:</strong> <code>idle-cosmic</code> (Applet integration for COSMIC Desktop)
         </div>
 
@@ -112,11 +112,20 @@
                         <div class="command" id="arch2Cmd">./install.sh</div>
                         <button class="copy-btn" onclick="copyCommand('arch2Cmd', this)">Copy</button>
                     </div>
-                    <div class="step-note">No Arch repository is published yet. The <code>arch/</code> directory in the source repository contains an applet PKGBUILD only — it is not a full product install, so use <code>install.sh</code>.</div>
+                    <div class="step-note">The installer detects Arch from <code>/etc/os-release</code>, verifies the signing-key fingerprint, and unpacks the signed pacman sync database into <code>/etc/xdg/idlescreen/idlescreen.db</code>. If the database is not published for this release yet, build from source: <code>git clone https://github.com/idlescreen/packages &amp;&amp; cd packages/arch/idlescreen &amp;&amp; makepkg -si</code>.</div>
                 </div>
 
                 <div class="step-item">
-                    <div class="step-label">Step 3: Launch</div>
+                    <div class="step-label">Step 3: Install the product package</div>
+                    <div class="installer-box">
+                        <div class="command" id="archPacmanCmd">pacman -S idlescreen</div>
+                        <button class="copy-btn" onclick="copyCommand('archPacmanCmd', this)">Copy</button>
+                    </div>
+                    <div class="step-note">The <code>idlescreen</code> metapackage pulls <code>idle-daemon idle-cli idle-savers idle-tui</code>.</div>
+                </div>
+
+                <div class="step-item">
+                    <div class="step-label">Step 4: Launch</div>
                     <div class="installer-box">
                         <div class="command" id="arch3Cmd">idlescreen tui</div>
                         <button class="copy-btn" onclick="copyCommand('arch3Cmd', this)">Copy</button>
