@@ -78,8 +78,24 @@ jobs:
           useradd -m -s /bin/bash builder
           mkdir -p /opt/rust
           cp -a /root/.rustup /root/.cargo /opt/rust/ 2>/dev/null || true
+
+          # Cargo reads $CARGO_HOME/config.toml itself. makepkg runs build()
+          # in a controlled environment, and RUSTFLAGS set in the parent has
+          # not been reaching cargo — every attempt to force the linker by
+          # environment variable still ended up on rust-lld. Put it where
+          # cargo looks instead.
+          cat >/opt/rust/.cargo/config.toml <<'CARGO_EOF'
+          [target.x86_64-unknown-linux-gnu]
+          linker = "cc"
+          rustflags = [
+            "-C", "link-arg=-fuse-ld=bfd",
+            "-C", "link-self-contained=-linker",
+          ]
+          CARGO_EOF
+
           chmod -R a+rX /opt/rust
           chown -R builder:builder "$GITHUB_WORKSPACE" /opt/rust
+          echo "cargo config:"; cat /opt/rust/.cargo/config.toml
 
       - name: Build packages
         # The build script goes in a file rather than inline in `su -c`.
@@ -103,8 +119,9 @@ jobs:
           # Arch ships /usr/bin/ld as ld.lld, so choosing cc as the driver is
           # not enough on its own — cc still lands on lld. Now that cc is the
           # driver, -fuse-ld=bfd is meaningful and pins the actual linker.
-          export RUSTFLAGS="-C linker=cc -C link-arg=-fuse-ld=bfd -C link-self-contained=-linker"
-          export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=cc
+          # Linker selection lives in $CARGO_HOME/config.toml (see setup).
+          # Arch ships /usr/bin/ld as ld.lld, so cc alone still lands on lld;
+          # -fuse-ld=bfd is what actually pins GNU ld.
 
           # Prove which linker we actually got, rather than inferring it from
           # a link error twenty minutes later.
