@@ -90,12 +90,18 @@ jobs:
             export RUSTUP_HOME=/opt/rust/.rustup
             export CARGO_HOME=/opt/rust/.cargo
             export PATH="$CARGO_HOME/bin:$PATH"
-            # Force GNU ld. Arch enables lld by default, and mimalloc'"'"'s C
-            # symbols do not resolve under it here: the link dies with
+            # Force GNU ld. Arch enables rust-lld by default, and mimalloc'"'"'s
+            # C symbols do not resolve under it here: the link dies with
             # "undefined symbol: mi_realloc_aligned" and "mi_zalloc_aligned".
             # The RPM and DEB channels build on Ubuntu with bfd; match them so
             # all three channels compile identical binaries.
-            export RUSTFLAGS="-C link-arg=-fuse-ld=bfd"
+            #
+            # -C linker=bfd, not a -fuse-ld link-arg: the arg is handed to
+            # whichever driver rust already picked, so it cannot change the
+            # choice. link-self-contained=-linker stops rust bundling its own
+            # lld alongside the system one.
+            export RUSTFLAGS="-C linker=bfd -C link-self-contained=-linker"
+            export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=bfd
             cd "'"$GITHUB_WORKSPACE"'/arch/idlescreen"
             makepkg --cleanbuild --clean --noconfirm --nodeps \
               --skippgpcheck --skipchecksums
