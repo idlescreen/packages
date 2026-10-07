@@ -163,7 +163,7 @@ if [ ! -f "$SCRIPT_DIR/ui.sh" ]; then
             "repo.sh") _expected_hash="84d3612dc618f5e648d027f55199b0c63f5da0f437037a001afa439e0e0549fc" ;;
             "install_core.sh") _expected_hash="e6e812033771844da6f94eccd39a5e519df6aaae0633cc7129a1bbb10da07e58" ;;
             "install_audit.sh") _expected_hash="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
-            "post_install.sh") _expected_hash="664234082a6db0812a51fab9be62366af3880f4e0fef0889cadf7b798c971c41" ;;
+            "post_install.sh") _expected_hash="87129922cb113a6a19a220e6c81f594f5a7e49bd1a90c59d2ed72578c8f16f07" ;;
             "uninstall.sh") _expected_hash="b58506e67439835c1e65756c81aa75ece32d34935a2160fc42bc008a778c542a" ;;
             *) echo "install: unknown module $f" >&2; exit 1 ;;
         esac

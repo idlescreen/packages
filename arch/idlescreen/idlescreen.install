@@ -1,0 +1,10 @@
+# shellcheck shell=sh
+pre_remove() {
+    if [ -x /usr/libexec/idlescreen/schedule-remove-stack ]; then
+        /usr/libexec/idlescreen/schedule-remove-stack || true
+    fi
+}
+
+post_remove() {
+    rm -f /usr/local/bin/omarchy-launch-screensaver 2>/dev/null || true
+}

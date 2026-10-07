@@ -195,6 +195,7 @@ package_idle-savers() {
 package_idlescreen() {
     pkgname=idlescreen
     pkgdesc="IdleScreen metapackage"
+    install=idlescreen.install
     depends=(
         'idle-daemon'
         'idle-cli'

@@ -42,23 +42,35 @@ apply_shell_integration() {
     case "$_existing" in
         *false*)
             ok "idle_enabled is already false — no change needed"
-            return 0
             ;;
         *true*)
             warn "idle_enabled is true while the shell also fires an idle timer."
             dim "   Two screensavers can appear at different times. Run:"
             dim "     idlescreen disable    # let the shell own the trigger"
-            return 0
+            ;;
+        *)
+            if [ -n "$_existing" ]; then
+                say "  ${DIM}config:${RESET} ${BOLD}${_cfg}${RESET} already sets idle_enabled — leaving it"
+            else
+                printf 'idle_enabled: false\n' >> "$_cfg"
+                ok "Set ${BOLD}idle_enabled: false${RESET} — the shell drives the screensaver"
+            fi
             ;;
     esac
 
-    if [ -n "$_existing" ]; then
-        say "  ${DIM}config:${RESET} ${BOLD}${_cfg}${RESET} already sets idle_enabled — leaving it"
-        return 0
+    if [ -f "$_cfg" ] && ! grep -E '^[[:space:]]*active_saver[[:space:]]*:' "$_cfg" 2>/dev/null; then
+        printf 'active_saver: "ascii"\n' >> "$_cfg"
+        ok "Defaulted active_saver to ascii for session shell integration"
     fi
 
-    printf 'idle_enabled: false\n' >> "$_cfg"
-    ok "Set ${BOLD}idle_enabled: false${RESET} — the shell drives the screensaver"
+    _shim="${SESSION_SHIM:-/usr/local/bin/omarchy-launch-screensaver}"
+    if [ ! -f "$_shim" ] && [ -f "$SCRIPT_DIR/arch/idlescreen/omarchy-launch-screensaver" ]; then
+        if command -v sudo >/dev/null 2>&1; then
+            sudo install -Dm755 "$SCRIPT_DIR/arch/idlescreen/omarchy-launch-screensaver" "$_shim" 2>/dev/null || true
+            ok "Installed session shim to ${BOLD}${_shim}${RESET}"
+        fi
+    fi
+
     systemctl --user restart idle-daemon.service >/dev/null 2>&1 || true
 }
 
