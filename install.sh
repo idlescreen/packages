@@ -25,15 +25,37 @@
 set -eu
 
 DRY_RUN=0
+UNINSTALL=0
+UNINSTALL_PURGE=0
 for arg in "$@"; do
     case "$arg" in
         --plan|--dry-run)
             DRY_RUN=1
             ;;
+        --uninstall)
+            UNINSTALL=1
+            ;;
+        --purge)
+            # Only meaningful with --uninstall; wipes user config as well.
+            UNINSTALL_PURGE=1
+            ;;
+        -h|--help)
+            cat <<'USAGE'
+Usage: install.sh [options]
+
+  (no options)        install / update IdleScreen
+  --uninstall         remove IdleScreen, keeping user configuration
+  --purge             with --uninstall: also remove user and system config
+  --plan | --dry-run  print the install plan and exit
+  --verify            print SHA-256 of the installer and its modules
+  --verify-self HEX   fail unless this script's SHA-256 matches HEX
+USAGE
+            exit 0
+            ;;
     esac
 done
 REPO_BASE="${IDLESCREEN_REPO_BASE:-https://idlescreen.github.io/packages}"
-MODULES="ui.sh detect.sh repo.sh install_core.sh install_audit.sh post_install.sh"
+MODULES="ui.sh detect.sh repo.sh install_core.sh install_audit.sh post_install.sh uninstall.sh"
 
 # Handle `--verify` before sourcing anything else so the user can run it
 # even if the helper files are missing.
@@ -56,6 +78,7 @@ case "${1:-}" in
                   "$_dir/repo.sh" \
                   "$_dir/install_core.sh" \
                   "$_dir/install_audit.sh" \
+                  "$_dir/uninstall.sh" \
                   "$_dir/post_install.sh"; do
             if [ -f "$_f" ]; then
                 $_hash_cmd "$_f" 2>/dev/null
@@ -140,7 +163,8 @@ if [ ! -f "$SCRIPT_DIR/ui.sh" ]; then
             "repo.sh") _expected_hash="910e261bb58968972b30d17908a9646c7fd1fbeb36aaf3e4c8a6885ab8009996" ;;
             "install_core.sh") _expected_hash="e6e812033771844da6f94eccd39a5e519df6aaae0633cc7129a1bbb10da07e58" ;;
             "install_audit.sh") _expected_hash="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
-            "post_install.sh") _expected_hash="dbd7b548164ce14b61958e0cc114142cb4fe813257114a0917a3383a78068dc6" ;;
+            "post_install.sh") _expected_hash="086da5b6d70dcf04471018692dee4fcb9e1f8c0716dd70dd4e00eaff77304c3b" ;;
+            "uninstall.sh") _expected_hash="d64f7a599d005c44ee3efdc2569550d8effcfad9fea66beaf02909cbb3adb950" ;;
             *) echo "install: unknown module $f" >&2; exit 1 ;;
         esac
         
@@ -181,6 +205,8 @@ fi
 # shellcheck disable=SC1090,SC1091
 . "$SCRIPT_DIR/install_audit.sh"
 # shellcheck disable=SC1090,SC1091
+. "$SCRIPT_DIR/uninstall.sh"
+# shellcheck disable=SC1090,SC1091
 . "$SCRIPT_DIR/post_install.sh"
 
 main() {
@@ -194,6 +220,17 @@ main() {
     read_os_release
     detect_pkg_mgr
     detect_de
+
+    # Removal never needs a working channel, so it runs before the repo gate
+    # and after identity — a broken repo must not block removing a stack.
+    if [ "$UNINSTALL" -eq 1 ]; then
+        if [ -z "$PKG_MGR" ]; then
+            err "No supported package manager (need DNF, APT or PACMAN)."
+            exit 1
+        fi
+        uninstall_stack
+        return 0
+    fi
 
     say "  ${DIM}os${RESET}       ${GREEN}${OS_NAME}${RESET}"
     if [ -n "$OS_VERSION" ]; then

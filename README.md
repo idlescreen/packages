@@ -81,6 +81,33 @@ release tags and produces `idle-daemon`, `idle-cli`, `idle-tui`,
 `idle-savers` and the `idlescreen` metapackage. It is a full source build —
 expect tens of minutes.
 
+## Uninstall
+
+```sh
+curl -fsSL https://idlescreen.github.io/install.sh -o install.sh
+./install.sh --uninstall
+```
+
+This stops and disables `idle-daemon` in every desktop session, removes the
+product stack and all saver plugins through your package manager, then
+removes the repo drop-in, the GPG key and the pacman sync database. It does
+**not** need the channel to be reachable — a removal path that depends on the
+repo being up isn't a removal path.
+
+Your configuration is kept. To wipe it as well:
+
+```sh
+./install.sh --uninstall --purge
+```
+
+`--purge` deletes `~/.config/idlescreen`, `~/.config/idle` and the system
+config under `/etc/xdg/idlescreen` for **every** desktop user on the machine,
+not just the one running the command.
+
+Removing through the package manager still works and triggers the metapackage
+removal hook: `dnf remove idlescreen`, `apt remove idlescreen`,
+`pacman -R idlescreen`.
+
 ## Configuration & Preservation
 
 The IdleScreen installer preserves existing user and system configurations without clobbering:

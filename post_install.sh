@@ -240,13 +240,21 @@ victory() {
     say "    ${CYAN}idlescreen doctor${RESET}     system diagnostics"
     say ""
     say "  ${BOLD}Remove${RESET}"
-    if [ "$PKG_MGR" = "dnf" ]; then
-        say "    ${CYAN}sudo dnf remove idlescreen${RESET}"
-        say "    ${DIM}# idlescreen 2.6+ also removes modules, savers, idle-cosmic, repo drop-in${RESET}"
-    else
-        say "    ${CYAN}sudo apt remove idlescreen${RESET}"
-        say "    ${DIM}# idlescreen 2.6+ also removes modules, savers, idle-cosmic, APT list drop-in${RESET}"
-    fi
+    case "$PKG_MGR" in
+        dnf)
+            say "    ${CYAN}sudo dnf remove idlescreen${RESET}"
+            say "    ${DIM}# 2.6+ also removes modules, savers, idle-cosmic, repo drop-in${RESET}"
+            ;;
+        pacman)
+            say "    ${CYAN}sudo pacman -R idlescreen${RESET}"
+            say "    ${DIM}# or: ./install.sh --uninstall${RESET}"
+            ;;
+        *)
+            say "    ${CYAN}sudo apt remove idlescreen${RESET}"
+            say "    ${DIM}# 2.6+ also removes modules, savers, idle-cosmic, APT list drop-in${RESET}"
+            ;;
+    esac
+    say "    ${CYAN}./install.sh --uninstall${RESET}  ${DIM}(standalone; add --purge to drop config)${RESET}"
     say ""
     say "  ${DIM}docs  ${RESET}https://idlescreen.github.io"
     say "  ${DIM}pkgs  ${RESET}${REPO_BASE}/"

@@ -34,6 +34,7 @@ jobs:
         shellcheck ui.sh
         shellcheck detect.sh
         shellcheck repo.sh
+        shellcheck uninstall.sh
         # The install-studio driver dot-sources a chain
         # of helpers under install-studio-lib/. Those are linted
         # separately — they are not exec'd at install time, so a

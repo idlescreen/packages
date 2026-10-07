@@ -96,7 +96,7 @@ SCRIPT_DIR="$TMP/repo"
 mkdir -p "$SCRIPT_DIR"
 REPO_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
 cp -f "$REPO_ROOT/install.sh" "$SCRIPT_DIR/"
-for mod in ui.sh detect.sh repo.sh install_core.sh install_audit.sh post_install.sh; do
+for mod in ui.sh detect.sh repo.sh install_core.sh install_audit.sh post_install.sh uninstall.sh; do
     if [ -f "$REPO_ROOT/$mod" ]; then
         cp -f "$REPO_ROOT/$mod" "$SCRIPT_DIR/"
     fi
@@ -231,6 +231,45 @@ if [ -f "$TMP/pacman-keys/idlescreen-key.gpg" ]; then
     echo "ok: pacman trust anchor written to the configured key dir"
 else
     echo "FAIL: pacman key not written to $TMP/pacman-keys/idlescreen-key.gpg"
+    fail=$((fail + 1))
+fi
+
+# 7. --uninstall. Removal must work on a host with no reachable channel, so
+#    it is asserted against the mock with no repo config written at all.
+LOG_UN="$TMP/install-uninstall.log"
+: > "$LOG_UN"
+(
+    cd "$SCRIPT_DIR"
+    PATH="$MOCKBIN_ARCH:/usr/bin:/bin" \
+    FAKE_LOG_FILE="$LOG_UN" \
+    IDLESCREEN_OS_ID="arch" \
+    IDLESCREEN_REPO_BASE="file://$SCRIPT_DIR" \
+    IDLESCREEN_PACMAN_XDG_D="$TMP/un-xdg" \
+    IDLESCREEN_PACMAN_KEY_D="$TMP/un-keys" \
+    IDLESCREEN_RPM_GPG_DIR="$TMP/un-rpm-gpg" \
+    XDG_RUNTIME_DIR="$TMP/xdg" \
+    HOME="$TMP/home-un" \
+    timeout 30 sh install.sh --uninstall >/dev/null 2>&1 || true
+)
+if grep -q 'fake pacman -R' "$LOG_UN" 2>/dev/null; then
+    echo "ok: --uninstall removes packages via pacman"
+else
+    echo "FAIL: --uninstall never called pacman -R (log:)"
+    head -10 "$LOG_UN" | sed 's/^/    /'
+    fail=$((fail + 1))
+fi
+if grep -qE 'fake dnf |fake apt-get ' "$LOG_UN" 2>/dev/null; then
+    echo "FAIL: --uninstall fell through to dnf/apt on an Arch host"
+    fail=$((fail + 1))
+else
+    echo "ok: --uninstall did not fall through to dnf/apt"
+fi
+# The channel must be torn down without ever having been configured: a
+# removal that depends on the repo being reachable is not a removal.
+if [ ! -e "$TMP/un-xdg/idlescreen.db" ] && [ ! -e "$TMP/un-keys/idlescreen-key.gpg" ]; then
+    echo "ok: --uninstall leaves no repo trust anchor behind"
+else
+    echo "FAIL: --uninstall left pacman repo state behind"
     fail=$((fail + 1))
 fi
 
