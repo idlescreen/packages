@@ -59,35 +59,43 @@ jobs:
 
       - name: Prepare Rust toolchain and a non-root build user
         run: |
-          # The pinned toolchain lives in each source workspace's
-          # rust-toolchain.toml, which makepkg only fetches at build time —
-          # so there is nothing to read here yet. Set a default to satisfy
-          # rustup; rustup still auto-selects each workspace's pinned
-          # channel once those sources exist.
-          rustup default stable
+          # Pin the toolchain the project declares, rather than whatever
+          # `stable` happens to be today. The file lives in the runtime repo,
+          # which is only fetched later by makepkg, so read it from a shallow
+          # clone up front.
+          git clone --depth 1 --branch v3.5.28 https://github.com/idlescreen/runtime /tmp/rt
+          TOOLCHAIN="$(sed -n 's/^channel *= *"\(.*\)"/\1/p' /tmp/rt/rust-toolchain.toml | head -n1)"
+          echo "project toolchain: ${TOOLCHAIN:-<unpinned>}"
+          if [ -n "$TOOLCHAIN" ]; then
+            rustup toolchain install "$TOOLCHAIN" --profile minimal
+            rustup default "$TOOLCHAIN"
+          else
+            rustup default stable
+          fi
           rustc --version
 
           # makepkg hard-refuses to run as root, and container jobs are root.
-          # Build as an unprivileged user instead, sharing the toolchain the
-          # image installed rather than installing a second one.
           useradd -m -s /bin/bash builder
           mkdir -p /opt/rust
           cp -a /root/.rustup /root/.cargo /opt/rust/ 2>/dev/null || true
           chmod -R a+rX /opt/rust
           chown -R builder:builder "$GITHUB_WORKSPACE" /opt/rust
-          echo "builder ready"
 
       - name: Build packages
         id: build
         working-directory: arch/idlescreen
-        # Packages are built unsigned here; signing needs the private key and
-        # happens as a separate, explicit step in the publish job.
         run: |
           su builder -c '
             set -euo pipefail
             export RUSTUP_HOME=/opt/rust/.rustup
             export CARGO_HOME=/opt/rust/.cargo
             export PATH="$CARGO_HOME/bin:$PATH"
+            # Force GNU ld. Arch enables lld by default, and mimalloc'"'"'s C
+            # symbols do not resolve under it here: the link dies with
+            # "undefined symbol: mi_realloc_aligned" and "mi_zalloc_aligned".
+            # The RPM and DEB channels build on Ubuntu with bfd; match them so
+            # all three channels compile identical binaries.
+            export RUSTFLAGS="-C link-arg=-fuse-ld=bfd"
             cd "'"$GITHUB_WORKSPACE"'/arch/idlescreen"
             makepkg --cleanbuild --clean --noconfirm --nodeps \
               --skippgpcheck --skipchecksums
