@@ -76,7 +76,7 @@ jobs:
 
           # makepkg hard-refuses to run as root, and container jobs are root.
           useradd -m -s /bin/bash builder
-          mkdir -p /opt/rust
+          mkdir -p /opt/rust/.cargo /opt/rust/.rustup
           cp -a /root/.rustup /root/.cargo /opt/rust/ 2>/dev/null || true
 
           # Cargo reads $CARGO_HOME/config.toml itself. makepkg runs build()

@@ -17,8 +17,7 @@
 # swapped for those tarballs and `build()` for an extract; the package() bodies
 # and file layouts stay identical.
 pkgbase=idlescreen
-
-pkgname=idlescreen
+pkgname=('idle-daemon' 'idle-cli' 'idle-tui' 'idle-savers' 'idlescreen')
 pkgver=3.5.28
 pkgrel=1
 pkgdesc="Modular Wayland idle host and procedural screensaver plugins"
@@ -128,11 +127,17 @@ _build_savers() {
         -p idle-saver-storm
 }
 
+_build_idlescreen() {
+    cd "$srcdir/idlescreen" || return 1
+    cargo build --release --locked -p idlescreen
+}
+
 build() {
     _build_runtime
     _build_cli
     _build_tui
     _build_savers
+    _build_idlescreen
 }
 
 # _install_saver copies one built plugin plus its manifest into the plugin dir.
@@ -198,6 +203,10 @@ package_idlescreen() {
     )
     install -Dm755 "$srcdir/idlescreen/target/release/idlescreen" \
         "$pkgdir/usr/bin/idlescreen"
+    install -Dm755 "$srcdir/idlescreen/libexec/remove-product-stack.sh" \
+        "$pkgdir/usr/libexec/idlescreen/remove-product-stack"
+    install -Dm755 "$srcdir/idlescreen/libexec/schedule-remove-stack.sh" \
+        "$pkgdir/usr/libexec/idlescreen/schedule-remove-stack"
     # Session-shell integration: shadows the shell's screensaver launcher so
     # its idle trigger hands off to IdleScreen. /usr/local/bin precedes
     # /usr/bin on Arch, so this wins the PATH lookup.

@@ -23,9 +23,14 @@ if [ "$(omarchy-shell lock isLocked 2>/dev/null || echo false)" = "true" ]; then
     exit 0
 fi
 
+# Idempotent: exit 0 if already presenting.
+if idlescreen status --json 2>/dev/null | grep -q '"presentation_active":true'; then
+    exit 0
+fi
+
 # Respect media/session inhibitors. The shell's own idle monitor honours only
 # idle-inhibit-unstable-v1, so portal-derived inhibitors reach IdleScreen alone.
-if [ "$(idlescreen inhibitors --json 2>/dev/null | tr -d ' \n')" != "[]" ]; then
+if idlescreen inhibitors --json 2>/dev/null | grep -q '"inhibited":true'; then
     exit 0
 fi
 
