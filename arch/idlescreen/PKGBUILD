@@ -136,6 +136,14 @@ _build_idlescreen() {
 }
 
 build() {
+    # Arch default /etc/makepkg.conf injects -flto=auto into CFLAGS/LDFLAGS.
+    # When cc-rs compiles C dependencies (like mimalloc), GCC produces GIMPLE
+    # bytecode rather than machine code, causing undefined symbol errors at rustc link time.
+    CFLAGS="${CFLAGS//-flto=auto/}"
+    CXXFLAGS="${CXXFLAGS//-flto=auto/}"
+    LDFLAGS="${LDFLAGS//-flto=auto/}"
+    export CFLAGS CXXFLAGS LDFLAGS
+
     export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="gcc"
     export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS="-C target-cpu=x86-64-v3 -C link-arg=-fuse-ld=bfd"
     _build_runtime

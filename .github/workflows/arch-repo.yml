@@ -56,6 +56,7 @@ jobs:
             dbus wayland openssl systemd-libs \
             libxcb libxkbcommon wayland-protocols vulkan-headers \
             fontconfig freetype2 seatd
+          sed -i 's/-flto=auto//g' /etc/makepkg.conf
 
       - name: Prepare Rust toolchain and a non-root build user
         run: |
@@ -105,6 +106,12 @@ jobs:
           cat >/tmp/build.sh <<'BUILD_EOF'
           #!/bin/bash
           set -euo pipefail
+          export CFLAGS="${CFLAGS:-}"
+          export CXXFLAGS="${CXXFLAGS:-}"
+          export LDFLAGS="${LDFLAGS:-}"
+          export CFLAGS="${CFLAGS//-flto=auto/}"
+          export CXXFLAGS="${CXXFLAGS//-flto=auto/}"
+          export LDFLAGS="${LDFLAGS//-flto=auto/}"
           export RUSTUP_HOME=/opt/rust/.rustup
           export CARGO_HOME=/opt/rust/.cargo
           export PATH="$CARGO_HOME/bin:$PATH"
