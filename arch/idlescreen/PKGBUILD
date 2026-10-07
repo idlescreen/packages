@@ -143,10 +143,11 @@ package_idle-daemon() {
         "$pkgdir/usr/lib/systemd/user/idle-daemon.service"
     install -Dm644 "$_rtdir/runtime/idle-daemon/assets/io.github.idlescreen.Idle.service" \
         "$pkgdir/usr/share/dbus-1/services/io.github.idlescreen.Idle.service"
-    # NOTE: org.freedesktop.ScreenSaver.service is NOT installed here. The
-    # runtime implements that bus name but publishes no activation file, so a
-    # portal Inhibit arriving before the daemon starts still fails. Adding the
-    # file is a runtime change, not a packaging one — see the packaging TODO.
+    # D-Bus activation for the freedesktop screensaver interface. Without it,
+    # a portal-mediated Inhibit fails on sessions that ship no screensaver
+    # service: the daemon owns the bus name only while it is already running.
+    install -Dm644 "$_rtdir/runtime/idle-daemon/assets/org.freedesktop.ScreenSaver.service" \
+        "$pkgdir/usr/share/dbus-1/services/org.freedesktop.ScreenSaver.service"
 }
 
 package_idle-cli() {
@@ -186,4 +187,9 @@ package_idlescreen() {
     )
     install -Dm755 "$srcdir/idlescreen/target/release/idlescreen" \
         "$pkgdir/usr/bin/idlescreen"
+    # Session-shell integration: shadows the shell's screensaver launcher so
+    # its idle trigger hands off to IdleScreen. /usr/local/bin precedes
+    # /usr/bin on Arch, so this wins the PATH lookup.
+    install -Dm755 "$startdir/omarchy-launch-screensaver" \
+        "$pkgdir/usr/local/bin/omarchy-launch-screensaver"
 }

@@ -15,6 +15,10 @@ RPM_GPG_DIR="${IDLESCREEN_RPM_GPG_DIR:-/etc/pki/rpm-gpg}"
 YUM_REPOS_D="${IDLESCREEN_YUM_REPOS_D:-/etc/yum.repos.d}"
 PACMAN_XDG_D="${IDLESCREEN_PACMAN_XDG_D:-/etc/xdg/idlescreen}"
 PACMAN_KEY_D="${IDLESCREEN_PACMAN_KEY_D:-/etc/pacman.d/idlescreen}"
+# Session-shell integration shim. Env-overridable for the same reason as the
+# others: the smoke test must be able to observe removal without writing to
+# the real /usr/local/bin.
+SESSION_SHIM="${IDLESCREEN_SESSION_SHIM:-/usr/local/bin/omarchy-launch-screensaver}"
 
 setup_repo_dnf() {
     step "[2/5]  Opening the package gate  ·  RPM repository"

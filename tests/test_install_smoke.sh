@@ -56,6 +56,8 @@ case "$cmd" in
         esac
         ;;
     tar)        exit 0 ;;
+    omarchy-shell) printf 'false\n'; exit 0 ;;
+    omarchy-toggle-enabled) exit 1 ;;
     systemctl)  exit 0 ;;
     pkexec)     exit 0 ;;
     gtk-update-icon-cache) exit 0 ;;
@@ -195,7 +197,8 @@ MOCKBIN_ARCH="$TMP/bin-arch"
 mkdir -p "$MOCKBIN_ARCH"
 LOG_ARCH="$TMP/install-arch.log"
 : > "$LOG_ARCH"
-for cmd in pacman tar curl sudo systemctl pkexec gtk-update-icon-cache update-desktop-database; do
+for cmd in pacman tar curl sudo systemctl pkexec gtk-update-icon-cache update-desktop-database \
+           omarchy-shell omarchy-toggle-enabled; do
     ln -sfn "$MOCKBIN/_dispatch" "$MOCKBIN_ARCH/$cmd"
 done
 cp -f "$MOCKBIN/gpg" "$MOCKBIN_ARCH/gpg"
@@ -214,7 +217,7 @@ cp -f "$MOCKBIN/gpg" "$MOCKBIN_ARCH/gpg"
     XDG_STATE_HOME="$TMP/home-arch/.local/state" \
     timeout 30 sh install.sh >/dev/null 2>&1 || true
 )
-if grep -q 'fake pacman ' "$LOG_ARCH" 2>/dev/null; then
+if grep -q 'fake pacman -S' "$LOG_ARCH" 2>/dev/null; then
     echo "ok: install.sh reached the pacman stage"
 else
     echo "FAIL: install.sh never called pacman (log:)"
@@ -234,10 +237,25 @@ else
     fail=$((fail + 1))
 fi
 
+# 6b. Session-shell integration. Both `omarchy-shell` and the shim are on the
+#     mock PATH, so the installer must stand IdleScreen's own idle timer down
+#     — otherwise two screensavers fire at two different delays.
+_arch_home="$TMP/home-arch/.config/idlescreen/config.yaml"
+if [ -f "$_arch_home" ] && grep -q '^idle_enabled: false' "$_arch_home"; then
+    echo "ok: shell integration stood the own idle timer down"
+else
+    echo "FAIL: idle_enabled was not set false (config: ${_arch_home:-absent})"
+    [ -f "$_arch_home" ] && sed 's/^/    /' "$_arch_home"
+    fail=$((fail + 1))
+fi
+
 # 7. --uninstall. Removal must work on a host with no reachable channel, so
 #    it is asserted against the mock with no repo config written at all.
 LOG_UN="$TMP/install-uninstall.log"
 : > "$LOG_UN"
+# Seed the shim so removal is observable. SESSION_SHIM is env-overridable for
+# exactly this reason — the test must not write to the real /usr/local/bin.
+: > "$TMP/un-shim"
 (
     cd "$SCRIPT_DIR"
     PATH="$MOCKBIN_ARCH:/usr/bin:/bin" \
@@ -246,6 +264,7 @@ LOG_UN="$TMP/install-uninstall.log"
     IDLESCREEN_REPO_BASE="file://$SCRIPT_DIR" \
     IDLESCREEN_PACMAN_XDG_D="$TMP/un-xdg" \
     IDLESCREEN_PACMAN_KEY_D="$TMP/un-keys" \
+    IDLESCREEN_SESSION_SHIM="$TMP/un-shim" \
     IDLESCREEN_RPM_GPG_DIR="$TMP/un-rpm-gpg" \
     XDG_RUNTIME_DIR="$TMP/xdg" \
     HOME="$TMP/home-un" \
@@ -271,6 +290,15 @@ if [ ! -e "$TMP/un-xdg/idlescreen.db" ] && [ ! -e "$TMP/un-keys/idlescreen-key.g
 else
     echo "FAIL: --uninstall left pacman repo state behind"
     fail=$((fail + 1))
+fi
+# The shim lives in /usr/local/bin, outside every package tree, so no package
+# manager removes it. If it survived, it would shadow the shell's launcher and
+# call a daemon that is gone.
+if [ -f "$TMP/un-shim" ]; then
+    echo "FAIL: --uninstall left the integration shim behind"
+    fail=$((fail + 1))
+else
+    echo "ok: --uninstall removed the integration shim"
 fi
 
 if [ "$fail" -eq 0 ]; then

@@ -1,0 +1,32 @@
+#!/bin/sh
+# Intercept the session shell's screensaver launch and hand off to IdleScreen.
+#
+# The shell invokes a command named `omarchy-launch-screensaver` when its idle
+# timer fires. Installing this script under the same name earlier in PATH
+# redirects that trigger to IdleScreen. The shell keeps ownership of idle
+# timing and of screen lock; this script only draws.
+#
+# Exit status is the command's own: non-zero when the handoff fails, so the
+# caller's log shows why nothing was presented.
+
+set -eu
+
+# The shell's own toggle must keep working, or `omarchy toggle screensaver`
+# becomes a lie. `force` is the shell's own bypass and wins over the toggle.
+if [ "${1:-}" != "force" ] \
+    && omarchy-toggle-enabled screensaver-off >/dev/null 2>&1; then
+    exit 0
+fi
+
+# Lock already owns the screen; never draw underneath it.
+if [ "$(omarchy-shell lock isLocked 2>/dev/null || echo false)" = "true" ]; then
+    exit 0
+fi
+
+# Respect media/session inhibitors. The shell's own idle monitor honours only
+# idle-inhibit-unstable-v1, so portal-derived inhibitors reach IdleScreen alone.
+if [ "$(idlescreen inhibitors --json 2>/dev/null | tr -d ' \n')" != "[]" ]; then
+    exit 0
+fi
+
+exec idlescreen start

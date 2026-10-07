@@ -139,6 +139,13 @@ uninstall_remove_repo_dropins() {
     # pacman: the sync database is the trust anchor here.
     sudo rm -rf "${PACMAN_XDG_D}" 2>/dev/null || true
     sudo rm -rf "${PACMAN_KEY_D}" 2>/dev/null || true
+    # Session-shell integration shim. It lives in /usr/local/bin, outside the
+    # package tree, so no package manager removes it for us. Leaving it would
+    # shadow the shell's own launcher and call a daemon that is gone.
+    if [ -f "$SESSION_SHIM" ]; then
+        sudo rm -f "$SESSION_SHIM"
+        ok "Session-shell integration shim removed."
+    fi
     ok "Repository drop-ins and trust anchors removed."
 }
 

@@ -79,6 +79,23 @@ detect_pkg_mgr() {
     fi
 }
 
+# True when a session shell owns idle timing and screen lock, and IdleScreen
+# is expected to hand off to it rather than run its own idle timer.
+#
+# `omarchy-shell` alone is the signal. The interception shim is deliberately
+# not part of the test: this runs during the identity phase, before the
+# package that installs the shim has been deployed, so on a first install the
+# shim is not on PATH yet. The installer only runs on hosts that are installing
+# IdleScreen, so the shell's presence is sufficient.
+SHELL_INTEGRATION=0
+
+detect_shell_integration() {
+    SHELL_INTEGRATION=0
+    if command -v omarchy-shell >/dev/null 2>&1; then
+        SHELL_INTEGRATION=1
+    fi
+}
+
 detect_de() {
     _xd="${XDG_CURRENT_DESKTOP:-}"
     _xs="${XDG_SESSION_DESKTOP:-}"

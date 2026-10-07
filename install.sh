@@ -159,12 +159,12 @@ if [ ! -f "$SCRIPT_DIR/ui.sh" ]; then
         _expected_hash=""
         case "$f" in
             "ui.sh") _expected_hash="af4ba64b19c76a0dcfaf9b9536ed9551a708efe2c8fa4980e9603dc292e2851c" ;;
-            "detect.sh") _expected_hash="6206b4997e5a11a461de3d35a66775b42d7ad4c9879734a7fec8cefe4aeb7f05" ;;
-            "repo.sh") _expected_hash="910e261bb58968972b30d17908a9646c7fd1fbeb36aaf3e4c8a6885ab8009996" ;;
+            "detect.sh") _expected_hash="2c42332b700c5c32a753bd8e8c98e6fa5be58d6b10da8046a9ec9be3e961acac" ;;
+            "repo.sh") _expected_hash="84d3612dc618f5e648d027f55199b0c63f5da0f437037a001afa439e0e0549fc" ;;
             "install_core.sh") _expected_hash="e6e812033771844da6f94eccd39a5e519df6aaae0633cc7129a1bbb10da07e58" ;;
             "install_audit.sh") _expected_hash="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
-            "post_install.sh") _expected_hash="086da5b6d70dcf04471018692dee4fcb9e1f8c0716dd70dd4e00eaff77304c3b" ;;
-            "uninstall.sh") _expected_hash="d64f7a599d005c44ee3efdc2569550d8effcfad9fea66beaf02909cbb3adb950" ;;
+            "post_install.sh") _expected_hash="664234082a6db0812a51fab9be62366af3880f4e0fef0889cadf7b798c971c41" ;;
+            "uninstall.sh") _expected_hash="b58506e67439835c1e65756c81aa75ece32d34935a2160fc42bc008a778c542a" ;;
             *) echo "install: unknown module $f" >&2; exit 1 ;;
         esac
         
@@ -220,6 +220,7 @@ main() {
     read_os_release
     detect_pkg_mgr
     detect_de
+    detect_shell_integration
 
     # Removal never needs a working channel, so it runs before the repo gate
     # and after identity — a broken repo must not block removing a stack.

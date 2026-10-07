@@ -21,6 +21,47 @@ _fix_dbus_activation_file() {
     fi
 }
 
+# Session-shell integration: when the shell owns idle timing, IdleScreen must
+# not also present on its own timer or the user gets two savers at two
+# different times.
+#
+# Writes only when the key is absent. `idle_enabled: false` is already the
+# desired state and makes re-runs idempotent; an explicit `true` is left
+# alone and reported instead — that is a deliberate choice the user made after
+# the integration landed, and silently overwriting it would be worse than
+# warning about it.
+apply_shell_integration() {
+    if [ "${SHELL_INTEGRATION:-0}" -ne 1 ]; then
+        return 0
+    fi
+    story_line "Session shell owns idle timing — checking IdleScreen's own idle trigger…"
+    _cfg="${HOME}/.config/idlescreen/config.yaml"
+    mkdir -p "$(dirname "$_cfg")"
+
+    _existing=$(grep -E '^[[:space:]]*idle_enabled[[:space:]]*:' "$_cfg" 2>/dev/null | head -n1 || true)
+    case "$_existing" in
+        *false*)
+            ok "idle_enabled is already false — no change needed"
+            return 0
+            ;;
+        *true*)
+            warn "idle_enabled is true while the shell also fires an idle timer."
+            dim "   Two screensavers can appear at different times. Run:"
+            dim "     idlescreen disable    # let the shell own the trigger"
+            return 0
+            ;;
+    esac
+
+    if [ -n "$_existing" ]; then
+        say "  ${DIM}config:${RESET} ${BOLD}${_cfg}${RESET} already sets idle_enabled — leaving it"
+        return 0
+    fi
+
+    printf 'idle_enabled: false\n' >> "$_cfg"
+    ok "Set ${BOLD}idle_enabled: false${RESET} — the shell drives the screensaver"
+    systemctl --user restart idle-daemon.service >/dev/null 2>&1 || true
+}
+
 awaken_daemon() {
     step "[5/5]  Starting the idle user service"
     story_line "Ensuring ${HOME}/.config/idle exists (daemon config dir)…"
@@ -63,6 +104,8 @@ awaken_daemon() {
     fi
 
     _fix_dbus_activation_file
+
+    apply_shell_integration
 
     # Package %post may still be finishing; give user units a moment.
     sleep 0.3
