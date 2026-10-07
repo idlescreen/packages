@@ -96,7 +96,7 @@ jobs:
       - name: Verify the expected split packages were produced
         working-directory: arch/idlescreen
         run: |
-          set -euo pipefail
+          set -uo pipefail
           produced="$(ls -1 ./*.pkg.tar.zst 2>/dev/null | wc -l)"
           echo "produced $produced package(s)"
           ls -la ./*.pkg.tar.zst || true
