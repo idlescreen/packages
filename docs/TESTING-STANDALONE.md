@@ -30,21 +30,36 @@ The one convenience you give up is the shorter `idlescreen` command name; use
 ## Steps
 
 ```sh
-# 1. Install everything except the metapackage.
-sudo pacman -S idle-daemon idle-cli idle-savers idle-tui
+# 1. Install. This configures the repository and installs the full stack —
+#    including the metapackage, and therefore the hand-off script.
+./install.sh
 
-# 2. Make sure IdleScreen never presents on its own.
+# 2. Stand the hand-off down before anything can trigger it.
+sudo rm -f /usr/local/bin/omarchy-launch-screensaver
+
+# 3. Make sure IdleScreen never presents on its own.
 #    With this off it only ever appears when you ask for it, so there is no
 #    way it can compete with the screensaver your session already runs.
 idle-cli disable
-
-# 3. Confirm the service is up.
-systemctl --user status idle-daemon
 ```
 
-Step 2 is the important one. It sets `idle_enabled: false` in
-`~/.config/idlescreen/config.yaml`, which means IdleScreen's own idle trigger is
-switched off. Nothing about your existing session changes, and IdleScreen sits
+Step 2 is why this page exists. `install.sh` installs the `idlescreen`
+metapackage, and that package is the only thing that carries
+`omarchy-launch-screensaver` — so a fresh install wires the hand-off up
+immediately unless you remove it.
+
+Confirm you are clear:
+
+```sh
+command -v omarchy-launch-screensaver    # expect: no output
+```
+
+If you have already run the installer once and want a clean slate,
+`./install.sh --plan` shows what it would do without doing it.
+
+`idle-cli disable` sets `idle_enabled: false` in
+`~/.config/idlescreen/config.yaml`, which switches off IdleScreen's own idle
+trigger. Nothing about your existing session changes, and IdleScreen sits
 dormant until you tell it to appear.
 
 If you would rather not edit config by hand:
@@ -79,22 +94,23 @@ To be certain nothing of ours is on the path at all:
 command -v omarchy-launch-screensaver    # expect: no output
 ```
 
-## Trying it out
+## Seeing it
 
-Everything is manual while you are in this state.
+That is the whole point — once the hand-off is gone, everything is manual.
 
 ```sh
 idle-cli list                 # installed savers
 idle-cli preview ascii        # fullscreen preview of one saver
 idle-cli preview ascii -t 10  # ...that stops itself after 10 seconds
-idle-cli start                # present using the configured saver
+idle-cli start                # present using the configured saver, no auto-stop
 idle-cli stop                 # dismiss it
 idle-cli tui                  # live configuration UI
 ```
 
-`idle-cli start` is the one that behaves most like a real presentation. Press
-`start` and check that it covers every monitor, that input dismisses it, and
-that `idle-cli stop` clears it.
+`idle-cli preview <name>` is the quickest thing to try — it goes fullscreen and
+comes back on its own. `idle-cli start` is the one that behaves like a real
+presentation, so use that to check it covers every monitor and that input
+dismisses it.
 
 ### Checking idle behaviour properly
 
