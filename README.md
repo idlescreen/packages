@@ -126,6 +126,10 @@ case, and `idlescreen doctor` reports exactly what happened.
 See [docs/SESSION-SHELLS.md](docs/SESSION-SHELLS.md) for the hand-off, how to
 verify it, and how to hand idle timing back to IdleScreen.
 
+Trying it first? [docs/TESTING-STANDALONE.md](docs/TESTING-STANDALONE.md)
+covers running IdleScreen on a session that already handles idle and lock,
+without changing what that session does.
+
 ## License
 
 Apache-2.0 · © 2026 IdleScreen
