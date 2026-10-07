@@ -47,11 +47,15 @@ jobs:
 
       - name: Install build dependencies
         run: |
+          # Build tooling plus the libraries the PKGBUILD declares in
+          # `depends`, so makepkg's own dep check passes. Note libxkbcommon,
+          # not "xkbcommon" — that name does not exist and fails the whole
+          # install before a package is ever fetched.
           pacman -S --noconfirm --needed --disable-download-timeout \
-            base-devel git rustup \
-            dbus wayland xkbcommon openssl systemd-libs \
-            cmake vulkan-headers libxcb libxkbcommon \
-            wayland-protocols seatd
+            base-devel git rustup cmake \
+            dbus wayland openssl systemd-libs \
+            libxcb libxkbcommon wayland-protocols vulkan-headers \
+            fontconfig freetype2 seatd
 
       - name: Pin the toolchain to the project rust-toolchain.toml
         run: |
