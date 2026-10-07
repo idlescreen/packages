@@ -96,12 +96,21 @@ jobs:
             # The RPM and DEB channels build on Ubuntu with bfd; match them so
             # all three channels compile identical binaries.
             #
-            # -C linker=bfd, not a -fuse-ld link-arg: the arg is handed to
-            # whichever driver rust already picked, so it cannot change the
-            # choice. link-self-contained=-linker stops rust bundling its own
-            # lld alongside the system one.
-            export RUSTFLAGS="-C linker=bfd -C link-self-contained=-linker"
-            export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=bfd
+            # Use the system C compiler as the link driver, which is what the
+            # working channels effectively do.
+            #
+            # Not `-fuse-ld=bfd`: that is a link-arg handed to whichever driver
+            # rust already picked, so it cannot change the choice. Not
+            # `-C linker=bfd` either — there is no binary called `bfd`, only
+            # ld.bfd, and rust resolves the name literally. `cc` is guaranteed
+            # present from base-devel and gcc does not default to lld, so this
+            # lands on the same linker the RPM/DEB builds use.
+            #
+            # link-self-contained=-linker stops rust bundling its own lld next
+            # to the system linker, which is the thing that was actually
+            # failing to resolve mimalloc's C symbols.
+            export RUSTFLAGS="-C linker=cc -C link-self-contained=-linker"
+            export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=cc
             cd "'"$GITHUB_WORKSPACE"'/arch/idlescreen"
             makepkg --cleanbuild --clean --noconfirm --nodeps \
               --skippgpcheck --skipchecksums
