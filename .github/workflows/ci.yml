@@ -37,6 +37,7 @@ jobs:
         shellcheck uninstall.sh
         shellcheck arch/idlescreen/omarchy-launch-screensaver
         shellcheck -s bash arch/idlescreen/PKGBUILD
+        shellcheck arch/idlescreen/idlescreen.install
         # The install-studio driver dot-sources a chain
         # of helpers under install-studio-lib/. Those are linted
         # separately — they are not exec'd at install time, so a

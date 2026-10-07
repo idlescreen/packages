@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: Apache-2.0
 #
 # makepkg supplies $srcdir, $pkgdir, $startdir and $BUILDDIR.
-# shellcheck disable=SC2154
+# shellcheck disable=SC2154,SC2178
 #
 # Split-package PKGBUILD for IdleScreen on Arch Linux and derivatives.
 #
