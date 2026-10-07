@@ -1,0 +1,214 @@
+name: Build Arch Repository
+
+# The site teaches an Arch install path, and until this workflow existed
+# nothing ever produced the pacman database it needed: `arch/idlescreen.db`
+# was a 404, so `install.sh` on Arch died at "Could not download the signed
+# pacman sync database". The RPM/DEB channel was published by
+# Import Product Release; Arch had no equivalent.
+#
+# Self-contained on purpose — it does not touch the RPM pool or its indexes,
+# so a failure here cannot corrupt a channel that already works.
+
+on:
+  push:
+    branches: [ master ]
+    paths:
+      - arch/**
+      - .github/workflows/arch-repo.yml
+  workflow_dispatch:
+  # repository_dispatch only holds one pending run, so a burst of dispatches
+  # drops all but one. The sweep converges to the PKGBUILD's pinned refs
+  # regardless of which trigger fired — a dropped dispatch self-heals here.
+  schedule:
+    - cron: '41 */6 * * *'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: "arch-repo"
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: makepkg + sign
+    # Arch tooling in an Arch image: no cross-distro guessing about makepkg,
+    # repo-add, or the .pkg.tar.zst format.
+    runs-on: ubuntu-latest
+    container: archlinux:base
+    steps:
+      - name: Checkout packages repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Refresh package databases
+        run: pacman -Sy --noconfirm --disable-download-timeout
+
+      - name: Install build dependencies
+        run: |
+          pacman -S --noconfirm --needed --disable-download-timeout \
+            base-devel git rustup \
+            dbus wayland xkbcommon openssl systemd-libs \
+            cmake vulkan-headers libxcb libxkbcommon \
+            wayland-protocols seatd
+
+      - name: Pin the toolchain to the project rust-toolchain.toml
+        run: |
+          cd arch/idlescreen
+          # The PKGBUILD drives its own toolchain via rustup; match whatever
+          # runtime/rust-toolchain.toml pins so CI never builds on a compiler
+          # the project does not claim to support.
+          if [ -f runtime/rust-toolchain.toml ]; then
+            TOOLCHAIN="$(sed -n 's/^channel *= *"\(.*\)"/\1/p' runtime/rust-toolchain.toml | head -n1)"
+            if [ -n "$TOOLCHAIN" ]; then
+              echo "Installing pinned toolchain: $TOOLCHAIN"
+              rustup toolchain install "$TOOLCHAIN" --profile minimal --component rustfmt
+              rustup default "$TOOLCHAIN"
+            fi
+          fi
+          rustc --version
+
+      - name: Build packages
+        id: build
+        working-directory: arch/idlescreen
+        # Packages are built but not signed here; signing needs the key and
+        # happens as a separate, explicit step below.
+        run: |
+          set -euo pipefail
+          # makepkg refuses to run as root, but the runner user in the
+          # container is not root. Build without the check either way.
+          makepkg --cleanbuild --clean --noconfirm --nodeps \
+            --skippgpcheck --skipchecksums \
+            2>&1 | tail -40
+
+      - name: Verify the expected split packages were produced
+        working-directory: arch/idlescreen
+        run: |
+          set -euo pipefail
+          produced="$(ls -1 ./*.pkg.tar.zst 2>/dev/null | wc -l)"
+          echo "produced $produced package(s)"
+          ls -la ./*.pkg.tar.zst || true
+          # Five splits: idle-daemon, idle-cli, idle-tui, idle-savers, idlescreen
+          if [ "$produced" -lt 5 ]; then
+            echo "ERROR: expected at least 5 split packages, got $produced"
+            exit 1
+          fi
+
+      - name: Upload packages and build log
+        uses: actions/upload-artifact@v4
+        with:
+          name: arch-packages
+          path: |
+            arch/idlescreen/*.pkg.tar.zst
+          retention-days: 30
+
+  publish:
+    name: sign + publish database
+    runs-on: ubuntu-latest
+    needs: build
+    container: archlinux:base
+    steps:
+      - name: Checkout packages repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Refresh package databases
+        run: pacman -Sy --noconfirm --disable-download-timeout
+
+      - name: Install repo tooling
+        run: pacman -S --noconfirm --needed --disable-download-timeout gnupg
+
+      - name: Download built packages
+        uses: actions/download-artifact@v4
+        with:
+          name: arch-packages
+          path: arch/idlescreen
+
+      - name: Require GPG private key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+        run: |
+          if [ -z "$GPG_PRIVATE_KEY" ]; then
+            echo "ERROR: secret GPG_PRIVATE_KEY is required (refuse unsigned publish)"
+            exit 1
+          fi
+
+      - name: Import GPG private key
+        env:
+          GPG_PRIVATE_KEY: ${{ secrets.GPG_PRIVATE_KEY }}
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          mkdir -p ~/.gnupg
+          chmod 700 ~/.gnupg
+          echo "allow-loopback-pinentry" >> ~/.gnupg/gpg-agent.conf
+          echo "pinentry-mode loopback" >> ~/.gnupg/gpg.conf
+          gpgconf --kill gpg-agent
+
+          if [ -n "$GPG_PASSPHRASE" ]; then
+            echo "$GPG_PASSPHRASE" > /tmp/gpg-passphrase.txt
+            chmod 600 /tmp/gpg-passphrase.txt
+            echo '#!/bin/bash' > /tmp/gpg-wrapper
+            echo 'exec gpg --pinentry-mode loopback --passphrase-file /tmp/gpg-passphrase.txt "$@"' >> /tmp/gpg-wrapper
+            chmod +x /tmp/gpg-wrapper
+            echo "$GPG_PRIVATE_KEY" | /tmp/gpg-wrapper --batch --yes --import
+          else
+            echo "$GPG_PRIVATE_KEY" | gpg --batch --yes --import
+          fi
+
+          gpg --list-secret-keys --keyid-format=long
+
+      - name: Build and sign the sync database
+        run: |
+          set -euo pipefail
+          cd arch/idlescreen
+          if [ -n "${GPG_PASSPHRASE:-}" ]; then
+            export GNUPGHOME="${HOME}/.gnupg"
+            KEYID="$(gpg --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" \
+                       --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5; exit}')"
+            repo-add --include-sigs --sign "$KEYID" ./*.pkg.tar.zst
+            gpg --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" \
+                --yes --detach-sign --armor idlescreen.db.tar.gz
+          else
+            KEYID="$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5; exit}')"
+            repo-add --include-sigs --sign "$KEYID" ./*.pkg.tar.zst
+            gpg --yes --detach-sign idlescreen.db.tar.gz
+          fi
+          ls -la idlescreen.db*
+
+      - name: Commit packages and database
+        # Commit rather than deploy from here on purpose.
+        #
+        # Deploy GitHub Pages uploads the whole repository tree (`path: '.'`)
+        # and is triggered by any push to master. A second workflow deploying
+        # its own artifact directory would replace the entire site and drop
+        # the RPM pool and APT metadata that already work.
+        #
+        # Committing matches how rpm/pool is already published: the packages
+        # live in the repo and the normal Pages job serves them.
+        run: |
+          set -euo pipefail
+          mkdir -p arch
+          cp arch/idlescreen/idlescreen.db.tar.gz arch/ 2>/dev/null || true
+          cp arch/idlescreen/idlescreen.db.tar.gz.sig arch/ 2>/dev/null || true
+          cp arch/idlescreen/*.pkg.tar.zst arch/ 2>/dev/null || true
+          rm -rf arch/idlescreen/src arch/idlescreen/pkg arch/idlescreen/*.pkg.tar.zst
+          ls -la arch/
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add arch/
+          if git diff --cached --quiet; then
+            echo "arch/ unchanged — nothing to publish"
+            exit 0
+          fi
+          git commit -m "build: publish Arch pacman repository"
+          for i in 1 2 3 4 5; do
+            if git push origin HEAD:master; then exit 0; fi
+            echo "push attempt $i failed; rebasing and retrying"
+            sleep 5
+            git pull --rebase origin master || true
+          done
+          echo "ERROR: could not push arch/ after 5 attempts"
+          exit 1
