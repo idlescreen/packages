@@ -65,12 +65,27 @@ exists on disk but loses the `PATH` lookup does nothing at all, and looks
 perfectly healthy from the daemon's own status — so `doctor` resolves the name
 the same way the shell does and reports which file actually wins.
 
-## Turning it off
+## Who controls the delay
 
-If you would rather IdleScreen ran its own timer:
+This trips people up, so it is worth stating plainly.
+
+While the hand-off is active, **the delay before the screensaver appears is
+the session shell's, not IdleScreen's.** The shell reads `idle.screensaver` from
+`~/.config/omarchy/shell.json` — seconds since the session went idle, defaulting
+to 150:
+
+```json
+{ "version": 1, "idle": { "screensaver": 150, "lock": 300 } }
+```
+
+`idlescreen timeout <minutes>` therefore does nothing while the integration is
+active, because IdleScreen's own idle trigger is stood down. That is expected,
+not a bug. To change how quickly it appears, edit `idle.screensaver`.
+
+To hand idle timing — and the timeout with it — back to IdleScreen:
 
 ```sh
-idlescreen disable      # IdleScreen's idle trigger back on
+idlescreen disable      # IdleScreen's own idle trigger back on
 idlescreen enable       # ...and back off again
 ```
 
