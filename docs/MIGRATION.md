@@ -8,6 +8,35 @@ the affected version, the change, and the migration step.
 
 ## Unreleased
 
+### New — session-shell idle hand-off
+
+**Before**: on a session shell that owns idle timing, IdleScreen ran its own idle
+timer as well. Both triggered, so a screensaver could appear at one delay from
+the shell's policy and another from IdleScreen's.
+
+**After**: installers detect a shell that owns idle timing and lock, and set
+`idle_enabled: false` so that shell calls IdleScreen instead. The shell keeps the
+clock and the lock; IdleScreen draws. Arch installs also ship the hand-off script
+at `/usr/local/bin/omarchy-launch-screensaver`.
+
+**Migration**:
+- No action needed. `idle_enabled: false` is only written when the key is
+  **absent**. An explicit `true` is left alone and reported, so an existing
+  deliberate choice is never overwritten.
+- To hand idle timing back to IdleScreen at any point: `idlescreen enable`.
+- To check the state on a running machine: `idlescreen doctor`, under
+  "Session shell integration".
+- Upgrading from a version that did not install the script gets it automatically
+  on reinstall. It lives outside every package tree, so `idlescreen uninstall`
+  removes it explicitly.
+
+### New — `logo_file` config key
+
+`logo_file: /absolute/path` points IdleScreen at a user-supplied ASCII-art file.
+The daemon reads it and hands the contents to the renderer; the saver plugin
+never opens the file. No capability or permission change is involved, and the key
+is absent by default.
+
 ### Sprint 06 — saver RPM `Requires: idle` → `idle-daemon`
 
 **Before**: `idle-saver-*.rpm` declared `Requires: idle = "*"` (no such

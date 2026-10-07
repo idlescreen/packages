@@ -116,6 +116,16 @@ The IdleScreen installer preserves existing user and system configurations witho
 
 Existing files are preserved completely across installs, upgrades, and channel re-syncs.
 
+### Session shells that own idle and lock
+
+If your session shell already owns idle timing and screen lock, IdleScreen draws
+the screensaver while the shell decides when to show it — so you never get two
+savers on two different clocks. Installers set `idle_enabled: false` in that
+case, and `idlescreen doctor` reports exactly what happened.
+
+See [docs/SESSION-SHELLS.md](docs/SESSION-SHELLS.md) for the hand-off, how to
+verify it, and how to hand idle timing back to IdleScreen.
+
 ## License
 
 Apache-2.0 · © 2026 IdleScreen
