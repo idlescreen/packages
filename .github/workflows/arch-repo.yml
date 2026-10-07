@@ -57,21 +57,16 @@ jobs:
             libxcb libxkbcommon wayland-protocols vulkan-headers \
             fontconfig freetype2 seatd
 
-      - name: Pin the toolchain to the project rust-toolchain.toml
+      - name: Prepare Rust toolchain
         run: |
-          cd arch/idlescreen
-          # The PKGBUILD drives its own toolchain via rustup; match whatever
-          # runtime/rust-toolchain.toml pins so CI never builds on a compiler
-          # the project does not claim to support.
-          if [ -f runtime/rust-toolchain.toml ]; then
-            TOOLCHAIN="$(sed -n 's/^channel *= *"\(.*\)"/\1/p' runtime/rust-toolchain.toml | head -n1)"
-            if [ -n "$TOOLCHAIN" ]; then
-              echo "Installing pinned toolchain: $TOOLCHAIN"
-              rustup toolchain install "$TOOLCHAIN" --profile minimal --component rustfmt
-              rustup default "$TOOLCHAIN"
-            fi
-          fi
+          # The pinned toolchain lives in each source workspace's
+          # rust-toolchain.toml, which makepkg only fetches at build time —
+          # so there is nothing to read here yet. Set a default to satisfy
+          # rustup, and let rustup auto-select the pinned channel per
+          # workspace once those sources are on disk.
+          rustup default stable
           rustc --version
+          cargo --version
 
       - name: Build packages
         id: build
