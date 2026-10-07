@@ -72,16 +72,22 @@ optdepends=(
     'cosmic-session: COSMIC panel applet'
 )
 
-_rtdir="$srcdir/runtime"
-_stagedir="$srcdir/.stage"
+# Resolved at call time, not at source time.
+#
+# makepkg sets $srcdir only *after* it has sourced this file — it needs
+# $pkgname and $pkgver first. Assigning these at the top level therefore
+# captured an empty $srcdir, and prepare() died with "cd: /runtime: No
+# such file or directory". Every path is computed when it is used, by which
+# point makepkg has finished reading the file.
+_rtdir()  { echo "$srcdir/runtime"; }
 
 prepare() {
-    cd "$_rtdir" || return 1
+    cd "$(_rtdir)" || return 1
 
     # `savers` declares `idle-api = { path = "runtime/idle-api" }`, so the
     # engine link MUST be named `runtime` inside the savers tree.
     if [ ! -e "$srcdir/savers/runtime" ]; then
-        ln -s "$_rtdir" "$srcdir/savers/runtime"
+        ln -s "$(_rtdir)" "$srcdir/savers/runtime"
     fi
 
     cargo fetch --locked
@@ -91,7 +97,7 @@ prepare() {
 # from the shared artifacts. Recompiling per subpackage would multiply a
 # ~30 minute build by six.
 _build_runtime() {
-    cd "$_rtdir" || return 1
+    cd "$(_rtdir)" || return 1
     cargo build --release --locked -p idle-daemon
 }
 
@@ -142,16 +148,16 @@ package_idle-daemon() {
     pkgname=idle-daemon
     pkgdesc="IdleScreen host daemon: idle detection, presentation, and session-lock handling"
     depends=("${depends[@]}")
-    install -Dm755 "$_rtdir/target/release/idle-daemon" \
+    install -Dm755 "$(_rtdir)/target/release/idle-daemon" \
         "$pkgdir/usr/bin/idle-daemon"
-    install -Dm644 "$_rtdir/runtime/idle-daemon/assets/idle-daemon.service" \
+    install -Dm644 "$(_rtdir)/runtime/idle-daemon/assets/idle-daemon.service" \
         "$pkgdir/usr/lib/systemd/user/idle-daemon.service"
-    install -Dm644 "$_rtdir/runtime/idle-daemon/assets/io.github.idlescreen.Idle.service" \
+    install -Dm644 "$(_rtdir)/runtime/idle-daemon/assets/io.github.idlescreen.Idle.service" \
         "$pkgdir/usr/share/dbus-1/services/io.github.idlescreen.Idle.service"
     # D-Bus activation for the freedesktop screensaver interface. Without it,
     # a portal-mediated Inhibit fails on sessions that ship no screensaver
     # service: the daemon owns the bus name only while it is already running.
-    install -Dm644 "$_rtdir/runtime/idle-daemon/assets/org.freedesktop.ScreenSaver.service" \
+    install -Dm644 "$(_rtdir)/runtime/idle-daemon/assets/org.freedesktop.ScreenSaver.service" \
         "$pkgdir/usr/share/dbus-1/services/org.freedesktop.ScreenSaver.service"
 }
 
