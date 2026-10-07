@@ -82,39 +82,39 @@ jobs:
           chown -R builder:builder "$GITHUB_WORKSPACE" /opt/rust
 
       - name: Build packages
-        id: build
-        working-directory: arch/idlescreen
+        # The build script goes in a file rather than inline in `su -c`.
+        # Nesting shell quoting inside a single-quoted su argument is fragile
+        # in a way that is very hard to debug from CI output.
         run: |
-          su builder -c '
-            set -euo pipefail
-            export RUSTUP_HOME=/opt/rust/.rustup
-            export CARGO_HOME=/opt/rust/.cargo
-            export PATH="$CARGO_HOME/bin:$PATH"
-            # Force GNU ld. Arch enables rust-lld by default, and mimalloc'"'"'s
-            # C symbols do not resolve under it here: the link dies with
-            # "undefined symbol: mi_realloc_aligned" and "mi_zalloc_aligned".
-            # The RPM and DEB channels build on Ubuntu with bfd; match them so
-            # all three channels compile identical binaries.
-            #
-            # Use the system C compiler as the link driver, which is what the
-            # working channels effectively do.
-            #
-            # Not `-fuse-ld=bfd`: that is a link-arg handed to whichever driver
-            # rust already picked, so it cannot change the choice. Not
-            # `-C linker=bfd` either — there is no binary called `bfd`, only
-            # ld.bfd, and rust resolves the name literally. `cc` is guaranteed
-            # present from base-devel and gcc does not default to lld, so this
-            # lands on the same linker the RPM/DEB builds use.
-            #
-            # link-self-contained=-linker stops rust bundling its own lld next
-            # to the system linker, which is the thing that was actually
-            # failing to resolve mimalloc's C symbols.
-            export RUSTFLAGS="-C linker=cc -C link-self-contained=-linker"
-            export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=cc
-            cd "'"$GITHUB_WORKSPACE"'/arch/idlescreen"
-            makepkg --cleanbuild --clean --noconfirm --nodeps \
-              --skippgpcheck --skipchecksums
-          ' 2>&1 | tail -60
+          cat >/tmp/build.sh <<'BUILD_EOF'
+          #!/bin/bash
+          set -euo pipefail
+          export RUSTUP_HOME=/opt/rust/.rustup
+          export CARGO_HOME=/opt/rust/.cargo
+          export PATH="$CARGO_HOME/bin:$PATH"
+
+          # Link with the system C compiler driver. Arch enables rust-lld by
+          # default and mimalloc's C symbols do not resolve under it here:
+          # "undefined symbol: mi_realloc_aligned" / "mi_zalloc_aligned".
+          # Not `-fuse-ld=bfd` — that is a link-arg handed to whichever driver
+          # rust already picked. Not `-C linker=bfd` — there is no binary
+          # called `bfd`. `cc` is present from base-devel and gcc does not
+          # default to lld, so this matches the RPM/DEB channels.
+          export RUSTFLAGS="-C linker=cc -C link-self-contained=-linker"
+          export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=cc
+
+          cd "$1"
+          echo "building in $PWD"
+          ls -1
+          makepkg --cleanbuild --clean --noconfirm --nodeps \
+            --skippgpcheck --skipchecksums
+          BUILD_EOF
+          chmod +x /tmp/build.sh
+          mkdir -p /tmp/site
+          chown builder:builder /tmp/build.sh
+          su builder -c "/tmp/build.sh \"$GITHUB_WORKSPACE/arch/idlescreen\""
+          echo "=== produced ==="
+          ls -la "$GITHUB_WORKSPACE/arch/idlescreen"/*.pkg.tar.zst || true
 
       - name: Verify the expected split packages were produced
         working-directory: arch/idlescreen
