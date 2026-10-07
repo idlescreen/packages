@@ -57,29 +57,41 @@ jobs:
             libxcb libxkbcommon wayland-protocols vulkan-headers \
             fontconfig freetype2 seatd
 
-      - name: Prepare Rust toolchain
+      - name: Prepare Rust toolchain and a non-root build user
         run: |
           # The pinned toolchain lives in each source workspace's
           # rust-toolchain.toml, which makepkg only fetches at build time —
           # so there is nothing to read here yet. Set a default to satisfy
-          # rustup, and let rustup auto-select the pinned channel per
-          # workspace once those sources are on disk.
+          # rustup; rustup still auto-selects each workspace's pinned
+          # channel once those sources exist.
           rustup default stable
           rustc --version
-          cargo --version
+
+          # makepkg hard-refuses to run as root, and container jobs are root.
+          # Build as an unprivileged user instead, sharing the toolchain the
+          # image installed rather than installing a second one.
+          useradd -m -s /bin/bash builder
+          mkdir -p /opt/rust
+          cp -a /root/.rustup /root/.cargo /opt/rust/ 2>/dev/null || true
+          chmod -R a+rX /opt/rust
+          chown -R builder:builder "$GITHUB_WORKSPACE" /opt/rust
+          echo "builder ready"
 
       - name: Build packages
         id: build
         working-directory: arch/idlescreen
-        # Packages are built but not signed here; signing needs the key and
-        # happens as a separate, explicit step below.
+        # Packages are built unsigned here; signing needs the private key and
+        # happens as a separate, explicit step in the publish job.
         run: |
-          set -euo pipefail
-          # makepkg refuses to run as root, but the runner user in the
-          # container is not root. Build without the check either way.
-          makepkg --cleanbuild --clean --noconfirm --nodeps \
-            --skippgpcheck --skipchecksums \
-            2>&1 | tail -40
+          su builder -c '
+            set -euo pipefail
+            export RUSTUP_HOME=/opt/rust/.rustup
+            export CARGO_HOME=/opt/rust/.cargo
+            export PATH="$CARGO_HOME/bin:$PATH"
+            cd "'"$GITHUB_WORKSPACE"'/arch/idlescreen"
+            makepkg --cleanbuild --clean --noconfirm --nodeps \
+              --skippgpcheck --skipchecksums
+          ' 2>&1 | tail -60
 
       - name: Verify the expected split packages were produced
         working-directory: arch/idlescreen
