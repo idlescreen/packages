@@ -100,8 +100,17 @@ jobs:
           # rust already picked. Not `-C linker=bfd` — there is no binary
           # called `bfd`. `cc` is present from base-devel and gcc does not
           # default to lld, so this matches the RPM/DEB channels.
-          export RUSTFLAGS="-C linker=cc -C link-self-contained=-linker"
+          # Arch ships /usr/bin/ld as ld.lld, so choosing cc as the driver is
+          # not enough on its own — cc still lands on lld. Now that cc is the
+          # driver, -fuse-ld=bfd is meaningful and pins the actual linker.
+          export RUSTFLAGS="-C linker=cc -C link-arg=-fuse-ld=bfd -C link-self-contained=-linker"
           export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER=cc
+
+          # Prove which linker we actually got, rather than inferring it from
+          # a link error twenty minutes later.
+          echo "cc:     $(cc --version | head -n1)"
+          echo "ld:     $(ld --version | head -n1)"
+          echo "ld.bfd: $(ld.bfd --version | head -n1)"
 
           cd "$1"
           echo "building in $PWD"
