@@ -86,10 +86,10 @@ jobs:
           # cargo looks instead.
           cat >/opt/rust/.cargo/config.toml <<'CARGO_EOF'
           [target.x86_64-unknown-linux-gnu]
-          linker = "cc"
+          linker = "gcc"
           rustflags = [
+            "-C", "target-cpu=x86-64-v3",
             "-C", "link-arg=-fuse-ld=bfd",
-            "-C", "link-self-contained=-linker",
           ]
           CARGO_EOF
 
@@ -108,6 +108,8 @@ jobs:
           export RUSTUP_HOME=/opt/rust/.rustup
           export CARGO_HOME=/opt/rust/.cargo
           export PATH="$CARGO_HOME/bin:$PATH"
+          export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="gcc"
+          export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS="-C target-cpu=x86-64-v3 -C link-arg=-fuse-ld=bfd"
 
           # Link with the system C compiler driver. Arch enables rust-lld by
           # default and mimalloc's C symbols do not resolve under it here:

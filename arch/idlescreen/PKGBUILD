@@ -89,6 +89,9 @@ prepare() {
         ln -s "$(_rtdir)" "$srcdir/savers/runtime"
     fi
 
+    # Remove workspace-level .cargo/config.toml so linker flags are not dropped
+    rm -f "$(_rtdir)/.cargo/config.toml" 2>/dev/null || true
+
     cargo fetch --locked
 }
 
@@ -133,6 +136,8 @@ _build_idlescreen() {
 }
 
 build() {
+    export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_LINKER="gcc"
+    export CARGO_TARGET_X86_64_UNKNOWN_LINUX_GNU_RUSTFLAGS="-C target-cpu=x86-64-v3 -C link-arg=-fuse-ld=bfd"
     _build_runtime
     _build_cli
     _build_tui
