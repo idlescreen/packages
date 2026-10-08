@@ -30,7 +30,9 @@ fi
 
 # Respect media/session inhibitors. The shell's own idle monitor honours only
 # idle-inhibit-unstable-v1, so portal-derived inhibitors reach IdleScreen alone.
-if idlescreen inhibitors --json 2>/dev/null | grep -q '"inhibited":true'; then
+# `force` wins over inhibitors when the user explicitly forces the screensaver.
+if [ "${1:-}" != "force" ] \
+    && idlescreen inhibitors --json 2>/dev/null | grep -q '"inhibited":true'; then
     exit 0
 fi
 
