@@ -52,6 +52,7 @@ apply_shell_integration() {
             if [ -n "$_existing" ]; then
                 say "  ${DIM}config:${RESET} ${BOLD}${_cfg}${RESET} already sets idle_enabled — leaving it"
             else
+                [ -s "$_cfg" ] && [ -n "$(tail -c1 "$_cfg" 2>/dev/null)" ] && printf '\n' >> "$_cfg"
                 printf 'idle_enabled: false\n' >> "$_cfg"
                 ok "Set ${BOLD}idle_enabled: false${RESET} — the shell drives the screensaver"
             fi
@@ -59,6 +60,7 @@ apply_shell_integration() {
     esac
 
     if [ -f "$_cfg" ] && ! grep -E '^[[:space:]]*active_saver[[:space:]]*:' "$_cfg" 2>/dev/null; then
+        [ -s "$_cfg" ] && [ -n "$(tail -c1 "$_cfg" 2>/dev/null)" ] && printf '\n' >> "$_cfg"
         printf 'active_saver: "ascii"\n' >> "$_cfg"
         ok "Defaulted active_saver to ascii for session shell integration"
     fi
@@ -66,8 +68,13 @@ apply_shell_integration() {
     _shim="${SESSION_SHIM:-/usr/local/bin/omarchy-launch-screensaver}"
     if [ ! -f "$_shim" ] && [ -f "$SCRIPT_DIR/arch/idlescreen/omarchy-launch-screensaver" ]; then
         if command -v sudo >/dev/null 2>&1; then
-            sudo install -Dm755 "$SCRIPT_DIR/arch/idlescreen/omarchy-launch-screensaver" "$_shim" 2>/dev/null || true
-            ok "Installed session shim to ${BOLD}${_shim}${RESET}"
+            if sudo install -Dm755 "$SCRIPT_DIR/arch/idlescreen/omarchy-launch-screensaver" "$_shim" 2>/dev/null; then
+                ok "Installed session shim to ${BOLD}${_shim}${RESET}"
+            else
+                warn "Failed to install session shim to ${BOLD}${_shim}${RESET} (sudo required)"
+            fi
+        else
+            warn "sudo not available; could not install session shim to ${BOLD}${_shim}${RESET}"
         fi
     fi
 

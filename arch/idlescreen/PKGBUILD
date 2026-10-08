@@ -116,18 +116,18 @@ _build_tui() {
 _build_savers() {
     cd "$srcdir/savers" || return 1
     cargo build --release --locked \
-        -p idle-saver-ascii \
-        -p idle-saver-aurora \
-        -p idle-saver-beams \
-        -p idle-saver-bursts \
-        -p idle-saver-chaos \
-        -p idle-saver-cosmos \
-        -p idle-saver-glyphs \
-        -p idle-saver-gnats \
-        -p idle-saver-hearth \
-        -p idle-saver-radar \
-        -p idle-saver-ripple \
-        -p idle-saver-storm
+        -p ascii \
+        -p aurora \
+        -p beams \
+        -p bursts \
+        -p chaos \
+        -p cosmos \
+        -p glyphs \
+        -p gnats \
+        -p hearth \
+        -p radar \
+        -p ripple \
+        -p storm
 }
 
 _build_idlescreen() {
@@ -157,9 +157,9 @@ build() {
 _install_saver() {
     local saver="$1"
     install -Dm755 "$srcdir/savers/target/release/libscreensaver_${saver}.so" \
-        "$pkgdir/usr/lib/idlescreen/screensavers/libscreensaver_${saver}.so"
+        "$pkgdir/usr/libexec/idle/screensavers/libscreensaver_${saver}.so"
     install -Dm644 "$srcdir/savers/${saver}/libscreensaver_${saver}.idleplugin.toml" \
-        "$pkgdir/usr/lib/idlescreen/screensavers/libscreensaver_${saver}.idleplugin.toml"
+        "$pkgdir/usr/libexec/idle/screensavers/libscreensaver_${saver}.idleplugin.toml"
 }
 
 package_idle-daemon() {
