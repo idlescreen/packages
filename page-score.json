@@ -1,7 +1,7 @@
 {
  "repo": "packages",
- "rev": "97ae183",
- "dirty": false,
+ "rev": "441358c",
+ "dirty": true,
  "pages": [
   {
    "path": "./src/bin/prune.rs",
@@ -75,7 +75,7 @@
   },
   {
    "path": "./src/install_honesty/constants.rs",
-   "lines": 169,
+   "lines": 171,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 3
