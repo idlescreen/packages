@@ -31,27 +31,39 @@ echo "custom_setting: preserved_idlescreen" > "$HOME_DIR/.config/idlescreen/conf
 # Run awaken_daemon with HOME pointed at our test home
 PATH="$MOCKBIN:/usr/bin:/bin" HOME="$HOME_DIR" awaken_daemon >/dev/null 2>&1 || true
 
-# Assert ~/.config/idlescreen/config.yaml still contains custom_setting
+# Assert ~/.config/idlescreen/config.yaml still contains custom_setting and default active_saver: "ascii"
 content=$(cat "$HOME_DIR/.config/idlescreen/config.yaml")
-if [ "$content" != "custom_setting: preserved_idlescreen" ]; then
-    echo "FAIL: ~/.config/idlescreen/config.yaml was overwritten! content=$content"
+if ! grep -q "custom_setting: preserved_idlescreen" "$HOME_DIR/.config/idlescreen/config.yaml"; then
+    echo "FAIL: ~/.config/idlescreen/config.yaml lost custom_setting! content=$content"
+    exit 1
+fi
+if ! grep -q 'active_saver: "ascii"' "$HOME_DIR/.config/idlescreen/config.yaml"; then
+    echo "FAIL: ~/.config/idlescreen/config.yaml missing default active_saver: \"ascii\"! content=$content"
     exit 1
 fi
 
 # Assert ~/.config/idle/config.yaml was synced from idlescreen without clobbering
 idle_content=$(cat "$HOME_DIR/.config/idle/config.yaml")
-if [ "$idle_content" != "custom_setting: preserved_idlescreen" ]; then
-    echo "FAIL: ~/.config/idle/config.yaml was not preserved from idlescreen! content=$idle_content"
+if ! grep -q "custom_setting: preserved_idlescreen" "$HOME_DIR/.config/idle/config.yaml"; then
+    echo "FAIL: ~/.config/idle/config.yaml lost custom_setting! content=$idle_content"
+    exit 1
+fi
+if ! grep -q 'active_saver: "ascii"' "$HOME_DIR/.config/idle/config.yaml"; then
+    echo "FAIL: ~/.config/idle/config.yaml missing default active_saver: \"ascii\"! content=$idle_content"
     exit 1
 fi
 
-# Modify idle config, run awaken_daemon again, ensure neither is clobbered
-echo "user_custom_edit: 123" > "$HOME_DIR/.config/idle/config.yaml"
+# Modify idle config with explicit active_saver, run awaken_daemon again, ensure user active_saver is preserved
+printf 'user_custom_edit: 123\nactive_saver: "cosmos"\n' > "$HOME_DIR/.config/idle/config.yaml"
 PATH="$MOCKBIN:/usr/bin:/bin" HOME="$HOME_DIR" awaken_daemon >/dev/null 2>&1 || true
 
 idle_content2=$(cat "$HOME_DIR/.config/idle/config.yaml")
-if [ "$idle_content2" != "user_custom_edit: 123" ]; then
-    echo "FAIL: ~/.config/idle/config.yaml was clobbered on second run!"
+if ! grep -q "user_custom_edit: 123" "$HOME_DIR/.config/idle/config.yaml"; then
+    echo "FAIL: ~/.config/idle/config.yaml was clobbered on second run! content=$idle_content2"
+    exit 1
+fi
+if ! grep -q 'active_saver: "cosmos"' "$HOME_DIR/.config/idle/config.yaml"; then
+    echo "FAIL: user active_saver 'cosmos' was overridden by ascii on second run! content=$idle_content2"
     exit 1
 fi
 
@@ -64,18 +76,39 @@ output_log="$TMP/awaken.log"
 PATH="$MOCKBIN:/usr/bin:/bin" HOME="$HOME_DIR2" awaken_daemon >"$output_log" 2>&1 || true
 
 content2=$(cat "$HOME_DIR2/.config/idle/config.yaml")
-if [ "$content2" != "custom_setting: preserved_idle" ]; then
+if ! grep -q "custom_setting: preserved_idle" "$HOME_DIR2/.config/idle/config.yaml"; then
     echo "FAIL: ~/.config/idle/config.yaml was overwritten! content=$content2"
     exit 1
 fi
+if ! grep -q 'active_saver: "ascii"' "$HOME_DIR2/.config/idle/config.yaml"; then
+    echo "FAIL: ~/.config/idle/config.yaml missing default active_saver: \"ascii\"! content=$content2"
+    exit 1
+fi
 synced_idlescreen=$(cat "$HOME_DIR2/.config/idlescreen/config.yaml")
-if [ "$synced_idlescreen" != "custom_setting: preserved_idle" ]; then
+if ! grep -q "custom_setting: preserved_idle" "$HOME_DIR2/.config/idlescreen/config.yaml"; then
     echo "FAIL: ~/.config/idlescreen/config.yaml was not synced from idle! content=$synced_idlescreen"
+    exit 1
+fi
+if ! grep -q 'active_saver: "ascii"' "$HOME_DIR2/.config/idlescreen/config.yaml"; then
+    echo "FAIL: ~/.config/idlescreen/config.yaml missing default active_saver: \"ascii\"! content=$synced_idlescreen"
     exit 1
 fi
 
 if ! grep -q "Preserving existing configuration" "$output_log"; then
     echo "FAIL: awaken_daemon did not emit preservation notice!"
+    exit 1
+fi
+
+# Fresh user home with no prior config gets active_saver: "ascii"
+HOME_DIR_EMPTY="$TMP/home_empty"
+mkdir -p "$HOME_DIR_EMPTY"
+PATH="$MOCKBIN:/usr/bin:/bin" HOME="$HOME_DIR_EMPTY" awaken_daemon >/dev/null 2>&1 || true
+if ! grep -q 'active_saver: "ascii"' "$HOME_DIR_EMPTY/.config/idlescreen/config.yaml"; then
+    echo "FAIL: empty home did not get active_saver: \"ascii\" in idlescreen config!"
+    exit 1
+fi
+if ! grep -q 'active_saver: "ascii"' "$HOME_DIR_EMPTY/.config/idle/config.yaml"; then
+    echo "FAIL: empty home did not get active_saver: \"ascii\" in idle config!"
     exit 1
 fi
 
