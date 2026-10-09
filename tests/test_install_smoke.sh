@@ -417,6 +417,7 @@ PIPE_OUT="$TMP/pipe.out"
     export IDLESCREEN_PACMAN_KEY_D="$TMP/pipe-keys"
     export XDG_RUNTIME_DIR="$TMP/xdg"
     export HOME="$TMP/home-pipe"
+    # shellcheck disable=SC2002
     cat "$REPO_ROOT/install.sh" | timeout 30 sh -s -- --plan > "$PIPE_OUT" 2>&1 || true
 )
 
@@ -473,6 +474,7 @@ chmod +x "$SH_DIR/sh"
 VERIFY_PIPE_OUT="$TMP/pipe-verify.out"
 (
     cd "$SH_DIR"
+    # shellcheck disable=SC2002
     cat "$REPO_ROOT/install.sh" | sh -s -- --verify > "$VERIFY_PIPE_OUT" 2>&1
 )
 
@@ -483,7 +485,7 @@ elif grep -q 'ui.sh (pinned bootstrap hash)' "$VERIFY_PIPE_OUT" && grep -q 'stre
     echo "ok: piped --verify ignores CWD ./sh and cleanly outputs pinned bootstrap hashes"
 else
     echo "FAIL: piped --verify did not produce expected output:"
-    cat "$VERIFY_PIPE_OUT" | sed 's/^/    /'
+    sed 's/^/    /' "$VERIFY_PIPE_OUT"
     fail=$((fail + 1))
 fi
 
