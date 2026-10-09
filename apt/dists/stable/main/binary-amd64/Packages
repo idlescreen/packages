@@ -944,32 +944,6 @@ Description: Optional TUI client for IdleScreen (idle-tui)
  Optional live TUI controller for IdleScreen.
 
 Package: idlescreen
-Version: 4.0.4-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 440
-Depends: idle-cli (>= 4.0.0), idle-daemon (>= 3.5.8), idle-savers, idle-tui (>= 3.0.1), libc6
-Recommends: idle-cosmic (>= 3.0.2)
-Breaks: idle-cli (<< 4.0.0)
-Replaces: idle-cli (<< 4.0.0)
-Filename: pool/main/idlescreen_4.0.4-1_amd64.deb
-Size: 178992
-MD5sum: c18ba28c2a51cf017d5542b982feec6f
-SHA1: 3fa09b1666e1727a63034914f5d96068a0344346
-SHA256: e1b5614cfcf6523798f0100eae4b1cbe27abd6030155d1dff2f3bd01819a4712
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: IdleScreen router — one front door for cli, tui, studio, cosmic, savers,
- runtime
- IdleScreen product package and router: pulls in the modular host stack and
- provides `idlescreen` — `idlescreen <component>` execs component binaries
- (cli, tui, studio, cosmic); `idlescreen <verb>` forwards daemon commands to
- idle-cli; `idlescreen install` manages components via dnf/apt. Removing this
- package removes the installed product stack; user config under ~/.config/idle
- is left in place.
-
-Package: idlescreen
 Version: 4.0.5-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -1009,6 +983,31 @@ Size: 179032
 MD5sum: 9068e38985d0c9e1c4c3917c7b4774df
 SHA1: 72f221e32bd1276a11107bd42778fb28b29050c6
 SHA256: fd1a67172c13481242f8bc1007b528ed167ecc2562b168f740c87710c2db7c02
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: IdleScreen router — one front door for cli, tui, studio, cosmic, savers,
+ runtime
+ IdleScreen product package and router: pulls in the modular host stack and
+ provides `idlescreen` — `idlescreen <component>` execs component binaries
+ (cli, tui, studio, cosmic); `idlescreen <verb>` forwards daemon commands to
+ idle-cli; `idlescreen install` manages components via dnf/apt. Removing this
+ package removes the installed product stack; user config under ~/.config/idle
+ is left in place.
+
+Package: idlescreen
+Version: 4.0.7-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 441
+Depends: idle-cli (>= 4.0.0), idle-daemon (>= 3.5.8), idle-savers, idle-tui (>= 3.0.1), libc6
+Breaks: idle-cli (<< 4.0.0)
+Replaces: idle-cli (<< 4.0.0)
+Filename: pool/main/idlescreen_4.0.7-1_amd64.deb
+Size: 179168
+MD5sum: 066107ecb482232c1af07d5ffbf3c936
+SHA1: e4c673f94a0d088a5e13e2ace181e38f5db46752
+SHA256: 0314d00998a3c74912befa9b6ddb603b0272b36f81a2e8cb5686a383ca9ecb53
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idlescreen
