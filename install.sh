@@ -97,7 +97,7 @@ case "${1:-}" in
                 case "$_f" in
                     "ui.sh") _expected="af4ba64b19c76a0dcfaf9b9536ed9551a708efe2c8fa4980e9603dc292e2851c" ;;
                     "detect.sh") _expected="a293a11e01be7e0c978035ddf3795f1d5abc047658a08aef09eb5b2a0f95c01f" ;;
-                    "repo.sh") _expected="e8227073b784c968dcb1e6be67701f9f7cb4468c6ea6d07ccfc6c277b0d477c7" ;;
+                    "repo.sh") _expected="27f07f8face1703802646efe7accea076068209f8c3867700c203c57785d2677" ;;
                     "install_core.sh") _expected="c4200518095f97775e7ef66700dc4083da8e604504820fc61a01472207cfbf83" ;;
                     "install_audit.sh") _expected="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
                     "post_install.sh") _expected="cb7348bbf1d4a276ce30161cdee3d4c4eb70ac4a5f8c10a0ab3d26259469a6a2" ;;
@@ -229,7 +229,7 @@ if [ "$_local_checkout" -eq 0 ]; then
         case "$f" in
             "ui.sh") _expected_hash="af4ba64b19c76a0dcfaf9b9536ed9551a708efe2c8fa4980e9603dc292e2851c" ;;
             "detect.sh") _expected_hash="a293a11e01be7e0c978035ddf3795f1d5abc047658a08aef09eb5b2a0f95c01f" ;;
-            "repo.sh") _expected_hash="e8227073b784c968dcb1e6be67701f9f7cb4468c6ea6d07ccfc6c277b0d477c7" ;;
+            "repo.sh") _expected_hash="27f07f8face1703802646efe7accea076068209f8c3867700c203c57785d2677" ;;
             "install_core.sh") _expected_hash="c4200518095f97775e7ef66700dc4083da8e604504820fc61a01472207cfbf83" ;;
             "install_audit.sh") _expected_hash="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
             "post_install.sh") _expected_hash="cb7348bbf1d4a276ce30161cdee3d4c4eb70ac4a5f8c10a0ab3d26259469a6a2" ;;

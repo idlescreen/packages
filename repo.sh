@@ -20,12 +20,27 @@ PACMAN_KEY_D="${IDLESCREEN_PACMAN_KEY_D:-/etc/pacman.d/idlescreen}"
 # the real /usr/local/bin.
 SESSION_SHIM="${IDLESCREEN_SESSION_SHIM:-/usr/local/bin/omarchy-launch-screensaver}"
 
+# Fetch a remote file with retries on transient errors (503, 5xx, 429, network drops)
+if ! command -v fetch_file >/dev/null 2>&1; then
+    fetch_file() {
+        _url="$1"
+        _out="$2"
+        if curl --retry-all-errors --help >/dev/null 2>&1; then
+            curl -fsSL --retry 5 --retry-delay 2 --retry-all-errors "$_url" -o "$_out"
+        elif curl --retry-connrefused --help >/dev/null 2>&1; then
+            curl -fsSL --retry 5 --retry-delay 2 --retry-connrefused "$_url" -o "$_out"
+        else
+            curl -fsSL --retry 5 --retry-delay 2 "$_url" -o "$_out"
+        fi
+    }
+fi
+
 setup_repo_dnf() {
     step "[2/5]  Opening the package gate  ·  RPM repository"
     story_line "Fetching + fingerprint-checking the IdleScreen RPM signing key…"
     pause 0.3
     _tmp_key=$(mktemp)
-    if ! curl -fsSL "${REPO_BASE}/rpm/idlescreen-key.gpg" -o "$_tmp_key"; then
+    if ! fetch_file "${REPO_BASE}/rpm/idlescreen-key.gpg" "$_tmp_key"; then
         err "Could not download RPM signing key from ${REPO_BASE}/rpm/idlescreen-key.gpg"
         rm -f "$_tmp_key"
         exit 1
@@ -108,7 +123,7 @@ setup_repo_apt() {
     sudo mkdir -p /etc/apt/keyrings
     story_line "Downloading IdleScreen APT signing keyring…"
     _tmp_key=$(mktemp)
-    if ! curl -fsSL "${REPO_BASE}/apt/idlescreen-keyring.gpg" -o "$_tmp_key"; then
+    if ! fetch_file "${REPO_BASE}/apt/idlescreen-keyring.gpg" "$_tmp_key"; then
         err "Could not download APT keyring from ${REPO_BASE}/apt/idlescreen-keyring.gpg"
         rm -f "$_tmp_key"
         exit 1
@@ -143,7 +158,7 @@ setup_repo_pacman() {
     story_line "Fetching + fingerprint-checking the IdleScreen signing key…"
     pause 0.3
     _tmp_key=$(mktemp)
-    if ! curl -fsSL "${REPO_BASE}/rpm/idlescreen-key.gpg" -o "$_tmp_key"; then
+    if ! fetch_file "${REPO_BASE}/rpm/idlescreen-key.gpg" "$_tmp_key"; then
         err "Could not download signing key from ${REPO_BASE}/rpm/idlescreen-key.gpg"
         rm -f "$_tmp_key"
         exit 1
@@ -162,8 +177,8 @@ setup_repo_pacman() {
     story_line "Downloading the signed pacman sync database…"
     _tmp_db=$(mktemp)
     _tmp_sig=$(mktemp)
-    if ! curl -fsSL "${REPO_BASE}/arch/idlescreen.db.tar.gz" -o "$_tmp_db" \
-        || ! curl -fsSL "${REPO_BASE}/arch/idlescreen.db.tar.gz.sig" -o "$_tmp_sig"; then
+    if ! fetch_file "${REPO_BASE}/arch/idlescreen.db.tar.gz" "$_tmp_db" \
+        || ! fetch_file "${REPO_BASE}/arch/idlescreen.db.tar.gz.sig" "$_tmp_sig"; then
         err "Could not download the pacman sync database from ${REPO_BASE}/arch/"
         err "Arch packages may not be published for this release yet."
         rm -f "$_tmp_key" "$_tmp_db" "$_tmp_sig"

@@ -489,7 +489,7 @@ else
     fail=$((fail + 1))
 fi
 
-# 8f. Transient HTTP 503 during module bootstrap: retry and succeed
+# 8f. Transient HTTP 503 during module bootstrap and repo setup: retry and succeed
 if command -v python3 >/dev/null 2>&1; then
     LOG_RETRY="$TMP/install-retry-boot.log"
     : > "$LOG_RETRY"
@@ -512,11 +512,12 @@ import socketserver
 import os
 
 detect_attempts = 0
+key_attempts = 0
 repo_root = '$REPO_ROOT'
 
 class Handler(http.server.BaseHTTPRequestHandler):
     def do_GET(self):
-        global detect_attempts
+        global detect_attempts, key_attempts
         relpath = self.path.lstrip('/')
         filepath = os.path.join(repo_root, relpath)
         if not os.path.exists(filepath):
@@ -526,6 +527,14 @@ class Handler(http.server.BaseHTTPRequestHandler):
         if os.path.basename(filepath) == 'detect.sh':
             detect_attempts += 1
             if detect_attempts <= 2:
+                self.send_response(503)
+                self.send_header('Content-Type', 'text/plain')
+                self.end_headers()
+                self.wfile.write(b'Service Unavailable')
+                return
+        if 'idlescreen-key.gpg' in filepath:
+            key_attempts += 1
+            if key_attempts <= 2:
                 self.send_response(503)
                 self.send_header('Content-Type', 'text/plain')
                 self.end_headers()
@@ -568,9 +577,9 @@ httpd.serve_forever()
     wait "$_srv_boot_pid" 2>/dev/null || true
 
     if [ "$_boot_retry_rc" -eq 0 ] && grep -q 'Dry run complete. Exiting.' "$RETRY_BOOT_OUT"; then
-        echo "ok: module bootstrapping retried through transient 503 and succeeded"
+        echo "ok: module bootstrapping and repo key downloads retried through transient 503 and succeeded"
     else
-        echo "FAIL: module bootstrapping failed to recover from transient 503 (rc=$_boot_retry_rc, output:)"
+        echo "FAIL: bootstrapping or repo setup failed to recover from transient 503 (rc=$_boot_retry_rc, output:)"
         sed 's/^/    /' "$RETRY_BOOT_OUT"
         fail=$((fail + 1))
     fi
