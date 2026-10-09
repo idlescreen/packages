@@ -489,6 +489,93 @@ else
     fail=$((fail + 1))
 fi
 
+# 8f. Transient HTTP 503 during module bootstrap: retry and succeed
+if command -v python3 >/dev/null 2>&1; then
+    LOG_RETRY="$TMP/install-retry-boot.log"
+    : > "$LOG_RETRY"
+    BOOT_RETRY_DIR="$TMP/repo-retry-boot"
+    mkdir -p "$BOOT_RETRY_DIR"
+    cp -f "$REPO_ROOT/install.sh" "$BOOT_RETRY_DIR/"
+
+    # Mockbin with dnf/rpm fakes but real curl
+    MOCKBIN_RETRY="$TMP/bin-retry"
+    mkdir -p "$MOCKBIN_RETRY"
+    for c in rpm dnf sudo systemctl pkexec gtk-update-icon-cache update-desktop-database; do
+        ln -sfn "$MOCKBIN/_dispatch" "$MOCKBIN_RETRY/$c"
+    done
+    cp -f "$MOCKBIN/gpg" "$MOCKBIN_RETRY/gpg"
+
+    PORT_FILE_BOOT="$TMP/server_port_boot"
+    python3 -c "
+import http.server
+import socketserver
+import os
+
+detect_attempts = 0
+repo_root = '$REPO_ROOT'
+
+class Handler(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        global detect_attempts
+        relpath = self.path.lstrip('/')
+        filepath = os.path.join(repo_root, relpath)
+        if not os.path.exists(filepath):
+            self.send_response(404)
+            self.end_headers()
+            return
+        if os.path.basename(filepath) == 'detect.sh':
+            detect_attempts += 1
+            if detect_attempts <= 2:
+                self.send_response(503)
+                self.send_header('Content-Type', 'text/plain')
+                self.end_headers()
+                self.wfile.write(b'Service Unavailable')
+                return
+        self.send_response(200)
+        self.send_header('Content-Type', 'application/octet-stream')
+        self.end_headers()
+        with open(filepath, 'rb') as f:
+            self.wfile.write(f.read())
+    def log_message(self, *args):
+        pass
+
+httpd = socketserver.TCPServer(('127.0.0.1', 0), Handler)
+with open('$PORT_FILE_BOOT', 'w') as f:
+    f.write(str(httpd.server_address[1]))
+httpd.serve_forever()
+" &
+    _srv_boot_pid=$!
+    for _ in 1 2 3 4 5 6 7 8 9 10; do
+        if [ -s "$PORT_FILE_BOOT" ]; then break; fi
+        sleep 0.1
+    done
+    RETRY_BOOT_PORT=$(cat "$PORT_FILE_BOOT")
+    RETRY_BOOT_OUT="$TMP/retry-boot.out"
+    _boot_retry_rc=0
+    (
+        cd "$BOOT_RETRY_DIR"
+        PATH="$MOCKBIN_RETRY:/usr/bin:/bin" \
+        FAKE_LOG_FILE="$LOG_RETRY" \
+        IDLESCREEN_OS_ID="fedora" \
+        IDLESCREEN_REPO_BASE="http://127.0.0.1:${RETRY_BOOT_PORT}" \
+        IDLESCREEN_RPM_GPG_DIR="$TMP/retry-rpm-gpg" \
+        IDLESCREEN_YUM_REPOS_D="$TMP/retry-yum.repos.d" \
+        XDG_RUNTIME_DIR="$TMP/xdg" \
+        HOME="$TMP/home-retry" \
+        timeout 30 sh install.sh --plan > "$RETRY_BOOT_OUT" 2>&1
+    ) || _boot_retry_rc=$?
+    kill "$_srv_boot_pid" 2>/dev/null || true
+    wait "$_srv_boot_pid" 2>/dev/null || true
+
+    if [ "$_boot_retry_rc" -eq 0 ] && grep -q 'Dry run complete. Exiting.' "$RETRY_BOOT_OUT"; then
+        echo "ok: module bootstrapping retried through transient 503 and succeeded"
+    else
+        echo "FAIL: module bootstrapping failed to recover from transient 503 (rc=$_boot_retry_rc, output:)"
+        sed 's/^/    /' "$RETRY_BOOT_OUT"
+        fail=$((fail + 1))
+    fi
+fi
+
 if [ "$fail" -eq 0 ]; then
     echo "all checks passed"
     exit 0

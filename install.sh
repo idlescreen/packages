@@ -191,6 +191,19 @@ cleanup_bootstrap() {
 }
 trap cleanup_bootstrap EXIT INT TERM
 
+# Fetch a remote file with retries on transient errors (503, 5xx, 429, network drops)
+fetch_file() {
+    _url="$1"
+    _out="$2"
+    if curl --retry-all-errors --help >/dev/null 2>&1; then
+        curl -fsSL --retry 5 --retry-delay 2 --retry-all-errors "$_url" -o "$_out"
+    elif curl --retry-connrefused --help >/dev/null 2>&1; then
+        curl -fsSL --retry 5 --retry-delay 2 --retry-connrefused "$_url" -o "$_out"
+    else
+        curl -fsSL --retry 5 --retry-delay 2 "$_url" -o "$_out"
+    fi
+}
+
 if [ "$_local_checkout" -eq 0 ]; then
     if ! command -v curl >/dev/null 2>&1; then
         echo "install: helper modules missing and curl not available to bootstrap from $REPO_BASE" >&2
@@ -199,7 +212,7 @@ if [ "$_local_checkout" -eq 0 ]; then
     BOOTSTRAP_TMP=$(mktemp -d)
     echo "Bootstrapping installer modules from ${REPO_BASE}…"
     for f in $MODULES; do
-        curl -fsSL "${REPO_BASE}/${f}" -o "${BOOTSTRAP_TMP}/${f}" \
+        fetch_file "${REPO_BASE}/${f}" "${BOOTSTRAP_TMP}/${f}" \
             || { echo "install: failed to download ${REPO_BASE}/${f}" >&2; exit 1; }
         
         # Verify the downloaded module hash to prevent supply chain injection during bootstrap.
@@ -239,7 +252,7 @@ if [ "$_local_checkout" -eq 0 ]; then
                 echo "install: IDLE_REQUIRE_MANIFEST_SIGNATURE=1 but gpg not on PATH" >&2
                 exit 1
             fi
-            curl -fsSL "${REPO_BASE}/${f}.sig" -o "${BOOTSTRAP_TMP}/${f}.sig" \
+            fetch_file "${REPO_BASE}/${f}.sig" "${BOOTSTRAP_TMP}/${f}.sig" \
                 || { echo "install: missing signature ${REPO_BASE}/${f}.sig" >&2; exit 1; }
             if ! gpg --no-tty --verify "${BOOTSTRAP_TMP}/${f}.sig" "${BOOTSTRAP_TMP}/${f}" >/dev/null 2>&1; then
                 echo "install: signature verification FAILED for ${f}" >&2
