@@ -1,7 +1,7 @@
 {
  "repo": "packages",
- "rev": "5f566b9",
- "dirty": true,
+ "rev": "130af3f",
+ "dirty": false,
  "pages": [
   {
    "path": "./src/bin/prune.rs",
