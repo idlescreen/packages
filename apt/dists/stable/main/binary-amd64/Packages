@@ -310,24 +310,6 @@ Description: Spotlight cones sweeping a rising dust starfield
  Spotlight cones sweeping a rising dust starfield. Official IdleScreen
  screensaver plugin.
 
-Package: idle-saver-brand
-Version: 2.4.9-1
-Architecture: amd64
-Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 2766
-Depends: libc6
-Filename: pool/main/idle-saver-brand_2.4.9-1_amd64.deb
-Size: 813196
-MD5sum: d60fbd92b55c07335c4577f187cffbf8
-SHA1: 1a95e923bf16fab75eb5e6e92458743f16570fc7
-SHA256: 659193e5f12c881440456f8e8ade292376864a6be70a9c7d5e015b35c7e8b143
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/savers
-Description: Dedicated brand screensaver with dynamic OS/DE detection and ttfx effects
- Dedicated brand screensaver with dynamic OS/DE detection and ttfx effects.
- Official IdleScreen screensaver plugin.
-
 Package: idle-saver-bursts
 Version: 2.4.7-1
 Architecture: amd64
@@ -806,27 +788,6 @@ Description: Forest rain, lightning, and wildlife silhouettes
  screensaver plugin.
 
 Package: idle-savers
-Version: 3.3.13-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 4
-Depends: idle-daemon, idle-saver-aurora, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
-Conflicts: idle-plugins-all (<< 2.0.0)
-Replaces: idlescreen-savers, idle-plugins-all
-Provides: idlescreen-savers, idle-plugins-all
-Filename: pool/main/idle-savers_3.3.13-1_amd64.deb
-Size: 2088
-MD5sum: 1d04cc3c80c74ff43d20eb134b1b33f3
-SHA1: 5963545dc71396585f0d8e62da155ae5e3873c1e
-SHA256: 21d9396e76ae82b56160809c26b6ea1f17a3948b0cbae4af75f2b05a8b624509
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/savers
-Description: Meta package that hard-depends on all official IdleScreen saver plugins
- Installs every official IdleScreen screensaver plugin (saver-*). Pulled in by
- idle-cosmic (not installed alone by end users).
-
-Package: idle-savers
 Version: 3.3.14-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -861,6 +822,27 @@ Size: 2100
 MD5sum: 60989a86999bb6cf7a91aec1fe1e0dc8
 SHA1: 1e8304d7cc6d3c829eef280d9b190fa39359359e
 SHA256: baf4c26be6cefe965dc53c935d952932c104d6835a2d86c5ebeaf364c14490cc
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/savers
+Description: Meta package that hard-depends on all official IdleScreen saver plugins
+ Installs every official IdleScreen screensaver plugin (saver-*). Pulled in by
+ idle-cosmic (not installed alone by end users).
+
+Package: idle-savers
+Version: 3.3.16-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 4
+Depends: idle-daemon, idle-saver-ascii, idle-saver-aurora, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
+Conflicts: idle-plugins-all (<< 2.0.0)
+Replaces: idlescreen-savers, idle-plugins-all
+Provides: idlescreen-savers, idle-plugins-all
+Filename: pool/main/idle-savers_3.3.16-1_amd64.deb
+Size: 2096
+MD5sum: 926ee3984ac5ab1f09fabb16ec94d8dc
+SHA1: bb2840eca904de0fabcaeb6826cb7ca7eb1908a5
+SHA256: 3d0fe702aa63e93c059b8343c5440a70a6ec2fbf3c492f54466e3967d6231bce
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/savers
