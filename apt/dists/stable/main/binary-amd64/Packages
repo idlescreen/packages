@@ -128,25 +128,6 @@ Description: IdleScreen for COSMIC — product package (applet + pulls daemon an
  Installs the COSMIC panel applet and depends on idle-daemon.
 
 Package: idle-daemon
-Version: 3.5.30-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 17427
-Depends: dbus, fonts-dejavu-core, libc6
-Recommends: idle-cli, idle-saver-ascii, idle-saver-aurora, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
-Suggests: idle-cosmic
-Filename: pool/main/idle-daemon_3.5.30-1_amd64.deb
-Size: 5425784
-MD5sum: b42b63459c5cbfe14c50145a6bf20b4d
-SHA1: d23d28aff340855992a9a9825bdbd44dc7e29012
-SHA256: 69d6c7423e7cb5ac4369601834917cdd01f25acd08bd523533b3b2f01e0b1c89
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: IdleScreen background idle daemon (Wayland screensaver host)
- IdleScreen background idle monitoring and screensaver host for Wayland.
-
-Package: idle-daemon
 Version: 3.5.31-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -184,6 +165,25 @@ Homepage: https://github.com/idlescreen/idlescreen
 Description: IdleScreen background idle daemon (Wayland screensaver host)
  IdleScreen background idle monitoring and screensaver host for Wayland.
 
+Package: idle-daemon
+Version: 3.5.33-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 17599
+Depends: dbus, fonts-dejavu-core, libc6
+Recommends: idle-cli, idle-saver-ascii, idle-saver-aurora, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
+Suggests: idle-cosmic
+Filename: pool/main/idle-daemon_3.5.33-1_amd64.deb
+Size: 5476604
+MD5sum: 1b605f9e0701f97877b01b96f9ac9dea
+SHA1: 9134656187f495d051fa50b646d750c49a395c4b
+SHA256: 489ee40c804a4f8aa06a747e2b26ec7c4ea55ff56de3f47af1d6ca300c31b003
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: IdleScreen background idle daemon (Wayland screensaver host)
+ IdleScreen background idle monitoring and screensaver host for Wayland.
+
 Package: idle-saver-ascii
 Version: 2.4.10-1
 Architecture: amd64
@@ -195,6 +195,42 @@ Size: 2520
 MD5sum: f13b4c8cf4f10b09aaa8c6fc2bfdc61b
 SHA1: 8190727daa3ff3433945e6977c890d34d502fa6b
 SHA256: 295048d742559879cfabff2330e96fa2fb648b25b50f3a42c32ccb1f606ca88f
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/savers
+Description: Branded ASCII logo with terminal text effects
+ Branded ASCII logo with terminal text effects. Official IdleScreen screensaver
+ plugin.
+
+Package: idle-saver-ascii
+Version: 2.4.11-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 2758
+Depends: libc6
+Filename: pool/main/idle-saver-ascii_2.4.11-1_amd64.deb
+Size: 812388
+MD5sum: 53d30edf7b51fd9933e4a1d5492c6e16
+SHA1: 4cc4aeb060feae2ad22660b9f27ac0968191d9ae
+SHA256: a6f1e0513cd4e6a88f36e449403b12334965ad2c914bc07a1f295d0a28ba3251
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/savers
+Description: Branded ASCII logo with terminal text effects
+ Branded ASCII logo with terminal text effects. Official IdleScreen screensaver
+ plugin.
+
+Package: idle-saver-ascii
+Version: 2.4.12-1
+Architecture: amd64
+Maintainer: idlescreen <jerydleuck@gmail.com>
+Installed-Size: 2762
+Depends: libc6
+Filename: pool/main/idle-saver-ascii_2.4.12-1_amd64.deb
+Size: 813076
+MD5sum: a6f6af4ebcf72fc0b870011fcf8a5ef5
+SHA1: db32ebc6e05ebd33cb250501dde92b95a9a94319
+SHA256: c19aa9e40997e1094eac10f1953229c7a3444a05f8973df7472887bd1a7481f0
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/savers
@@ -922,19 +958,19 @@ Description: Optional TUI client for IdleScreen (idle-tui)
  Optional live TUI controller for IdleScreen.
 
 Package: idle-tui
-Version: 3.2.8-1
+Version: 3.2.11-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 4071
+Installed-Size: 3609
 Depends: idle-daemon, libc6
 Conflicts: app-tui (<< 2.1.0), idlescreen-tui (<< 2.1.0), trance-tui (<< 2.0.0)
 Replaces: app-tui, idlescreen-tui, trance-tui
 Provides: app-tui, idlescreen-tui, trance-tui
-Filename: pool/main/idle-tui_3.2.8-1_amd64.deb
-Size: 1171688
-MD5sum: eb3d3cc89ddbf04ef072cc9c3c5c3181
-SHA1: 3fc9d6782963dcb284dd2df03aefa39feca16a36
-SHA256: 3cfcfb2e39de004c1b537c1fd7806bcf281aac38da98a7071cf5a169c3797747
+Filename: pool/main/idle-tui_3.2.11-1_amd64.deb
+Size: 1024308
+MD5sum: 9288e00cdaee530d1c51e3ddf9de7c0e
+SHA1: 4f8f39eb3bda738af760eca899cede980ed1109c
+SHA256: c0ee5db63b1f49f85a43dc38bb35885d7dd3c8d941cc8153f3d02769b3844463
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/tui
