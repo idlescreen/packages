@@ -102,8 +102,7 @@ detect_de() {
     _de="${XDG_CURRENT_DESKTOP:-${XDG_SESSION_DESKTOP:-${DESKTOP_SESSION:-}}}"
     _de_lc=$(printf '%s' "$_de" | tr '[:upper:]' '[:lower:]')
 
-    if [ -x /usr/bin/cosmic-panel ] || [ -x /usr/bin/cosmic-comp ] \
-        || printf '%s' "$_de_lc" | grep -q 'cosmic'; then
+    if printf '%s' "$_de_lc" | grep -q 'cosmic'; then
         DE_ID="cosmic"
         DE_LABEL="COSMIC Desktop"
         return
@@ -132,6 +131,11 @@ detect_de() {
     if printf '%s' "$_de_lc" | grep -q 'xfce'; then
         DE_ID="xfce"
         DE_LABEL="Xfce"
+        return
+    fi
+    if [ -z "$_de" ] && { [ -x /usr/bin/cosmic-panel ] || [ -x /usr/bin/cosmic-comp ]; }; then
+        DE_ID="cosmic"
+        DE_LABEL="COSMIC Desktop"
         return
     fi
     if [ -n "$_de" ]; then

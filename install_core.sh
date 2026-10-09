@@ -98,28 +98,32 @@ install_packages() {
     fi
 
     if [ "$PKG_MGR" = "dnf" ]; then
+        _weak_flag=""
+        if [ "$DE_ID" != "cosmic" ]; then
+            _weak_flag="--setopt=install_weak_deps=False"
+        fi
         if [ -n "${UPGRADE_PKGS:-}" ]; then
             story_line "Raising outdated IdleScreen modules to the current channel…"
             # shellcheck disable=SC2086
-            if ! sudo dnf upgrade -y --refresh $UPGRADE_PKGS; then
+            if ! sudo dnf upgrade -y --refresh $_weak_flag $UPGRADE_PKGS; then
                 warn "dnf upgrade reported issues — continuing with install re-sync…"
             fi
         fi
         if [ -n "${INSTALL_PKGS:-}" ]; then
             story_line "Seating new IdleScreen modules…"
             # shellcheck disable=SC2086
-            if ! sudo dnf install -y --refresh $INSTALL_PKGS; then
+            if ! sudo dnf install -y --refresh $_weak_flag $INSTALL_PKGS; then
                 err "dnf install failed for: $INSTALL_PKGS"
                 exit 1
             fi
         fi
         story_line "Re-syncing the full IdleScreen set against the channel…"
         # shellcheck disable=SC2086
-        if ! sudo dnf upgrade -y --refresh $_pkgs; then
+        if ! sudo dnf upgrade -y --refresh $_weak_flag $_pkgs; then
             warn "dnf upgrade (full set) soft-failed — trying install…"
         fi
         # shellcheck disable=SC2086
-        if ! sudo dnf install -y --refresh $_pkgs; then
+        if ! sudo dnf install -y --refresh $_weak_flag $_pkgs; then
             err "dnf install failed for: $_pkgs"
             exit 1
         fi
@@ -130,7 +134,7 @@ install_packages() {
         fi
         if ! rpm -q idlescreen >/dev/null 2>&1; then
             warn "Product package idlescreen missing — installing metapackage…"
-            if ! sudo dnf install -y --refresh idlescreen; then
+            if ! sudo dnf install -y --refresh $_weak_flag idlescreen; then
                 err "failed to install idlescreen metapackage"
                 exit 1
             fi
@@ -194,23 +198,27 @@ install_packages() {
             exit 1
         fi
     elif [ "$PKG_MGR" = "apt" ]; then
+        _weak_flag=""
+        if [ "$DE_ID" != "cosmic" ]; then
+            _weak_flag="--no-install-recommends"
+        fi
         if [ -n "${UPGRADE_PKGS:-}" ]; then
             story_line "Raising outdated IdleScreen modules to the current channel…"
             # shellcheck disable=SC2086
-            if ! sudo apt-get install -y --only-upgrade $UPGRADE_PKGS; then
+            if ! sudo apt-get install -y --only-upgrade $_weak_flag $UPGRADE_PKGS; then
                 warn "apt only-upgrade soft-failed — continuing with full install…"
             fi
         fi
         if [ -n "${INSTALL_PKGS:-}" ]; then
             story_line "Seating new IdleScreen modules…"
             # shellcheck disable=SC2086
-            if ! sudo apt-get install -y $INSTALL_PKGS; then
+            if ! sudo apt-get install -y $_weak_flag $INSTALL_PKGS; then
                 warn "Partial install failed — retrying core set…"
             fi
         fi
         story_line "Re-syncing the full IdleScreen set against the channel…"
         # shellcheck disable=SC2086
-        if ! sudo apt-get install -y $_pkgs; then
+        if ! sudo apt-get install -y $_weak_flag $_pkgs; then
             err "apt-get install failed for planned set: $_pkgs"
             exit 1
         fi

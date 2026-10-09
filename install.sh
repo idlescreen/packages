@@ -159,9 +159,9 @@ if [ ! -f "$SCRIPT_DIR/ui.sh" ]; then
         _expected_hash=""
         case "$f" in
             "ui.sh") _expected_hash="af4ba64b19c76a0dcfaf9b9536ed9551a708efe2c8fa4980e9603dc292e2851c" ;;
-            "detect.sh") _expected_hash="2c42332b700c5c32a753bd8e8c98e6fa5be58d6b10da8046a9ec9be3e961acac" ;;
+            "detect.sh") _expected_hash="eaa121b3e458b5579ceb2b5559cd02ad7aac47f53010e6bad7e63a1ebdd00211" ;;
             "repo.sh") _expected_hash="e2713c316a3a27b939810d2a438a768b41f084afd6c2e74b4775cf8a868cf003" ;;
-            "install_core.sh") _expected_hash="e6e812033771844da6f94eccd39a5e519df6aaae0633cc7129a1bbb10da07e58" ;;
+            "install_core.sh") _expected_hash="1f8db507d5bc326e7fd225e863d518db5a1bdbdb2d48c6741264839dc30ccaae" ;;
             "install_audit.sh") _expected_hash="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
             "post_install.sh") _expected_hash="59fb1fa041728a44742b6dfc7e66df53f1cb6799d09ccdfe0d7733fd51e8fbe2" ;;
             "uninstall.sh") _expected_hash="b58506e67439835c1e65756c81aa75ece32d34935a2160fc42bc008a778c542a" ;;
