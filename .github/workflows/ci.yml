@@ -98,8 +98,11 @@ jobs:
     - name: Run --verify-self edge cases
       run: bash tests/test_verify_self_edge.sh
 
+    - name: Verify installer module checksums are synchronized
+      run: bash scripts/sync_installer_checksums.sh --check
+
     - name: bash -n syntax check
       run: |
-        for f in install.sh install_core.sh install_audit.sh post_install.sh; do
+        for f in install.sh install_core.sh install_audit.sh post_install.sh ui.sh detect.sh repo.sh uninstall.sh scripts/sync_installer_checksums.sh; do
           bash -n "$f"
         done

@@ -83,7 +83,22 @@ case "${1:-}" in
             if [ -f "$_f" ]; then
                 $_hash_cmd "$_f" 2>/dev/null
             else
-                echo "  (missing) $_f"
+                _m_name=$(basename "$_f")
+                _expected=""
+                case "$_m_name" in
+                    "ui.sh") _expected="af4ba64b19c76a0dcfaf9b9536ed9551a708efe2c8fa4980e9603dc292e2851c" ;;
+                    "detect.sh") _expected="a293a11e01be7e0c978035ddf3795f1d5abc047658a08aef09eb5b2a0f95c01f" ;;
+                    "repo.sh") _expected="e8227073b784c968dcb1e6be67701f9f7cb4468c6ea6d07ccfc6c277b0d477c7" ;;
+                    "install_core.sh") _expected="c4200518095f97775e7ef66700dc4083da8e604504820fc61a01472207cfbf83" ;;
+                    "install_audit.sh") _expected="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
+                    "post_install.sh") _expected="1bedcb3e8abc95dfe9dd35704d5259a02e069141e7b54adab4023e69c4523ff1" ;;
+                    "uninstall.sh") _expected="b58506e67439835c1e65756c81aa75ece32d34935a2160fc42bc008a778c542a" ;;
+                esac
+                if [ -n "$_expected" ]; then
+                    echo "$_expected  $_f (pinned bootstrap hash)"
+                else
+                    echo "  (missing) $_f"
+                fi
             fi
         done
         echo ""
@@ -163,7 +178,7 @@ if [ ! -f "$SCRIPT_DIR/ui.sh" ]; then
             "repo.sh") _expected_hash="e8227073b784c968dcb1e6be67701f9f7cb4468c6ea6d07ccfc6c277b0d477c7" ;;
             "install_core.sh") _expected_hash="c4200518095f97775e7ef66700dc4083da8e604504820fc61a01472207cfbf83" ;;
             "install_audit.sh") _expected_hash="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
-            "post_install.sh") _expected_hash="59fb1fa041728a44742b6dfc7e66df53f1cb6799d09ccdfe0d7733fd51e8fbe2" ;;
+            "post_install.sh") _expected_hash="1bedcb3e8abc95dfe9dd35704d5259a02e069141e7b54adab4023e69c4523ff1" ;;
             "uninstall.sh") _expected_hash="b58506e67439835c1e65756c81aa75ece32d34935a2160fc42bc008a778c542a" ;;
             *) echo "install: unknown module $f" >&2; exit 1 ;;
         esac

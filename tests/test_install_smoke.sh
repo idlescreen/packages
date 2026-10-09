@@ -38,12 +38,27 @@ case "$cmd" in
     rpm)        printf 'fake-pkg-1.0-1\n'; exit 0 ;;
     dpkg-query) printf 'Package: fake-pkg\nVersion: 1.0\n'; exit 0 ;;
     curl)
+        _url=""
+        _out=""
         while [ $# -gt 0 ]; do
             case "$1" in
-                -o) [ -n "${2:-}" ] && : > "$2"; shift 2 ;;
+                -o) [ -n "${2:-}" ] && _out="$2"; shift 2 ;;
+                http*|file://*) _url="$1"; shift ;;
                 *) shift ;;
             esac
         done
+        if [ -n "$_url" ] && [ -n "$_out" ]; then
+            case "$_url" in
+                file://*)
+                    _fpath="${_url#file://}"
+                    if [ -f "$_fpath" ]; then
+                        cp -f "$_fpath" "$_out"
+                        exit 0
+                    fi
+                    ;;
+            esac
+        fi
+        [ -n "$_out" ] && : > "$_out"
         exit 0
         ;;
     dnf)        printf 'fake-dnf-ok\n'; exit 0 ;;
@@ -316,6 +331,69 @@ if [ -f "$TMP/un-shim" ]; then
     fail=$((fail + 1))
 else
     echo "ok: --uninstall removed the integration shim"
+fi
+
+# 8. Module bootstrapping without pre-copied modules (happy path):
+#    Runs install.sh in an isolated directory where ui.sh does NOT exist.
+#    install.sh must fetch all modules from IDLESCREEN_REPO_BASE, verify
+#    their sha256 hashes against its pinned table, source them, and proceed.
+LOG_BOOT="$TMP/install-boot.log"
+: > "$LOG_BOOT"
+BOOT_DIR="$TMP/repo-boot"
+mkdir -p "$BOOT_DIR"
+cp -f "$REPO_ROOT/install.sh" "$BOOT_DIR/"
+(
+    cd "$BOOT_DIR"
+    PATH="$MOCKBIN_ARCH:/usr/bin:/bin" \
+    FAKE_LOG_FILE="$LOG_BOOT" \
+    IDLESCREEN_OS_ID="arch" \
+    IDLESCREEN_REPO_BASE="file://$REPO_ROOT" \
+    IDLESCREEN_PACMAN_XDG_D="$TMP/boot-xdg" \
+    IDLESCREEN_PACMAN_KEY_D="$TMP/boot-keys" \
+    XDG_RUNTIME_DIR="$TMP/xdg" \
+    HOME="$TMP/home-boot" \
+    timeout 30 sh install.sh --plan > "$TMP/boot.out" 2>&1 || true
+)
+if grep -q 'fake pacman ' "$LOG_BOOT" 2>/dev/null; then
+    echo "ok: module bootstrapping fetched, verified, and executed cleanly"
+else
+    echo "FAIL: module bootstrapping failed to reach package-manager stage (output:)"
+    head -20 "$TMP/boot.out" 2>/dev/null | sed 's/^/    /'
+    fail=$((fail + 1))
+fi
+
+# 8b. Negative: tampered module during bootstrap must fail closed
+LOG_BAD_BOOT="$TMP/install-bad-boot.log"
+: > "$LOG_BAD_BOOT"
+BAD_REPO="$TMP/bad-repo"
+mkdir -p "$BAD_REPO"
+for mod in ui.sh detect.sh repo.sh install_core.sh install_audit.sh post_install.sh uninstall.sh; do
+    cp -f "$REPO_ROOT/$mod" "$BAD_REPO/"
+done
+echo "# POISONED MODULE" >> "$BAD_REPO/post_install.sh"
+BAD_BOOT_DIR="$TMP/repo-bad-boot"
+mkdir -p "$BAD_BOOT_DIR"
+cp -f "$REPO_ROOT/install.sh" "$BAD_BOOT_DIR/"
+_bad_rc=0
+(
+    cd "$BAD_BOOT_DIR"
+    PATH="$MOCKBIN_ARCH:/usr/bin:/bin" \
+    FAKE_LOG_FILE="$LOG_BAD_BOOT" \
+    IDLESCREEN_OS_ID="arch" \
+    IDLESCREEN_REPO_BASE="file://$BAD_REPO" \
+    IDLESCREEN_PACMAN_XDG_D="$TMP/bad-xdg" \
+    IDLESCREEN_PACMAN_KEY_D="$TMP/bad-keys" \
+    XDG_RUNTIME_DIR="$TMP/xdg" \
+    HOME="$TMP/home-bad-boot" \
+    timeout 30 sh install.sh --plan > "$TMP/bad-boot.out" 2>&1
+) || _bad_rc=$?
+
+if [ "$_bad_rc" -ne 0 ] && grep -q 'hash mismatch on bootstrapped module' "$TMP/bad-boot.out" 2>/dev/null; then
+    echo "ok: tampered module bootstrap refuses with hash mismatch"
+else
+    echo "FAIL: tampered module bootstrap did not fail closed (rc=$_bad_rc, output:)"
+    head -20 "$TMP/bad-boot.out" 2>/dev/null | sed 's/^/    /'
+    fail=$((fail + 1))
 fi
 
 if [ "$fail" -eq 0 ]; then

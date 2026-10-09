@@ -52,7 +52,7 @@ jobs:
         run: |
           set -e
           sha256sum install.sh install-studio.sh repo.sh ui.sh detect.sh \
-            install_core.sh install_audit.sh post_install.sh \
+            install_core.sh install_audit.sh post_install.sh uninstall.sh \
             rpm/idlescreen-key.gpg apt/idlescreen-keyring.gpg \
             > checksums.sha256
 

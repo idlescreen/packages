@@ -14,14 +14,39 @@
 
 ## What the installer does NOT do
 
-- It does **not** run anything outside `dnf` / `apt-get` (Arch is
-  PKGBUILD-only and does not go through `install.sh` at all).
+- It does **not** run package installations outside your native system
+  package manager (`dnf`, `apt-get`, or `pacman`).
 - It does **not** contact any host other than the IdleScreen repo
   (`https://idlescreen.github.io/packages/`) and your distro's package
   mirrors.
 - It does **not** capture audio or video. No telemetry.
 - It does **not** open firewall ports or modify network config beyond
   adding the repo + signing key.
+
+## Installer architecture and chain of trust
+
+The installation pipeline operates across two repositories with strict cryptographic validation at each stage:
+
+1. **Canonical Entry Forwarder (`idlescreen.github.io/install.sh`)**:
+   - The user executes `curl -fsSL https://idlescreen.github.io/install.sh | sh`.
+   - The entry forwarder downloads the channel installer from `https://idlescreen.github.io/packages/install.sh`.
+   - The entry forwarder verifies the SHA-256 hash of `packages/install.sh` against its hardcoded, pinned `EXPECTED_INSTALLER_HASH` before executing it.
+   - It also natively supports `--verify-self <hex>` and `--verify`.
+
+2. **Package Channel Installer (`packages/install.sh`)**:
+   - Manages identity detection, package manager configuration, and installation.
+   - When executed via pipe or standalone without local sibling files, it bootstraps the helper modules (`ui.sh`, `detect.sh`, `repo.sh`, `install_core.sh`, `install_audit.sh`, `post_install.sh`, `uninstall.sh`).
+   - Every module's SHA-256 is verified against hardcoded pinned checksums before the module is sourced. Tampered or mismatched modules immediately halt execution (fail-closed).
+   - When `IDLE_REQUIRE_MANIFEST_SIGNATURE=1` is set, sibling `.sig` GPG signatures are verified for each module.
+
+3. **Package Repository & Key Verification**:
+   - RPM: Signing key fingerprint (`549E73C9BC9229C786E538E2FBD8FC52C7817DD2`) is verified via GPG before importing into `/etc/pki/rpm-gpg/`.
+   - APT: Keyring is placed in `/etc/apt/keyrings/idlescreen-keyring.gpg` with repo definition restricted to `signed-by`.
+   - Pacman: Signed sync database `idlescreen.db.tar.gz` and `.sig` are verified against the local trust anchor before configuring pacman.
+
+4. **Checksum Synchronization (`scripts/sync_installer_checksums.sh`)**:
+   - Automates checksum synchronization across modules in `packages/` and the entry forwarder in `idlescreen.github.io/`.
+   - CI enforces `--check` on every commit and pull request to prevent checksum drift.
 
 ## Threat model
 
