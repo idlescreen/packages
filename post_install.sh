@@ -298,7 +298,7 @@ victory() {
     say "    ${CYAN}idlescreen enable${RESET}     enable daemon"
     say "    ${CYAN}idlescreen tui${RESET}        interactive dashboard"
     say "    ${CYAN}idlescreen status${RESET}     daemon + saver state"
-    say "    ${CYAN}idlescreen preview beams${RESET}  try an effect"
+    say "    ${CYAN}idlescreen preview ascii${RESET}  try an effect"
     say "    ${CYAN}idlescreen doctor${RESET}     system diagnostics"
     say ""
     say "  ${BOLD}Remove${RESET}"

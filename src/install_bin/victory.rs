@@ -71,7 +71,7 @@ pub fn print_victory(
     println!("  {C_BOLD}Quick start{C_RESET}");
     println!("    {C_CYAN}idlescreen tui{C_RESET}        interactive dashboard");
     println!("    {C_CYAN}idlescreen status{C_RESET}     daemon + saver state");
-    println!("    {C_CYAN}idlescreen preview beams{C_RESET}  try an effect");
+    println!("    {C_CYAN}idlescreen preview ascii{C_RESET}  try an effect");
     println!("    {C_CYAN}idlescreen doctor{C_RESET}     system diagnostics");
     println!();
     println!("  {C_BOLD}Remove{C_RESET}");

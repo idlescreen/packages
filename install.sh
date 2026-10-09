@@ -281,8 +281,8 @@ main() {
     victory "$PKGS"
 
     say ""
-    say "Previewing IdleScreen beams for 5 seconds..."
-    idlescreen preview beams --timeout 5 || true
+    say "Previewing IdleScreen ascii for 5 seconds..."
+    idlescreen preview ascii --timeout 5 || true
 }
 
 main "$@"
