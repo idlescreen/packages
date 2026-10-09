@@ -28,58 +28,68 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     sweep_loose_packages(Path::new("."))?;
     dearmor_key()?;
 
-    println!("Generating APT metadata...");
-    let packages_path = "apt/dists/stable/main/binary-amd64/Packages";
-    let packages_file = fs::File::create(packages_path)?;
-    run_cmd(
-        std::process::Command::new("dpkg-scanpackages")
-            .args(["--multiversion", "pool/main"])
-            .stdout(packages_file)
-            .current_dir("apt"),
-    )?;
+    if command_exists("dpkg-scanpackages") && command_exists("apt-ftparchive") {
+        println!("Generating APT metadata...");
+        let packages_path = "apt/dists/stable/main/binary-amd64/Packages";
+        let packages_file = fs::File::create(packages_path)?;
+        run_cmd(
+            std::process::Command::new("dpkg-scanpackages")
+                .args(["--multiversion", "pool/main"])
+                .stdout(packages_file)
+                .current_dir("apt"),
+        )?;
 
-    run_cmd(
-        std::process::Command::new("gzip")
-            .args(["-k", "-f", "dists/stable/main/binary-amd64/Packages"])
-            .current_dir("apt"),
-    )?;
+        run_cmd(
+            std::process::Command::new("gzip")
+                .args(["-k", "-f", "dists/stable/main/binary-amd64/Packages"])
+                .current_dir("apt"),
+        )?;
 
-    let release_path = "apt/dists/stable/Release";
-    let release_file = fs::File::create(release_path)?;
-    run_cmd(
-        std::process::Command::new("apt-ftparchive")
-            .args([
-                "-o",
-                "APT::FTPArchive::Release::Origin=IdleScreen",
-                "-o",
-                "APT::FTPArchive::Release::Label=IdleScreen",
-                "-o",
-                "APT::FTPArchive::Release::Suite=stable",
-                "-o",
-                "APT::FTPArchive::Release::Codename=stable",
-                "-o",
-                "APT::FTPArchive::Release::Architectures=amd64",
-                "-o",
-                "APT::FTPArchive::Release::Components=main",
-                "-o",
-                "APT::FTPArchive::Release::Description=IdleScreen APT Repository (stable/main)",
-                "release",
-                "dists/stable",
-            ])
-            .stdout(release_file)
-            .current_dir("apt"),
-    )?;
+        let release_path = "apt/dists/stable/Release";
+        let release_file = fs::File::create(release_path)?;
+        run_cmd(
+            std::process::Command::new("apt-ftparchive")
+                .args([
+                    "-o",
+                    "APT::FTPArchive::Release::Origin=IdleScreen",
+                    "-o",
+                    "APT::FTPArchive::Release::Label=IdleScreen",
+                    "-o",
+                    "APT::FTPArchive::Release::Suite=stable",
+                    "-o",
+                    "APT::FTPArchive::Release::Codename=stable",
+                    "-o",
+                    "APT::FTPArchive::Release::Architectures=amd64",
+                    "-o",
+                    "APT::FTPArchive::Release::Components=main",
+                    "-o",
+                    "APT::FTPArchive::Release::Description=IdleScreen APT Repository (stable/main)",
+                    "release",
+                    "dists/stable",
+                ])
+                .stdout(release_file)
+                .current_dir("apt"),
+        )?;
 
-    let signing_key = resolve_signing_key(
-        resolve_gpg_name_from_env().as_deref(),
-        "jerydleuck@gmail.com",
-    );
-    let gpg_bin = resolve_gpg_bin_from_env();
-    sign_apt_release(&signing_key, &gpg_bin)?;
+        let signing_key = resolve_signing_key(
+            resolve_gpg_name_from_env().as_deref(),
+            "jerydleuck@gmail.com",
+        );
+        let gpg_bin = resolve_gpg_bin_from_env();
+        if let Err(e) = sign_apt_release(&signing_key, &gpg_bin) {
+            println!("Warning: APT release signing skipped: {e}");
+        }
+    } else {
+        println!("Skipping APT metadata generation (tools not on PATH)...");
+    }
 
-    sign_rpms()?;
+    if let Err(e) = sign_rpms() {
+        println!("Warning: sign_rpms skipped: {e}");
+    }
     run_createrepo()?;
-    sign_rpm_metadata()?;
+    if let Err(e) = sign_rpm_metadata() {
+        println!("Warning: sign_rpm_metadata skipped: {e}");
+    }
 
     println!("==========================================");
     println!("Update complete!");
@@ -97,4 +107,14 @@ fn run_cmd(cmd: &mut std::process::Command) -> Result<(), Box<dyn std::error::Er
         return Err(format!("Command failed with exit status: {status}").into());
     }
     Ok(())
+}
+
+fn command_exists(name: &str) -> bool {
+    std::process::Command::new("which")
+        .arg(name)
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .status()
+        .map(|s| s.success())
+        .unwrap_or(false)
 }

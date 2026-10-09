@@ -1,7 +1,7 @@
 {
  "repo": "packages",
- "rev": "130af3f",
- "dirty": false,
+ "rev": "9bfda6b",
+ "dirty": true,
  "pages": [
   {
    "path": "./src/bin/prune.rs",
@@ -19,7 +19,7 @@
   },
   {
    "path": "./src/bin/update.rs",
-   "lines": 100,
+   "lines": 120,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 0
