@@ -8,7 +8,7 @@ REPO_BASE="${IDLESCREEN_REPO_BASE:-https://idlescreen.github.io/packages}"
 
 # Fingerprint of the IdleScreen RPM signing key (rpm/idlescreen-key.gpg).
 # Pinned so the DNF trust anchor is verified the same way the APT keyring is.
-RPM_KEY_FPR="3D2D670DBD9BD94D7B2D23D356ED99E8C0243160"
+RPM_KEY_FPR="549E73C9BC9229C786E538E2FBD8FC52C7817DD2"
 
 # System dirs; env-overridable for the mock-package-manager smoke test.
 RPM_GPG_DIR="${IDLESCREEN_RPM_GPG_DIR:-/etc/pki/rpm-gpg}"
@@ -65,15 +65,15 @@ setup_repo_dnf() {
     sudo dnf clean metadata --repo=idlescreen >/dev/null 2>&1 || true
     _meta_ok=0
     if [ "$IS_TTY" -eq 1 ]; then
-        sudo dnf makecache --refresh --repo=idlescreen >/dev/null 2>&1 &
+        sudo dnf makecache -y --refresh --repo=idlescreen >/dev/null 2>&1 &
         if spin_while $! "syncing DNF metadata"; then
             _meta_ok=1
-        elif sudo dnf makecache --refresh >/dev/null 2>&1; then
+        elif sudo dnf makecache -y --refresh >/dev/null 2>&1; then
             _meta_ok=1
         fi
     else
-        if sudo dnf makecache --refresh --repo=idlescreen >/dev/null 2>&1 \
-            || sudo dnf makecache --refresh >/dev/null 2>&1; then
+        if sudo dnf makecache -y --refresh --repo=idlescreen >/dev/null 2>&1 \
+            || sudo dnf makecache -y --refresh >/dev/null 2>&1; then
             _meta_ok=1
         fi
     fi

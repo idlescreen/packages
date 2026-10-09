@@ -36,7 +36,7 @@ ALL_PKGS="$STUDIO_PKGS $SAVERS"
 # Pinned signing-key fingerprints — the package-channel trust
 # anchors are verified out-of-band so a compromised Pages origin
 # cannot swap them.
-RPM_KEY_FPR="3D2D670DBD9BD94D7B2D23D356ED99E8C0243160"
+RPM_KEY_FPR="549E73C9BC9229C786E538E2FBD8FC52C7817DD2"
 APT_KEY_FPR="549E73C9BC9229C786E538E2FBD8FC52C7817DD2"
 
 need_cmd() {

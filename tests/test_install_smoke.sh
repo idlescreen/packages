@@ -87,7 +87,7 @@ done
 # controls the emitted fingerprint so the negative case can forge a bad key.
 cat > "$MOCKBIN/gpg" <<'GPG'
 #!/bin/sh
-_fpr="${FAKE_GPG_FPR:-3D2D670DBD9BD94D7B2D23D356ED99E8C0243160}"
+_fpr="${FAKE_GPG_FPR:-549E73C9BC9229C786E538E2FBD8FC52C7817DD2}"
 printf 'fpr:::::::::%s:\n' "$_fpr"
 exit 0
 GPG
