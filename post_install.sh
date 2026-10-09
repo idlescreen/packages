@@ -120,7 +120,17 @@ awaken_daemon() {
     elif [ -n "$_sys_cfg" ]; then
         [ -f "${HOME}/.config/idlescreen/config.yaml" ] || cp -p "$_sys_cfg" "${HOME}/.config/idlescreen/config.yaml" 2>/dev/null || true
         [ -f "${HOME}/.config/idle/config.yaml" ] || cp -p "$_sys_cfg" "${HOME}/.config/idle/config.yaml" 2>/dev/null || true
+    else
+        printf 'active_saver: "ascii"\n' > "${HOME}/.config/idlescreen/config.yaml" 2>/dev/null || true
+        cp -p "${HOME}/.config/idlescreen/config.yaml" "${HOME}/.config/idle/config.yaml" 2>/dev/null || true
     fi
+
+    for _u_cfg in "${HOME}/.config/idlescreen/config.yaml" "${HOME}/.config/idle/config.yaml"; do
+        if [ -f "$_u_cfg" ] && ! grep -E '^[[:space:]]*active_saver[[:space:]]*:' "$_u_cfg" 2>/dev/null; then
+            [ -s "$_u_cfg" ] && [ -n "$(tail -c1 "$_u_cfg" 2>/dev/null)" ] && printf '\n' >> "$_u_cfg"
+            printf 'active_saver: "ascii"\n' >> "$_u_cfg"
+        fi
+    done
 
     _fix_dbus_activation_file
 

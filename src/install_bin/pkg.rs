@@ -117,10 +117,7 @@ pub fn dnf_upgrade(pkgs: &[String], cosmic: bool) -> bool {
         return true;
     }
     let mut cmd = Command::new("sudo");
-    cmd.arg("dnf")
-        .arg("upgrade")
-        .arg("-y")
-        .arg("--refresh");
+    cmd.arg("dnf").arg("upgrade").arg("-y").arg("--refresh");
     if !cosmic {
         cmd.arg("--setopt=install_weak_deps=False");
     }
@@ -133,10 +130,7 @@ pub fn dnf_install(pkgs: &[String], cosmic: bool) -> bool {
         return true;
     }
     let mut cmd = Command::new("sudo");
-    cmd.arg("dnf")
-        .arg("install")
-        .arg("-y")
-        .arg("--refresh");
+    cmd.arg("dnf").arg("install").arg("-y").arg("--refresh");
     if !cosmic {
         cmd.arg("--setopt=install_weak_deps=False");
     }

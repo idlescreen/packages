@@ -1,6 +1,6 @@
 {
  "repo": "packages",
- "rev": "9bfda6b",
+ "rev": "98c228a",
  "dirty": true,
  "pages": [
   {
@@ -47,7 +47,7 @@
   },
   {
    "path": "./src/install_bin/pkg.rs",
-   "lines": 174,
+   "lines": 168,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 3
