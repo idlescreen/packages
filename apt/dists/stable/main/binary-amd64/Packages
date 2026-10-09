@@ -128,25 +128,6 @@ Description: IdleScreen for COSMIC — product package (applet + pulls daemon an
  Installs the COSMIC panel applet and depends on idle-daemon.
 
 Package: idle-daemon
-Version: 3.5.27-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 16529
-Depends: dbus, fonts-dejavu-core, libc6
-Recommends: idle-cli, idle-saver-aurora, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
-Suggests: idle-cosmic
-Filename: pool/main/idle-daemon_3.5.27-1_amd64.deb
-Size: 5172072
-MD5sum: 82df52c94b835c12d5951aaf3ce9faff
-SHA1: e908094d6679b18471620389146c62e64a2cae6b
-SHA256: ab87021219fedfb76ace570d5005d18da4af27ed3115ef64229f35c2a3151a72
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: IdleScreen background idle daemon (Wayland screensaver host)
- IdleScreen background idle monitoring and screensaver host for Wayland.
-
-Package: idle-daemon
 Version: 3.5.28-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -178,6 +159,25 @@ Size: 5403412
 MD5sum: bfe2e93e6e36e2fd8f074aadd7e113ad
 SHA1: 589f03d29245f07825fc0a6692ec33e67fb05817
 SHA256: 3d24ab42292362f3ede1fc6df1664e7bb95c415cbfd537d65c8da76703ba2d23
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: IdleScreen background idle daemon (Wayland screensaver host)
+ IdleScreen background idle monitoring and screensaver host for Wayland.
+
+Package: idle-daemon
+Version: 3.5.30-1
+Architecture: amd64
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Installed-Size: 17427
+Depends: dbus, fonts-dejavu-core, libc6
+Recommends: idle-cli, idle-saver-ascii, idle-saver-aurora, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
+Suggests: idle-cosmic
+Filename: pool/main/idle-daemon_3.5.30-1_amd64.deb
+Size: 5425784
+MD5sum: b42b63459c5cbfe14c50145a6bf20b4d
+SHA1: d23d28aff340855992a9a9825bdbd44dc7e29012
+SHA256: 69d6c7423e7cb5ac4369601834917cdd01f25acd08bd523533b3b2f01e0b1c89
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idlescreen
