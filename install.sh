@@ -61,7 +61,6 @@ MODULES="ui.sh detect.sh repo.sh install_core.sh install_audit.sh post_install.s
 # even if the helper files are missing.
 case "${1:-}" in
     --verify|-V|verify)
-        _script_path="$0"
         if command -v sha256sum >/dev/null 2>&1; then
             _hash_cmd="sha256sum"
         elif command -v shasum >/dev/null 2>&1; then
@@ -71,21 +70,31 @@ case "${1:-}" in
             exit 1
         fi
         echo "=== SHA-256 of installer files ==="
-        _dir="$(cd "$(dirname "$_script_path")" 2>/dev/null && pwd || echo .)"
-        for _f in "$_script_path" \
-                  "$_dir/ui.sh" \
-                  "$_dir/detect.sh" \
-                  "$_dir/repo.sh" \
-                  "$_dir/install_core.sh" \
-                  "$_dir/install_audit.sh" \
-                  "$_dir/uninstall.sh" \
-                  "$_dir/post_install.sh"; do
-            if [ -f "$_f" ]; then
-                $_hash_cmd "$_f" 2>/dev/null
+        _bname="$(basename "$0" 2>/dev/null || echo "")"
+        _is_script_file=0
+        case "$_bname" in
+            sh|bash|dash|ash|zsh|-*|"") ;;
+            *)
+                if [ -f "$0" ]; then
+                    _is_script_file=1
+                fi
+                ;;
+        esac
+
+        if [ "$_is_script_file" -eq 1 ]; then
+            $_hash_cmd "$0" 2>/dev/null
+            _dir="$(cd "$(dirname "$0")" 2>/dev/null && pwd || echo .)"
+        else
+            echo "  (streamed via pipe) install.sh"
+            _dir=""
+        fi
+
+        for _f in ui.sh detect.sh repo.sh install_core.sh install_audit.sh post_install.sh uninstall.sh; do
+            if [ -n "$_dir" ] && [ -f "$_dir/$_f" ]; then
+                $_hash_cmd "$_dir/$_f" 2>/dev/null
             else
-                _m_name=$(basename "$_f")
                 _expected=""
-                case "$_m_name" in
+                case "$_f" in
                     "ui.sh") _expected="af4ba64b19c76a0dcfaf9b9536ed9551a708efe2c8fa4980e9603dc292e2851c" ;;
                     "detect.sh") _expected="a293a11e01be7e0c978035ddf3795f1d5abc047658a08aef09eb5b2a0f95c01f" ;;
                     "repo.sh") _expected="e8227073b784c968dcb1e6be67701f9f7cb4468c6ea6d07ccfc6c277b0d477c7" ;;
@@ -94,10 +103,10 @@ case "${1:-}" in
                     "post_install.sh") _expected="1bedcb3e8abc95dfe9dd35704d5259a02e069141e7b54adab4023e69c4523ff1" ;;
                     "uninstall.sh") _expected="b58506e67439835c1e65756c81aa75ece32d34935a2160fc42bc008a778c542a" ;;
                 esac
-                if [ -n "$_expected" ]; then
-                    echo "$_expected  $_f (pinned bootstrap hash)"
+                if [ -n "$_dir" ]; then
+                    echo "$_expected  $_dir/$_f (pinned bootstrap hash)"
                 else
-                    echo "  (missing) $_f"
+                    echo "$_expected  $_f (pinned bootstrap hash)"
                 fi
             fi
         done
@@ -119,12 +128,21 @@ case "${1:-}" in
             echo "verify-self: no sha256sum or shasum on PATH" >&2
             exit 1
         fi
+        if [ ! -f "$_script_path" ]; then
+            echo "verify-self: file not found: $_script_path" >&2
+            exit 1
+        fi
+        if [ "${#_expected}" -ne 64 ]; then
+            echo "verify-self: expected 64-character sha256, got ${#_expected}" >&2
+            exit 1
+        fi
         if command -v sha256sum >/dev/null 2>&1; then
             _actual=$(sha256sum "$_script_path" 2>/dev/null | awk '{print $1}')
         else
             _actual=$(shasum -a 256 "$_script_path" 2>/dev/null | awk '{print $1}')
         fi
-        if [ "$_actual" != "$_expected" ]; then
+        _expected_lower=$(printf '%s' "$_expected" | tr '[:upper:]' '[:lower:]')
+        if [ "$_actual" != "$_expected_lower" ]; then
             echo "verify-self: FAIL — expected $_expected, got $_actual" >&2
             exit 1
         fi
@@ -134,14 +152,37 @@ case "${1:-}" in
 esac
 
 # Resolve module directory: local checkout, or bootstrap from REPO_BASE (curl|sh).
-# Fail closed if cd fails: sourcing from "." would source ui.sh from the
-# caller's cwd (B5 forbidden path). Refuse to run if we cannot resolve
-# our own directory.
-SCRIPT_DIR="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
-if [ -z "$SCRIPT_DIR" ] || [ "$SCRIPT_DIR" != "$(cd "$(dirname "$0")" && pwd)" ]; then
-    echo "install: failed to resolve own script directory; refusing to run" >&2
-    exit 1
+# Never source from "." when executing via pipe/stdin (B5 forbidden path).
+_bname="$(basename "$0" 2>/dev/null || echo "")"
+_is_script_file=0
+case "$_bname" in
+    sh|bash|dash|ash|zsh|-*|"") ;;
+    *)
+        if [ -f "$0" ]; then
+            _is_script_file=1
+        fi
+        ;;
+esac
+
+_local_checkout=0
+SCRIPT_DIR=""
+if [ "$_is_script_file" -eq 1 ]; then
+    _candidate_dir="$(cd "$(dirname "$0")" 2>/dev/null && pwd)"
+    if [ -n "$_candidate_dir" ] && [ -d "$_candidate_dir" ]; then
+        _has_all=1
+        for _m in $MODULES; do
+            if [ ! -f "$_candidate_dir/$_m" ]; then
+                _has_all=0
+                break
+            fi
+        done
+        if [ "$_has_all" -eq 1 ]; then
+            SCRIPT_DIR="$_candidate_dir"
+            _local_checkout=1
+        fi
+    fi
 fi
+
 BOOTSTRAP_TMP=""
 cleanup_bootstrap() {
     if [ -n "$BOOTSTRAP_TMP" ] && [ -d "$BOOTSTRAP_TMP" ]; then
@@ -150,9 +191,9 @@ cleanup_bootstrap() {
 }
 trap cleanup_bootstrap EXIT INT TERM
 
-if [ ! -f "$SCRIPT_DIR/ui.sh" ]; then
+if [ "$_local_checkout" -eq 0 ]; then
     if ! command -v curl >/dev/null 2>&1; then
-        echo "install: ui.sh missing and curl not available to bootstrap from $REPO_BASE" >&2
+        echo "install: helper modules missing and curl not available to bootstrap from $REPO_BASE" >&2
         exit 1
     fi
     BOOTSTRAP_TMP=$(mktemp -d)

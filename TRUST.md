@@ -118,9 +118,12 @@ copy of the key they already hold.
 - DEB (APT / Debian / Ubuntu): signed by the same key, downloaded to
   `/etc/apt/keyrings/idlescreen-keyring.gpg`. APT refuses unsigned
   packages from the IdleScreen repo by default.
-- Arch (experimental PKGBUILD in `arch/`): not covered by `install.sh`;
-  build with `makepkg -si`. Its GPG verification is on you — the
-  PKGBUILD tracks upstream source, not the signed channel.
+- Arch (Pacman): `install.sh` detects Arch from `/etc/os-release`, fetches
+  the signing key and verifies its fingerprint against the pinned trust anchor,
+  verifies the signed sync database `idlescreen.db.tar.gz` and its detached
+  signature (`.sig`), and registers the repository with pacman. If a pre-built
+  sync database is not published for a given release, source builds remain
+  supported via `arch/idlescreen/PKGBUILD`.
 
 The private signing key is held only in GitHub Actions secrets
 (`GPG_PRIVATE_KEY`, `GPG_PASSPHRASE`). It is **never** committed to the

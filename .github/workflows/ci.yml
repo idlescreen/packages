@@ -36,6 +36,9 @@ jobs:
         shellcheck detect.sh
         shellcheck repo.sh
         shellcheck uninstall.sh
+        shellcheck scripts/sync_installer_checksums.sh
+        shellcheck tests/test_install_smoke.sh
+        shellcheck tests/test_verify_self_edge.sh
         shellcheck arch/idlescreen/omarchy-launch-screensaver
         shellcheck -s bash arch/idlescreen/PKGBUILD
         shellcheck arch/idlescreen/idlescreen.install

@@ -24,7 +24,7 @@ for c in rpm dpkg-query curl dnf apt-get sudo systemctl pkexec gtk-update-icon-c
 done
 SCRIPT_DIR="$TMP/repo"
 mkdir -p "$SCRIPT_DIR"
-cp -f "$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)/install.sh" "$SCRIPT_DIR/"
+cp -f "$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)/install.sh" "$SCRIPT_DIR/"
 
 fail=0
 SCRIPT="$SCRIPT_DIR/install.sh"
@@ -43,20 +43,43 @@ else
 fi
 
 HASH=$(PATH="/usr/bin:/bin" sha256sum "$SCRIPT" | awk '{print $1}')
+OUT_NONEXIST="$TMP/nonexist.err"
 if PATH="$MOCKBIN:/usr/bin:/bin" "$SCRIPT" \
-    --verify-self "$HASH" "/nonexistent/install.sh" 2>/dev/null; then
+    --verify-self "$HASH" "/nonexistent/install.sh" >/dev/null 2> "$OUT_NONEXIST"; then
     echo "FAIL: --verify-self with non-existent path returned success"
     fail=$((fail + 1))
 else
-    echo "ok: --verify-self with non-existent path refuses"
+    if grep -q 'file not found' "$OUT_NONEXIST"; then
+        echo "ok: --verify-self with non-existent path refuses with explicit file not found"
+    else
+        echo "FAIL: --verify-self did not print 'file not found' error"
+        cat "$OUT_NONEXIST"
+        fail=$((fail + 1))
+    fi
 fi
 
+OUT_SHORT="$TMP/short.err"
 if PATH="$MOCKBIN:/usr/bin:/bin" "$SCRIPT" \
-    --verify-self "deadbeef" "$SCRIPT" 2>/dev/null; then
+    --verify-self "deadbeef" "$SCRIPT" >/dev/null 2> "$OUT_SHORT"; then
     echo "FAIL: --verify-self with short hash returned success"
     fail=$((fail + 1))
 else
-    echo "ok: --verify-self with short hash refuses"
+    if grep -q 'expected 64-character sha256' "$OUT_SHORT"; then
+        echo "ok: --verify-self with short hash refuses with length error"
+    else
+        echo "FAIL: --verify-self did not print length error"
+        cat "$OUT_SHORT"
+        fail=$((fail + 1))
+    fi
+fi
+
+HASH_UPPER=$(printf '%s' "$HASH" | tr '[:lower:]' '[:upper:]')
+if PATH="$MOCKBIN:/usr/bin:/bin" "$SCRIPT" \
+    --verify-self "$HASH_UPPER" "$SCRIPT" >/dev/null 2>&1; then
+    echo "ok: --verify-self with uppercase hash accepts"
+else
+    echo "FAIL: --verify-self with uppercase hash returned non-zero"
+    fail=$((fail + 1))
 fi
 
 if [ "$fail" -eq 0 ]; then

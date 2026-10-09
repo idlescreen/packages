@@ -111,7 +111,7 @@ chmod +x "$MOCKBIN/gpg"
 # Helper modules from the repo.
 SCRIPT_DIR="$TMP/repo"
 mkdir -p "$SCRIPT_DIR"
-REPO_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+REPO_ROOT=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
 cp -f "$REPO_ROOT/install.sh" "$SCRIPT_DIR/"
 for mod in ui.sh detect.sh repo.sh install_core.sh install_audit.sh post_install.sh uninstall.sh; do
     if [ -f "$REPO_ROOT/$mod" ]; then
@@ -393,6 +393,97 @@ if [ "$_bad_rc" -ne 0 ] && grep -q 'hash mismatch on bootstrapped module' "$TMP/
 else
     echo "FAIL: tampered module bootstrap did not fail closed (rc=$_bad_rc, output:)"
     head -20 "$TMP/bad-boot.out" 2>/dev/null | sed 's/^/    /'
+    fail=$((fail + 1))
+fi
+
+# 8c. Piped execution (curl|sh) with a hostile ui.sh in CWD:
+#     Must NOT source the hostile local ui.sh. Must bootstrap, verify, and run.
+LOG_PIPE="$TMP/install-pipe.log"
+: > "$LOG_PIPE"
+HOSTILE_DIR="$TMP/hostile-cwd"
+mkdir -p "$HOSTILE_DIR"
+cat > "$HOSTILE_DIR/ui.sh" <<'EOF'
+echo "FATAL_CWD_INJECTION_EXPLOIT" >&2
+exit 99
+EOF
+PIPE_OUT="$TMP/pipe.out"
+(
+    cd "$HOSTILE_DIR"
+    export PATH="$MOCKBIN_ARCH:/usr/bin:/bin"
+    export FAKE_LOG_FILE="$LOG_PIPE"
+    export IDLESCREEN_OS_ID="arch"
+    export IDLESCREEN_REPO_BASE="file://$REPO_ROOT"
+    export IDLESCREEN_PACMAN_XDG_D="$TMP/pipe-xdg"
+    export IDLESCREEN_PACMAN_KEY_D="$TMP/pipe-keys"
+    export XDG_RUNTIME_DIR="$TMP/xdg"
+    export HOME="$TMP/home-pipe"
+    cat "$REPO_ROOT/install.sh" | timeout 30 sh -s -- --plan > "$PIPE_OUT" 2>&1 || true
+)
+
+if grep -q 'FATAL_CWD_INJECTION_EXPLOIT' "$PIPE_OUT"; then
+    echo "FAIL: piped install.sh sourced hostile ui.sh from caller cwd!"
+    fail=$((fail + 1))
+elif grep -q 'fake pacman ' "$LOG_PIPE" 2>/dev/null; then
+    echo "ok: piped install.sh isolated from caller cwd and bootstrapped safely"
+else
+    echo "FAIL: piped install.sh failed to reach package manager:"
+    head -20 "$PIPE_OUT" 2>/dev/null | sed 's/^/    /'
+    fail=$((fail + 1))
+fi
+
+# 8d. Incomplete local module checkout:
+#     A directory containing install.sh and ui.sh but lacking other modules
+#     must bootstrap rather than crash attempting to source missing detect.sh.
+LOG_INCOMPLETE="$TMP/install-incomplete.log"
+: > "$LOG_INCOMPLETE"
+INCOMPLETE_DIR="$TMP/incomplete-checkout"
+mkdir -p "$INCOMPLETE_DIR"
+cp -f "$REPO_ROOT/install.sh" "$INCOMPLETE_DIR/"
+cp -f "$REPO_ROOT/ui.sh" "$INCOMPLETE_DIR/"
+INCOMPLETE_OUT="$TMP/incomplete.out"
+(
+    cd "$INCOMPLETE_DIR"
+    PATH="$MOCKBIN_ARCH:/usr/bin:/bin" \
+    FAKE_LOG_FILE="$LOG_INCOMPLETE" \
+    IDLESCREEN_OS_ID="arch" \
+    IDLESCREEN_REPO_BASE="file://$REPO_ROOT" \
+    IDLESCREEN_PACMAN_XDG_D="$TMP/incomplete-xdg" \
+    IDLESCREEN_PACMAN_KEY_D="$TMP/incomplete-keys" \
+    XDG_RUNTIME_DIR="$TMP/xdg" \
+    HOME="$TMP/home-incomplete" \
+    timeout 30 sh install.sh --plan > "$INCOMPLETE_OUT" 2>&1 || true
+)
+
+if grep -q 'detect.sh: No such file' "$INCOMPLETE_OUT"; then
+    echo "FAIL: incomplete checkout crashed on missing sibling module instead of bootstrapping"
+    fail=$((fail + 1))
+elif grep -q 'fake pacman ' "$LOG_INCOMPLETE" 2>/dev/null; then
+    echo "ok: incomplete module set detected and safely bootstrapped"
+else
+    echo "FAIL: incomplete module test failed to reach package manager:"
+    head -20 "$INCOMPLETE_OUT" 2>/dev/null | sed 's/^/    /'
+    fail=$((fail + 1))
+fi
+
+# 8e. Piped --verify does not hash dummy ./sh in CWD and outputs clean list
+SH_DIR="$TMP/pipe-verify-cwd"
+mkdir -p "$SH_DIR"
+echo "# DUMMY SH" > "$SH_DIR/sh"
+chmod +x "$SH_DIR/sh"
+VERIFY_PIPE_OUT="$TMP/pipe-verify.out"
+(
+    cd "$SH_DIR"
+    cat "$REPO_ROOT/install.sh" | sh -s -- --verify > "$VERIFY_PIPE_OUT" 2>&1
+)
+
+if grep -q '(missing) sh' "$VERIFY_PIPE_OUT" || grep -q 'DUMMY SH' "$VERIFY_PIPE_OUT"; then
+    echo "FAIL: piped --verify output corrupted by CWD ./sh"
+    fail=$((fail + 1))
+elif grep -q 'ui.sh (pinned bootstrap hash)' "$VERIFY_PIPE_OUT" && grep -q 'streamed via pipe' "$VERIFY_PIPE_OUT"; then
+    echo "ok: piped --verify ignores CWD ./sh and cleanly outputs pinned bootstrap hashes"
+else
+    echo "FAIL: piped --verify did not produce expected output:"
+    cat "$VERIFY_PIPE_OUT" | sed 's/^/    /'
     fail=$((fail + 1))
 fi
 
