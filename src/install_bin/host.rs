@@ -42,11 +42,10 @@ pub fn is_apt() -> bool {
 pub fn is_cosmic() -> bool {
     let de = env::var("XDG_CURRENT_DESKTOP")
         .or_else(|_| env::var("XDG_SESSION_DESKTOP"))
+        .or_else(|_| env::var("DESKTOP_SESSION"))
         .unwrap_or_default()
         .to_ascii_lowercase();
-    Path::new("/usr/bin/cosmic-panel").exists()
-        || Path::new("/usr/bin/cosmic-comp").exists()
-        || de.contains("cosmic")
+    de.contains("cosmic")
 }
 
 pub fn desktop_label() -> (&'static str, &'static str) {

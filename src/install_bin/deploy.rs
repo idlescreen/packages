@@ -11,25 +11,25 @@ use super::pkg::{
 };
 use super::ui::{C_BOLD, C_RESET, err, ok, story_line, warn};
 
-pub fn deploy(dnf: bool, pkgs: &[&str], survey: &Survey) {
+pub fn deploy(dnf: bool, pkgs: &[&str], survey: &Survey, cosmic: bool) {
     let all: Vec<String> = pkgs.iter().map(|s| (*s).to_string()).collect();
     if dnf {
-        deploy_dnf(&all, survey, pkgs);
+        deploy_dnf(&all, survey, pkgs, cosmic);
     } else {
-        deploy_apt(&all, survey, pkgs);
+        deploy_apt(&all, survey, pkgs, cosmic);
     }
 }
 
-fn deploy_dnf(all: &[String], survey: &Survey, pkgs: &[&str]) {
+fn deploy_dnf(all: &[String], survey: &Survey, pkgs: &[&str], cosmic: bool) {
     if !survey.upgrade.is_empty() {
         story_line("Raising outdated IdleScreen modules to the current channel…");
-        if !dnf_upgrade(&survey.upgrade) {
+        if !dnf_upgrade(&survey.upgrade, cosmic) {
             warn("dnf upgrade reported issues — continuing with install re-sync…");
         }
     }
     if !survey.install.is_empty() {
         story_line("Seating new IdleScreen modules…");
-        if !dnf_install(&survey.install) {
+        if !dnf_install(&survey.install, cosmic) {
             err(&format!(
                 "dnf install failed for: {}",
                 survey.install.join(" ")
@@ -38,10 +38,10 @@ fn deploy_dnf(all: &[String], survey: &Survey, pkgs: &[&str]) {
         }
     }
     story_line("Re-syncing the full IdleScreen set against the channel…");
-    if !dnf_upgrade(all) {
+    if !dnf_upgrade(all, cosmic) {
         warn("dnf upgrade (full set) soft-failed — trying install…");
     }
-    if !dnf_install(all) {
+    if !dnf_install(all, cosmic) {
         err(&format!("dnf install failed for: {}", all.join(" ")));
         exit(1);
     }
@@ -49,6 +49,12 @@ fn deploy_dnf(all: &[String], survey: &Survey, pkgs: &[&str]) {
     if rpm_installed("idle-daemon").is_none() || rpm_installed("idle-cli").is_none() {
         err("idle-daemon / idle-cli missing after install");
         exit(1);
+    }
+    if !cosmic && rpm_installed("idle-cosmic").is_some() {
+        story_line("Pruning unintended idle-cosmic package from non-COSMIC desktop…");
+        let _ = Command::new("sudo")
+            .args(["dnf", "remove", "-y", "idle-cosmic"])
+            .status();
     }
     println!();
     for p in pkgs {
@@ -60,26 +66,26 @@ fn deploy_dnf(all: &[String], survey: &Survey, pkgs: &[&str]) {
     }
 }
 
-fn deploy_apt(all: &[String], survey: &Survey, pkgs: &[&str]) {
+fn deploy_apt(all: &[String], survey: &Survey, pkgs: &[&str], cosmic: bool) {
     if !survey.upgrade.is_empty() {
         story_line("Raising outdated IdleScreen modules to the current channel…");
-        if !apt_only_upgrade(&survey.upgrade) {
+        if !apt_only_upgrade(&survey.upgrade, cosmic) {
             warn("apt only-upgrade soft-failed — continuing with full install…");
         }
     }
     if !survey.install.is_empty() {
         story_line("Seating new IdleScreen modules…");
-        let _ = apt_install(&survey.install);
+        let _ = apt_install(&survey.install, cosmic);
     }
     story_line("Re-syncing the full IdleScreen set against the channel…");
-    if !apt_install(all) {
+    if !apt_install(all, cosmic) {
         warn("Full set failed — retrying without idle-tui…");
         let retry: Vec<String> = all
             .iter()
             .filter(|p| p.as_str() != "idle-tui")
             .cloned()
             .collect();
-        if !apt_install(&retry) {
+        if !apt_install(&retry, cosmic) {
             err("apt-get install failed");
             exit(1);
         }
@@ -88,6 +94,12 @@ fn deploy_apt(all: &[String], survey: &Survey, pkgs: &[&str]) {
     if apt_installed("idle-daemon").is_none() || apt_installed("idle-cli").is_none() {
         err("idle-daemon / idle-cli missing after install");
         exit(1);
+    }
+    if !cosmic && apt_installed("idle-cosmic").is_some() {
+        story_line("Pruning unintended idle-cosmic package from non-COSMIC desktop…");
+        let _ = Command::new("sudo")
+            .args(["apt-get", "remove", "-y", "idle-cosmic"])
+            .status();
     }
     println!();
     for p in pkgs {

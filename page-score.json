@@ -1,6 +1,6 @@
 {
  "repo": "packages",
- "rev": "3c6fd8f",
+ "rev": "2f61a6e",
  "dirty": true,
  "pages": [
   {
@@ -26,14 +26,14 @@
   },
   {
    "path": "./src/install_bin/deploy.rs",
-   "lines": 127,
+   "lines": 139,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 1
   },
   {
    "path": "./src/install_bin/host.rs",
-   "lines": 93,
+   "lines": 92,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 4
@@ -47,7 +47,7 @@
   },
   {
    "path": "./src/install_bin/pkg.rs",
-   "lines": 161,
+   "lines": 174,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 3

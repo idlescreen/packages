@@ -256,6 +256,19 @@ install_packages() {
         sudo update-desktop-database /usr/share/applications 2>/dev/null || true
     fi
 
+    if [ "$DE_ID" != "cosmic" ]; then
+        if [ "$PKG_MGR" = "dnf" ] && rpm -q idle-cosmic >/dev/null 2>&1; then
+            story_line "Pruning unintended idle-cosmic package from non-COSMIC desktop…"
+            sudo dnf remove -y idle-cosmic >/dev/null 2>&1 || true
+        elif [ "$PKG_MGR" = "apt" ] && dpkg-query -W idle-cosmic >/dev/null 2>&1; then
+            story_line "Pruning unintended idle-cosmic package from non-COSMIC desktop…"
+            sudo apt-get remove -y idle-cosmic >/dev/null 2>&1 || true
+        elif [ "$PKG_MGR" = "pacman" ] && pacman -Q idle-cosmic >/dev/null 2>&1; then
+            story_line "Pruning unintended idle-cosmic package from non-COSMIC desktop…"
+            sudo pacman -R --noconfirm idle-cosmic >/dev/null 2>&1 || true
+        fi
+    fi
+
     PRESENT_COUNT=0
     MISSING_AFTER=""
     for _pkg in $_pkgs; do

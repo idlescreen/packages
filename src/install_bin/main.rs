@@ -65,7 +65,7 @@ fn main() {
     pause(400);
 
     step("[4/5]  Deploying modules into the system");
-    deploy(dnf, &pkgs, &survey);
+    deploy(dnf, &pkgs, &survey, cosmic);
     let (present, missing) = recount(&pkgs, dnf);
     print_deploy_result(&present, &missing, pkgs.len());
 

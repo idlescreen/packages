@@ -133,11 +133,6 @@ detect_de() {
         DE_LABEL="Xfce"
         return
     fi
-    if [ -z "$_de" ] && { [ -x /usr/bin/cosmic-panel ] || [ -x /usr/bin/cosmic-comp ]; }; then
-        DE_ID="cosmic"
-        DE_LABEL="COSMIC Desktop"
-        return
-    fi
     if [ -n "$_de" ]; then
         DE_ID="other"
         DE_LABEL="$_de"

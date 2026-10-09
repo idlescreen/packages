@@ -112,7 +112,7 @@ pub fn survey(pkgs: &[&str], dnf: bool) -> Survey {
     s
 }
 
-pub fn dnf_upgrade(pkgs: &[String]) -> bool {
+pub fn dnf_upgrade(pkgs: &[String], cosmic: bool) -> bool {
     if pkgs.is_empty() {
         return true;
     }
@@ -120,12 +120,15 @@ pub fn dnf_upgrade(pkgs: &[String]) -> bool {
     cmd.arg("dnf")
         .arg("upgrade")
         .arg("-y")
-        .arg("--refresh")
-        .args(pkgs);
+        .arg("--refresh");
+    if !cosmic {
+        cmd.arg("--setopt=install_weak_deps=False");
+    }
+    cmd.args(pkgs);
     run_status(&mut cmd)
 }
 
-pub fn dnf_install(pkgs: &[String]) -> bool {
+pub fn dnf_install(pkgs: &[String], cosmic: bool) -> bool {
     if pkgs.is_empty() {
         return true;
     }
@@ -133,12 +136,15 @@ pub fn dnf_install(pkgs: &[String]) -> bool {
     cmd.arg("dnf")
         .arg("install")
         .arg("-y")
-        .arg("--refresh")
-        .args(pkgs);
+        .arg("--refresh");
+    if !cosmic {
+        cmd.arg("--setopt=install_weak_deps=False");
+    }
+    cmd.args(pkgs);
     run_status(&mut cmd)
 }
 
-pub fn apt_only_upgrade(pkgs: &[String]) -> bool {
+pub fn apt_only_upgrade(pkgs: &[String], cosmic: bool) -> bool {
     if pkgs.is_empty() {
         return true;
     }
@@ -146,16 +152,23 @@ pub fn apt_only_upgrade(pkgs: &[String]) -> bool {
     cmd.arg("apt-get")
         .arg("install")
         .arg("-y")
-        .arg("--only-upgrade")
-        .args(pkgs);
+        .arg("--only-upgrade");
+    if !cosmic {
+        cmd.arg("--no-install-recommends");
+    }
+    cmd.args(pkgs);
     run_status(&mut cmd)
 }
 
-pub fn apt_install(pkgs: &[String]) -> bool {
+pub fn apt_install(pkgs: &[String], cosmic: bool) -> bool {
     if pkgs.is_empty() {
         return true;
     }
     let mut cmd = Command::new("sudo");
-    cmd.arg("apt-get").arg("install").arg("-y").args(pkgs);
+    cmd.arg("apt-get").arg("install").arg("-y");
+    if !cosmic {
+        cmd.arg("--no-install-recommends");
+    }
+    cmd.args(pkgs);
     run_status(&mut cmd)
 }

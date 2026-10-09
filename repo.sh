@@ -49,16 +49,34 @@ setup_repo_dnf() {
     # anchor entirely. gpgkey points at the fingerprint-verified local file.
     story_line "Writing IdleScreen DNF repo file (pinned content)…"
     sudo mkdir -p "$YUM_REPOS_D"
-    printf '%s\n' \
-        "[idlescreen]" \
-        "name=IdleScreen RPM Repository" \
-        "baseurl=${REPO_BASE}/rpm" \
-        "enabled=1" \
-        "gpgcheck=1" \
-        "repo_gpgcheck=1" \
-        "gpgkey=file://${RPM_GPG_DIR}/idlescreen-key.gpg" \
-        "metadata_expire=1h" \
-        | sudo tee "${YUM_REPOS_D}/idlescreen.repo" >/dev/null
+    _exclude_line=""
+    if [ "${DE_ID:-}" != "cosmic" ]; then
+        _exclude_line="excludepkgs=idle-cosmic"
+    fi
+    if [ -n "$_exclude_line" ]; then
+        printf '%s\n' \
+            "[idlescreen]" \
+            "name=IdleScreen RPM Repository" \
+            "baseurl=${REPO_BASE}/rpm" \
+            "enabled=1" \
+            "gpgcheck=1" \
+            "repo_gpgcheck=1" \
+            "gpgkey=file://${RPM_GPG_DIR}/idlescreen-key.gpg" \
+            "metadata_expire=1h" \
+            "$_exclude_line" \
+            | sudo tee "${YUM_REPOS_D}/idlescreen.repo" >/dev/null
+    else
+        printf '%s\n' \
+            "[idlescreen]" \
+            "name=IdleScreen RPM Repository" \
+            "baseurl=${REPO_BASE}/rpm" \
+            "enabled=1" \
+            "gpgcheck=1" \
+            "repo_gpgcheck=1" \
+            "gpgkey=file://${RPM_GPG_DIR}/idlescreen-key.gpg" \
+            "metadata_expire=1h" \
+            | sudo tee "${YUM_REPOS_D}/idlescreen.repo" >/dev/null
+    fi
     ok "Repo written → ${BOLD}${YUM_REPOS_D}/idlescreen.repo${RESET}"
     dim "   baseurl ${REPO_BASE}/rpm  ·  package gpgcheck=1  ·  repo_gpgcheck=1"
     story_line "Refreshing IdleScreen channel metadata…"
