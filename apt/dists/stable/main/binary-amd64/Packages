@@ -185,16 +185,16 @@ Description: IdleScreen background idle daemon (Wayland screensaver host)
  IdleScreen background idle monitoring and screensaver host for Wayland.
 
 Package: idle-saver-ascii
-Version: 2.4.9-1
+Version: 2.4.10-1
 Architecture: amd64
 Maintainer: idlescreen <jerydleuck@gmail.com>
-Installed-Size: 2758
+Installed-Size: 15
 Depends: libc6
-Filename: pool/main/idle-saver-ascii_2.4.9-1_amd64.deb
-Size: 811324
-MD5sum: 0dc7ad0d5576999d251a0b67ee7016de
-SHA1: ec36a1eef13afd3e54d3c0a3fa220600212ef333
-SHA256: 51ee5b89a30467a99eaa21d92e70d6d0f63b4cc6aa19f90b633574cc6cd136b4
+Filename: pool/main/idle-saver-ascii_2.4.10-1_amd64.deb
+Size: 2520
+MD5sum: f13b4c8cf4f10b09aaa8c6fc2bfdc61b
+SHA1: 8190727daa3ff3433945e6977c890d34d502fa6b
+SHA256: 295048d742559879cfabff2330e96fa2fb648b25b50f3a42c32ccb1f606ca88f
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/savers
