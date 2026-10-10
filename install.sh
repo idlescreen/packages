@@ -95,12 +95,12 @@ case "${1:-}" in
             else
                 _expected=""
                 case "$_f" in
-                    "ui.sh") _expected="af4ba64b19c76a0dcfaf9b9536ed9551a708efe2c8fa4980e9603dc292e2851c" ;;
+                    "ui.sh") _expected="e67f1da218c432f88b5ef9a3683942fb79ba986c4930cb97542edba227dd7a73" ;;
                     "detect.sh") _expected="a293a11e01be7e0c978035ddf3795f1d5abc047658a08aef09eb5b2a0f95c01f" ;;
                     "repo.sh") _expected="27f07f8face1703802646efe7accea076068209f8c3867700c203c57785d2677" ;;
-                    "install_core.sh") _expected="c4200518095f97775e7ef66700dc4083da8e604504820fc61a01472207cfbf83" ;;
+                    "install_core.sh") _expected="23c1f962a3df73f96fc8ae698bb886aad0facfe5a4f2f739b2b395fc9614989a" ;;
                     "install_audit.sh") _expected="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
-                    "post_install.sh") _expected="cb7348bbf1d4a276ce30161cdee3d4c4eb70ac4a5f8c10a0ab3d26259469a6a2" ;;
+                    "post_install.sh") _expected="c4ca3f451d883d14a22e43518defc8ad02701f2412b65cf0c373c5fa5586291a" ;;
                     "uninstall.sh") _expected="b58506e67439835c1e65756c81aa75ece32d34935a2160fc42bc008a778c542a" ;;
                 esac
                 if [ -n "$_dir" ]; then
@@ -210,7 +210,7 @@ if [ "$_local_checkout" -eq 0 ]; then
         exit 1
     fi
     BOOTSTRAP_TMP=$(mktemp -d)
-    echo "Bootstrapping installer modules from ${REPO_BASE}…"
+    echo "Bootstrapping installer components from ${REPO_BASE}…"
     for f in $MODULES; do
         fetch_file "${REPO_BASE}/${f}" "${BOOTSTRAP_TMP}/${f}" \
             || { echo "install: failed to download ${REPO_BASE}/${f}" >&2; exit 1; }
@@ -227,12 +227,12 @@ if [ "$_local_checkout" -eq 0 ]; then
         
         _expected_hash=""
         case "$f" in
-            "ui.sh") _expected_hash="af4ba64b19c76a0dcfaf9b9536ed9551a708efe2c8fa4980e9603dc292e2851c" ;;
+            "ui.sh") _expected_hash="e67f1da218c432f88b5ef9a3683942fb79ba986c4930cb97542edba227dd7a73" ;;
             "detect.sh") _expected_hash="a293a11e01be7e0c978035ddf3795f1d5abc047658a08aef09eb5b2a0f95c01f" ;;
             "repo.sh") _expected_hash="27f07f8face1703802646efe7accea076068209f8c3867700c203c57785d2677" ;;
-            "install_core.sh") _expected_hash="c4200518095f97775e7ef66700dc4083da8e604504820fc61a01472207cfbf83" ;;
+            "install_core.sh") _expected_hash="23c1f962a3df73f96fc8ae698bb886aad0facfe5a4f2f739b2b395fc9614989a" ;;
             "install_audit.sh") _expected_hash="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
-            "post_install.sh") _expected_hash="cb7348bbf1d4a276ce30161cdee3d4c4eb70ac4a5f8c10a0ab3d26259469a6a2" ;;
+            "post_install.sh") _expected_hash="c4ca3f451d883d14a22e43518defc8ad02701f2412b65cf0c373c5fa5586291a" ;;
             "uninstall.sh") _expected_hash="b58506e67439835c1e65756c81aa75ece32d34935a2160fc42bc008a778c542a" ;;
             *) echo "install: unknown module $f" >&2; exit 1 ;;
         esac
@@ -281,8 +281,6 @@ fi
 main() {
     banner
     story_line "Preparing IdleScreen for this machine…"
-    say ""
-    countdown 3 "System scan"
 
     # --- Phase 1: identity ---
     step "[1/5]  Scanning host identity"
@@ -302,14 +300,7 @@ main() {
         return 0
     fi
 
-    say "  ${DIM}os${RESET}       ${GREEN}${OS_NAME}${RESET}"
-    if [ -n "$OS_VERSION" ]; then
-        dim "          id=${OS_ID}  version=${OS_VERSION}  like=${OS_LIKE:-—}"
-    fi
-    say "  ${DIM}arch${RESET}     ${GREEN}${ARCH}${RESET}"
-    say "  ${DIM}session${RESET}  ${GREEN}${SESSION_TYPE}${RESET}"
-    say "  ${DIM}desktop${RESET}  ${GREEN}${DE_LABEL}${RESET}  ${DIM}(${DE_ID})${RESET}"
-    say "  ${DIM}packages${RESET} ${GREEN}${PKG_HOST_LABEL}${RESET}"
+    say "  ${DIM}host${RESET}     ${GREEN}${OS_NAME}${RESET} ${DIM}(${ARCH}) · ${DE_LABEL} (${SESSION_TYPE}) · ${PKG_HOST_LABEL}${RESET}"
 
     if [ -z "$PKG_MGR" ]; then
         say ""
@@ -317,8 +308,6 @@ main() {
         dim "  Manual installs: ${REPO_BASE}/"
         exit 1
     fi
-
-    pause 0.4
 
     # --- Phase 2: repo ---
     if [ "$PKG_MGR" = "dnf" ]; then
@@ -328,8 +317,6 @@ main() {
     else
         setup_repo_apt
     fi
-
-    pause 0.3
 
     # --- Phase 3: plan + survey installed vs channel ---
     PKGS=$(build_pkg_list)
@@ -349,9 +336,11 @@ main() {
 
     victory "$PKGS"
 
-    say ""
-    say "Previewing IdleScreen ascii for 5 seconds..."
-    idlescreen preview ascii --timeout 5 || true
+    if [ "$IS_TTY" -eq 1 ] && [ -t 0 ] && command -v idlescreen >/dev/null 2>&1; then
+        say ""
+        say "  ${DIM}Previewing screensaver for 5s (press any key to exit)…${RESET}"
+        idlescreen preview --timeout 5 || true
+    fi
 }
 
 main "$@"

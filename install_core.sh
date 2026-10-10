@@ -86,16 +86,6 @@ survey_modules() {
 install_packages() {
     _pkgs="$1"
     step "[4/5]  Deploying modules into the system"
-    say "  ${DIM}manifest:${RESET} ${BOLD}${_pkgs}${RESET}"
-    say ""
-
-    if [ "${UPGRADE_COUNT:-0}" -gt 0 ]; then
-        countdown 3 "Module upgrade"
-    elif [ "${INSTALL_COUNT:-0}" -gt 0 ]; then
-        countdown 3 "Package deployment"
-    else
-        countdown 3 "Channel re-sync"
-    fi
 
     if [ "$PKG_MGR" = "dnf" ]; then
         _weak_flag=""

@@ -22,11 +22,7 @@ warn() { say " ${YELLOW}!${RESET} $*"; }
 err()  { say " ${YELLOW}ERROR:${RESET} $*"; }
 step() { say ""; say " ${CYAN}${BOLD}$*${RESET}"; }
 pause() {
-    # shellcheck disable=SC2039
-    _s="${1:-0.35}"
-    if [ "$IS_TTY" -eq 1 ]; then
-        sleep "$_s" 2>/dev/null || sleep 1
-    fi
+    :
 }
 
 spin_while() {
@@ -55,55 +51,19 @@ spin_while() {
 }
 
 countdown() {
-    _n="${1:-3}"
-    _msg="${2:-Launching installer}"
-    if [ "$IS_TTY" -eq 0 ]; then
-        return 0
-    fi
-    while [ "$_n" -gt 0 ]; do
-        printf "\r ${ORANGE}${BOLD}%s${RESET} in ${BOLD}%s${RESET}…   " "$_msg" "$_n"
-        sleep 1
-        _n=$((_n - 1))
-    done
-    printf '\r\033[K'
-    say " ${ORANGE}${BOLD}$_msg${RESET} ${GREEN}now.${RESET}"
+    :
 }
 
 clear_soft() {
-    if [ "$IS_TTY" -eq 1 ] && command -v clear >/dev/null 2>&1; then
-        clear 2>/dev/null || true
-    fi
+    :
 }
 
 banner() {
-    clear_soft
     say ""
-    say "${ORANGE}${BOLD}"
-    cat <<'BANNER'
-        ╔══════════════════════════════════════════════════════════╗
-        ║                                                          ║
-        ║      ██╗██████╗ ██╗     ███████╗                         ║
-        ║      ██║██╔══██╗██║     ██╔════╝                         ║
-        ║      ██║██║  ██║██║     █████╗                           ║
-        ║      ██║██║  ██║██║     ██╔══╝                           ║
-        ║      ██║██████╔╝███████╗███████╗                         ║
-        ║      ╚═╝╚═════╝ ╚══════╝╚══════╝                         ║
-        ║                                                          ║
-        ║   ███████╗ ██████╗██████╗ ███████╗███████╗███╗   ██╗     ║
-        ║   ██╔════╝██╔════╝██╔══██╗██╔════╝██╔════╝████╗  ██║     ║
-        ║   ███████╗██║     ██████╔╝█████╗  █████╗  ██╔██╗ ██║     ║
-        ║   ╚════██║██║     ██╔══██╗██╔══╝  ██╔══╝  ██║╚██╗██║     ║
-        ║   ███████║╚██████╗██║  ██║███████╗███████╗██║ ╚████║     ║
-        ║   ╚══════╝ ╚═════╝╚═╝  ╚═╝╚══════╝╚══════╝╚═╝  ╚═══╝     ║
-        ║                                                          ║
-        ╚══════════════════════════════════════════════════════════╝
-BANNER
-    say "${RESET}"
-    say "  ${DIM}━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━${RESET}"
-    say ""
+    say "  ${ORANGE}${BOLD}IdleScreen${RESET}  ${DIM}· High-performance Linux screensaver suite${RESET}"
+    say "  ${DIM}────────────────────────────────────────────────────────${RESET}"
 }
 
 story_line() {
-    say "  ${MAGENTA}›${RESET} ${DIM}$*${RESET}"
-    pause 0.25
+    say "  ${DIM}›${RESET} ${DIM}$*${RESET}"
 }

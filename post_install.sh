@@ -83,7 +83,6 @@ apply_shell_integration() {
 
 awaken_daemon() {
     step "[5/5]  Starting the idle user service"
-    story_line "Ensuring ${HOME}/.config/idle exists (daemon config dir)…"
     mkdir -p "${HOME}/.config/idle" "${HOME}/.config/idlescreen"
     # Leftover atomic-write temps confuse nothing useful and clutter the dir.
     rm -f "${HOME}/.config/idle"/config.tmp.* "${HOME}/.config/idlescreen"/config.tmp.* 2>/dev/null || true
@@ -136,19 +135,9 @@ awaken_daemon() {
 
     apply_shell_integration
 
-    # Package %post may still be finishing; give user units a moment.
-    sleep 0.3
-
-    story_line "Reloading user systemd units…"
     systemctl --user daemon-reload 2>/dev/null || true
     systemctl --user reset-failed idle-daemon.service 2>/dev/null || true
-
-    # Always enable so the unit starts with the graphical session next login.
-    story_line "systemctl --user enable idle-daemon.service…"
     systemctl --user enable idle-daemon.service 2>/dev/null || true
-
-    # Clean restart: upgrade can leave a dying process holding the bus name.
-    story_line "systemctl --user restart idle-daemon.service…"
     _start_out=$(systemctl --user restart idle-daemon.service 2>&1) || true
     if ! systemctl --user is-active --quiet idle-daemon.service 2>/dev/null; then
         warn "restart not active yet — stop + start…"
@@ -210,32 +199,6 @@ victory() {
     # records the post-install state even when the deploy phase was a no-op.
     if command -v audit_installed_plugins >/dev/null 2>&1; then
         audit_installed_plugins
-    fi
-    # Per Sprint 09 A09-H11: end-of-install should leave the user with a
-    # working preview, not a banner. Best-effort: try the first detected
-    # saver; if the daemon is up and idle is enabled, run a 5-second
-    # preview so the user sees the tool actually working. Non-blocking:
-    # any failure here is just a hint, not an error.
-    if [ -z "${MISSING_AFTER:-}" ] \
-        && command -v idlescreen >/dev/null 2>&1 \
-        && systemctl --user is-active --quiet idle-daemon.service 2>/dev/null; then
-        _first_saver=$(find /usr/libexec/idle/screensavers -maxdepth 1 -name 'libscreensaver_*.so' 2>/dev/null \
-            | head -n1 | xargs -I{} basename {} .so 2>/dev/null \
-            | sed 's/^libscreensaver_//')
-        if [ -n "${_first_saver:-}" ]; then
-            say ""
-            say "${DIM}Demonstrating ${_first_saver} for 5 seconds …${RESET}"
-            say "${DIM}(press any key to skip)${RESET}"
-            say ""
-            if command -v timeout >/dev/null 2>&1; then
-                timeout 5 idlescreen preview "$_first_saver" >/dev/null 2>&1 || true
-            else
-                idlescreen preview "$_first_saver" >/dev/null 2>&1 &
-                _prev=$!
-                sleep 5
-                kill "$_prev" 2>/dev/null || true
-            fi
-        fi
     fi
     if [ -z "${MISSING_AFTER:-}" ] && systemctl --user is-active --quiet idle-daemon.service 2>/dev/null; then
         _banner_title="INSTALL FINISHED"
