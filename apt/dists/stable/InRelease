@@ -4,38 +4,38 @@ Hash: SHA512
 Architectures: amd64
 Codename: stable
 Components: main
-Date: Sat, 10 Oct 2026 21:46:04 +0000
+Date: Sat, 10 Oct 2026 23:16:48 +0000
 Description: IdleScreen APT Repository (stable/main)
 Label: IdleScreen
 Origin: IdleScreen
 Suite: stable
 MD5Sum:
- 014b85c60bf297c630bd873c1ce65cc0              197 Release
- 921cb38f619d201cadca66f190feb832            15616 main/binary-amd64/Packages
- c00e9e6f76e4f1a604a2638b67a0e1b3             4301 main/binary-amd64/Packages.gz
+ d4ede4be2c7acfe0d2f2afdebbfc48f4              197 Release
+ 9f6f8d9cf29015ad1bea6f9d4ea932a1            15616 main/binary-amd64/Packages
+ 9768739709860035d11d294d43794218             4305 main/binary-amd64/Packages.gz
 SHA1:
- e194537b2eaf9b84127529e52e71ef7e13aca54b              197 Release
- 6dfbb5f58c8aca0216526b5e8913c2255a164787            15616 main/binary-amd64/Packages
- 8f522a9d4ba39178727db8b897b361fb7ec6e66d             4301 main/binary-amd64/Packages.gz
+ 631c7a3b2bfa375c5d23c8d4647127adf6db08f4              197 Release
+ 7b4fdb8c33cc1da53e11eee3083d2f5923f48a88            15616 main/binary-amd64/Packages
+ 13fde7fea107bb074b1c5c3e2fbcbd300919d376             4305 main/binary-amd64/Packages.gz
 SHA256:
- c920e618f50e3c5f69a15e156c3d22a29329beba9c5d8e3a32341586710eadba              197 Release
- 20c1189bb308f8fce49dde9050a701b876aaae839e1488d0fb12088e2813d362            15616 main/binary-amd64/Packages
- cf930c4a259a3650b7f41a1d11d6cb2dbd9d543ee133c90672ab1fc62bb84046             4301 main/binary-amd64/Packages.gz
+ 3865f976162fd144fbaefee5e233024ae00a3bcdbeae89dcc44b7fe212f0e50e              197 Release
+ 995ac225f18858bbb9ec456bca5f2b64209cc4f683c0c784a31321a0040d075b            15616 main/binary-amd64/Packages
+ df1b8a6a674a7908f546b3346fc82817325b129e1cd5a3f9f48401c45e8f26b3             4305 main/binary-amd64/Packages.gz
 SHA512:
- db2c59c1c4e8e37c6902e858271e8c6db9af4a8b27fd19ff29e82913024df392ff5a03247dac715d23b25b915d02b0e3583ea0dadd457fe43347fe3f48e0fc61              197 Release
- 9f6a8530c9b0d6f3e4f193e6e856913c954ff0ab0267a3442feb96b6dd9a78ed2a093a62479b2fbe18a5577ca10bb6532c52da6284a32c85342079c1ec7be5d2            15616 main/binary-amd64/Packages
- a6383263383fddca66393ca1f7f9d14f8d1b2b8472ff46e951ba1e5c3479375a1911b4ee4d976bfb36d1c61c9405700ef6fdbd60d1d179042657d0fc0dd931b9             4301 main/binary-amd64/Packages.gz
+ 93c0ca27a20b9e7049a94608d60ec75baf0d0f5a2aaefa44dd3f8ca7fb13214c945c5c682593072371b67380f85b5268f68c94e674c66fef65a23f69aba5ed78              197 Release
+ b12950abab95689de32646a77becd5dda21ca09bd4482acc3ed32b952b0122332f953f8bf8263601e25d9bf69df34571168a6614c717d43e30b06ae3092975ad            15616 main/binary-amd64/Packages
+ 6feae48e3c9d1c625656a8158e839e8f50549b4bb4cff7916a54a210575ff456d09bcf4371bdac25353cbb6c7ad81cd15e02eb3e000060c29ca148199aa5d760             4305 main/binary-amd64/Packages.gz
 -----BEGIN PGP SIGNATURE-----
 
-iQHJBAEBCgAzFiEEVJ5zybySKceG5Tji+9j8UseBfdIFAmrKshwVHGplcnlkbGV1
-Y2tAZ21haWwuY29tAAoJEPvY/FLHgX3S310MAJt2ZX1sCmjaivzIOY2GUOZUPmLE
-XsE17q4n2zRbllijw6PHAkkCHY8EXGluzhPmOGOPgAFsOsvuyeXJUeIDHQ+Yw87B
-FxUzOEua3MltAH5Uk9wUynveG9eE0fYMbAopOqexb4t5vC3hSVO9yRxYzR6MzZwy
-oa1iDNz48+ma2swBxeohcSmsY8/z6adtM0YTdXzvBcAh6S9NN9/Ameeu6MFAYXlg
-LJEMEg6lSIhC0UghxOB3tqjm8CzJmRh3+4CHTott9bMTjSxYGZvZtjA7h+dxnvxO
-YDnod3KPi+TyB8HEtWyEXCz+S6KPKGDneZbD3MQ0C3Y1J92w+i0ZYaB/zAtnZ2N6
-4AsqHXfdEHwLNtwhiDVZAITeip4VGCogo67vdJvBG9ZnXSgfc5yP2We96Uz0Vxsz
-YkEL9M+r3W4q8Kh/UN2g4r0Kfyp0OIxtlf8FoHCTz0r5K1vedxe17LVcRpmQoJND
-rr+SvhFcBkYjTl8InG6zM0F7g3LUwxFvY2Uobg==
-=XAG/
+iQHJBAEBCgAzFiEEVJ5zybySKceG5Tji+9j8UseBfdIFAmrKx2AVHGplcnlkbGV1
+Y2tAZ21haWwuY29tAAoJEPvY/FLHgX3SEf8MAL/9D8m7Fis3bj2Fg1aNXbdT6A5H
+v7vsTlcf8G/KHq4d/cbGNNYo2G0nlzzu1NvY6tbvnWL/C9zGgvphdLhrAdJvzU1F
+3aTRxFnI6YS3dSfttG9a3wPpcZMT2JQw+L08hzzEs28V4Vl9pyBUcPmdPozvlZEA
+PXKo+hmMBUqqXoaCcmIbaqjQO6knSzxzJc00sIR26yG38CwxAwgPk6uk0InXDv5b
+1V7v669BXHG0enUpu5KsuwmHhVeDOndy2ZKjWlN7eQQzOUoKRqO0RTOKQTO7LFJ+
+bcKaW4XlmzC1Xy6duLjsEC6k8S45xy6nU+VSS76AEPUVzf1Mw3n/ENvPrtExw+ag
+HxmR3MyFkRUti/ismqM95UVpLcrEN8YS/ky3vP2v3VlEODIqexEVRSujxHi7cYE4
+uEodEckhOqEbCDDl7nKG8WKycSHOLEyCwwOI3I9DcC3ukDgUBEyTIch5H9J0itPN
+DPzHUVL1R8ZCQ/NCvr8oyYcd0rHGLvoMGI3E9w==
+=18V8
 -----END PGP SIGNATURE-----
