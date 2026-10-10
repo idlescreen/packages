@@ -340,9 +340,9 @@ main() {
         say ""
         say "  ${DIM}Previewing screensaver for 5s (press any key to exit)…${RESET}"
         if [ -r /dev/tty ]; then
-            idlescreen preview --timeout 5 < /dev/tty || true
+            idlescreen preview ascii --timeout 5 < /dev/tty || true
         else
-            idlescreen preview --timeout 5 || true
+            idlescreen preview ascii --timeout 5 || true
         fi
     fi
 }
