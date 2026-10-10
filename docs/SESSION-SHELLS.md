@@ -85,8 +85,8 @@ not a bug. To change how quickly it appears, edit `idle.screensaver`.
 To hand idle timing — and the timeout with it — back to IdleScreen:
 
 ```sh
-idlescreen disable      # IdleScreen's own idle trigger back on
-idlescreen enable       # ...and back off again
+idlescreen enable       # IdleScreen's own idle trigger back on
+idlescreen disable      # ...and back off again
 ```
 
 Re-running the installer is idempotent here. It sets `idle_enabled: false` only
