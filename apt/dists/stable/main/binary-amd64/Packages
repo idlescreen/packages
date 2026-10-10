@@ -42,18 +42,18 @@ Description: IdleScreen for COSMIC — product package (applet + pulls daemon an
  Installs the COSMIC panel applet and depends on idle-daemon.
 
 Package: idle-daemon
-Version: 3.5.33-1
+Version: 3.6.0-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 17599
+Installed-Size: 17749
 Depends: dbus, fonts-dejavu-core, libc6
 Recommends: idle-cli, idle-saver-ascii, idle-saver-aurora, idle-saver-beams, idle-saver-bursts, idle-saver-chaos, idle-saver-cosmos, idle-saver-glyphs, idle-saver-gnats, idle-saver-hearth, idle-saver-radar, idle-saver-ripple, idle-saver-storm
 Suggests: idle-cosmic
-Filename: pool/main/idle-daemon_3.5.33-1_amd64.deb
-Size: 5476604
-MD5sum: 1b605f9e0701f97877b01b96f9ac9dea
-SHA1: 9134656187f495d051fa50b646d750c49a395c4b
-SHA256: 489ee40c804a4f8aa06a747e2b26ec7c4ea55ff56de3f47af1d6ca300c31b003
+Filename: pool/main/idle-daemon_3.6.0-1_amd64.deb
+Size: 5520292
+MD5sum: f449b22d200de39f729d354401d14d5e
+SHA1: 985e7352566d45d624fc2200c5f35f301ae058fe
+SHA256: d4e12e371db51e25a302726bf9e705ec9ba9fed61b5d67c374d6d2072933f51e
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idlescreen
