@@ -150,7 +150,7 @@ jobs:
 
       - name: Prune old versions from pool
         run: |
-          # Keep the latest 3 versions of each package to prevent bloat.
+          # Keep the latest version of each package to prevent bloat.
           # The prune binary is local to this repo and only acts on the pool
           # directories; dispatch payloads cannot supply alternate paths.
           cargo run --release --bin prune
@@ -258,7 +258,7 @@ jobs:
               [ -e "rpm/pool/$(basename "$f")" ] || cp "$f" rpm/pool/
             done
             # The newer remote may itself have pushed a package past the
-            # keep-3 limit — re-prune over the merged pool state.
+            # keep-1 limit — re-prune over the merged pool state.
             cargo run --release --bin prune
             # Same identity fallback as the sign step — the IDLESCREEN/CRATERIA
             # GPG_NAME secrets may be unset; the retry must not die on it.

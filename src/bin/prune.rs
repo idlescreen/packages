@@ -102,7 +102,7 @@ fn prune_directory(
 
 fn parse_keep_arg(args: &[String]) -> Result<usize, String> {
     if args.len() <= 1 {
-        return Ok(3);
+        return Ok(1);
     }
     args[1]
         .parse::<usize>()
@@ -145,7 +145,7 @@ mod tests {
 
     #[test]
     fn parse_keep_default_and_value() {
-        assert_eq!(parse_keep_arg(&["prune".into()]).expect("default"), 3);
+        assert_eq!(parse_keep_arg(&["prune".into()]).expect("default"), 1);
         assert_eq!(parse_keep_arg(&["prune".into(), "5".into()]).expect("5"), 5);
         assert!(parse_keep_arg(&["prune".into(), "x".into()]).is_err());
     }

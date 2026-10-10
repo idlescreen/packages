@@ -1,6 +1,6 @@
 # PKGBUILD for Arch Linux / AUR
 pkgname=idle-cosmic
-pkgver=3.2.6
+pkgver=3.2.10
 pkgrel=1
 pkgdesc="IdleScreen for COSMIC Desktop"
 arch=('x86_64')
@@ -13,7 +13,7 @@ optdepends=(
   'idle-saver-bursts: Bursts screensaver plugin'
 )
 source=("https://github.com/idlescreen/cosmic/archive/refs/tags/v${pkgver}.tar.gz")
-sha256sums=('0000000000000000000000000000000000000000000000000000000000000000')
+sha256sums=('SKIP')
 
 build() {
   cd "cosmic-${pkgver}"

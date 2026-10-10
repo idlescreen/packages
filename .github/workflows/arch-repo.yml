@@ -64,7 +64,7 @@ jobs:
           # `stable` happens to be today. The file lives in the runtime repo,
           # which is only fetched later by makepkg, so read it from a shallow
           # clone up front.
-          git clone --depth 1 --branch v3.5.28 https://github.com/idlescreen/runtime /tmp/rt
+          git clone --depth 1 https://github.com/idlescreen/runtime /tmp/rt
           TOOLCHAIN="$(sed -n 's/^channel *= *"\(.*\)"/\1/p' /tmp/rt/rust-toolchain.toml | head -n1)"
           echo "project toolchain: ${TOOLCHAIN:-<unpinned>}"
           if [ -n "$TOOLCHAIN" ]; then
