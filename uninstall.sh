@@ -136,22 +136,39 @@ uninstall_remove_packages() {
     return 0
 }
 
+# Fallback UI helpers if invoked outside install.sh
+command -v say >/dev/null 2>&1 || say() { printf '%s\n' "$*"; }
+command -v ok >/dev/null 2>&1 || ok() { printf '[OK] %s\n' "$*"; }
+command -v step >/dev/null 2>&1 || step() { printf '==> %s\n' "$*"; }
+command -v banner >/dev/null 2>&1 || banner() { :; }
+command -v story_line >/dev/null 2>&1 || story_line() { printf '%s\n' "$*"; }
+command -v dim >/dev/null 2>&1 || dim() { printf '%s\n' "$*"; }
+command -v warn >/dev/null 2>&1 || warn() { printf '[WARN] %s\n' "$*"; }
+
 # Trust anchors and channel config, all three channels.
 uninstall_remove_repo_dropins() {
+    _u_yum_d="${YUM_REPOS_D:-${IDLESCREEN_YUM_REPOS_D:-/etc/yum.repos.d}}"
+    _u_apt_src_d="${APT_SOURCES_D:-${IDLESCREEN_APT_SOURCES_D:-/etc/apt/sources.list.d}}"
+    _u_apt_key_d="${APT_KEYRINGS_D:-${IDLESCREEN_APT_KEYRINGS_D:-/etc/apt/keyrings}}"
+    _u_rpm_gpg_d="${RPM_GPG_DIR:-${IDLESCREEN_RPM_GPG_DIR:-/etc/pki/rpm-gpg}}"
+    _u_pacman_xdg_d="${PACMAN_XDG_D:-${IDLESCREEN_PACMAN_XDG_D:-/etc/pacman.d/idlescreen}}"
+    _u_pacman_key_d="${PACMAN_KEY_D:-${IDLESCREEN_PACMAN_KEY_D:-/etc/pacman.d/gnupg}}"
+    _u_shim="${SESSION_SHIM:-${IDLESCREEN_SESSION_SHIM:-/usr/local/bin/omarchy-launch-screensaver}}"
+
     sudo rm -f \
-        /etc/yum.repos.d/idlescreen.repo \
-        /etc/apt/sources.list.d/idlescreen.list \
+        "$_u_yum_d/idlescreen.repo" \
+        "$_u_apt_src_d/idlescreen.list" \
         2>/dev/null || true
-    sudo rm -f /etc/apt/keyrings/idlescreen-keyring.gpg 2>/dev/null || true
-    sudo rm -f "${RPM_GPG_DIR}/idlescreen-key.gpg" 2>/dev/null || true
+    sudo rm -f "$_u_apt_key_d/idlescreen-keyring.gpg" 2>/dev/null || true
+    sudo rm -f "$_u_rpm_gpg_d/idlescreen-key.gpg" "$_u_rpm_gpg_d/RPM-GPG-KEY-idlescreen"* 2>/dev/null || true
     # pacman: the sync database is the trust anchor here.
-    sudo rm -rf "${PACMAN_XDG_D}" 2>/dev/null || true
-    sudo rm -rf "${PACMAN_KEY_D}" 2>/dev/null || true
+    sudo rm -rf "$_u_pacman_xdg_d" 2>/dev/null || true
+    sudo rm -rf "$_u_pacman_key_d" 2>/dev/null || true
     # Session-shell integration shim. It lives in /usr/local/bin, outside the
     # package tree, so no package manager removes it for us. Leaving it would
     # shadow the shell's own launcher and call a daemon that is gone.
-    if [ -f "$SESSION_SHIM" ]; then
-        sudo rm -f "$SESSION_SHIM"
+    if [ -f "$_u_shim" ]; then
+        sudo rm -f "$_u_shim"
         ok "Session-shell integration shim removed."
     fi
     ok "Repository drop-ins and trust anchors removed."
@@ -177,7 +194,38 @@ uninstall_purge_user_data() {
             "$_u_home/.config/idlescreen" \
             "$_u_home/.config/idle" \
             "$_u_home/.config/trance" \
-            "$_u_home/.local/share/idlescreen"; do
+            "$_u_home/.local/share/idlescreen" \
+            "$_u_home/.local/state/idlescreen" \
+            "$_u_home/.cache/idlescreen"; do
+            if [ -d "$_u_d" ]; then
+                say "  ${DIM}rm -rf${RESET} ${BOLD}${_u_d}${RESET}"
+                sudo rm -rf "$_u_d" 2>/dev/null || true
+            fi
+        done
+    done
+    if [ -n "${HOME:-}" ] && [ -d "$HOME" ]; then
+        for _u_d in \
+            "$HOME/.config/idlescreen" \
+            "$HOME/.config/idle" \
+            "$HOME/.config/trance" \
+            "$HOME/.local/share/idlescreen" \
+            "$HOME/.local/state/idlescreen" \
+            "$HOME/.cache/idlescreen"; do
+            if [ -d "$_u_d" ]; then
+                say "  ${DIM}rm -rf${RESET} ${BOLD}${_u_d}${RESET}"
+                sudo rm -rf "$_u_d" 2>/dev/null || true
+            fi
+        done
+    fi
+    for _h in /home/*; do
+        [ -d "$_h" ] || continue
+        for _u_d in \
+            "$_h/.config/idlescreen" \
+            "$_h/.config/idle" \
+            "$_h/.config/trance" \
+            "$_h/.local/share/idlescreen" \
+            "$_h/.local/state/idlescreen" \
+            "$_h/.cache/idlescreen"; do
             if [ -d "$_u_d" ]; then
                 say "  ${DIM}rm -rf${RESET} ${BOLD}${_u_d}${RESET}"
                 sudo rm -rf "$_u_d" 2>/dev/null || true
@@ -190,18 +238,30 @@ uninstall_purge_user_data() {
             sudo rm -rf "$_u_d" 2>/dev/null || true
         fi
     done
+    sudo rm -rf /run/user/*/idlescreen* /tmp/idlescreen* /var/tmp/idlescreen* 2>/dev/null || true
     ok "User and system configuration purged."
 }
 
 _u_desktop_uids() {
-    if ! command -v loginctl >/dev/null 2>&1; then
-        id -u
-        return 0
-    fi
-    loginctl list-users --no-legend 2>/dev/null \
-        | awk '{print $1}' | while read -r uid; do
-            _u_is_desktop_uid "$uid" && printf '%s ' "$uid"
+    _u_list=""
+    if command -v loginctl >/dev/null 2>&1; then
+        for uid in $(loginctl list-users --no-legend 2>/dev/null | awk '{print $1}'); do
+            _u_is_desktop_uid "$uid" && _u_list="$_u_list $uid"
         done
+    fi
+    if [ -n "${SUDO_USER:-}" ]; then
+        _suid=$(id -u "$SUDO_USER" 2>/dev/null || true)
+        _u_is_desktop_uid "$_suid" && _u_list="$_u_list $_suid"
+    fi
+    _cuid=$(id -u 2>/dev/null || true)
+    _u_is_desktop_uid "$_cuid" && _u_list="$_u_list $_cuid"
+    if command -v getent >/dev/null 2>&1; then
+        for uid in $(getent passwd 2>/dev/null | awk -F: '$3 >= 1000 && $3 < 60000 {print $3}'); do
+            _u_list="$_u_list $uid"
+        done
+    fi
+    # shellcheck disable=SC2086
+    printf '%s\n' $_u_list 2>/dev/null | sort -u | tr '\n' ' '
 }
 
 uninstall_stack() {
@@ -235,3 +295,31 @@ uninstall_stack() {
     dim "  Reinstall: curl -fsSL https://idlescreen.github.io/install.sh | sh"
     say ""
 }
+
+if [ "${0##*/}" = "uninstall.sh" ]; then
+    _script_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+    if [ -f "$_script_dir/ui.sh" ]; then
+        # shellcheck disable=SC1091
+        . "$_script_dir/ui.sh"
+    fi
+    if [ -f "$_script_dir/detect.sh" ]; then
+        # shellcheck disable=SC1091
+        . "$_script_dir/detect.sh"
+    fi
+    for _arg in "$@"; do
+        case "$_arg" in
+            --purge) UNINSTALL_PURGE=1 ;;
+        esac
+    done
+    OS_NAME="${OS_NAME:-$(uname -s 2>/dev/null || echo "Linux")}"
+    if [ -z "${PKG_MGR:-}" ]; then
+        if command -v dnf >/dev/null 2>&1; then
+            PKG_MGR="dnf"
+        elif command -v pacman >/dev/null 2>&1; then
+            PKG_MGR="pacman"
+        else
+            PKG_MGR="apt"
+        fi
+    fi
+    uninstall_stack
+fi

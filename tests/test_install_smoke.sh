@@ -37,6 +37,7 @@ printf '%s fake %s %s\n' "$(date +%s)" "$cmd" "$*" >> "$LOG_FILE"
 case "$cmd" in
     rpm)        printf 'fake-pkg-1.0-1\n'; exit 0 ;;
     dpkg-query) printf 'Package: fake-pkg\nVersion: 1.0\n'; exit 0 ;;
+    busctl)     exit 0 ;;
     curl)
         _url=""
         _out=""
@@ -93,7 +94,7 @@ export FAKE_LOG_FILE="$LOG"
 # `MOCKBIN/_dispatch` resolves against the symlink's parent
 # directory (not the caller's cwd) so a broken symlink can go
 # unnoticed.
-for cmd in rpm dpkg-query curl dnf apt-get sudo systemctl pkexec gtk-update-icon-cache update-desktop-database; do
+for cmd in rpm dpkg-query curl dnf apt-get sudo systemctl busctl pkexec gtk-update-icon-cache update-desktop-database; do
     ln -sfn "$MOCKBIN/_dispatch" "$MOCKBIN/$cmd"
 done
 
@@ -229,7 +230,7 @@ MOCKBIN_ARCH="$TMP/bin-arch"
 mkdir -p "$MOCKBIN_ARCH"
 LOG_ARCH="$TMP/install-arch.log"
 : > "$LOG_ARCH"
-for cmd in pacman tar curl sudo systemctl pkexec gtk-update-icon-cache update-desktop-database \
+for cmd in pacman tar curl sudo systemctl busctl pkexec gtk-update-icon-cache update-desktop-database \
            omarchy-shell omarchy-toggle-enabled; do
     ln -sfn "$MOCKBIN/_dispatch" "$MOCKBIN_ARCH/$cmd"
 done

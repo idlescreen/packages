@@ -89,7 +89,7 @@ apply_shell_integration() {
             ;;
     esac
 
-    if [ -f "$_cfg" ] && ! grep -E '^[[:space:]]*active_saver[[:space:]]*:' "$_cfg" 2>/dev/null; then
+    if [ -f "$_cfg" ] && ! grep -q -E '^[[:space:]]*active_saver[[:space:]]*:' "$_cfg" 2>/dev/null; then
         [ -s "$_cfg" ] && [ -n "$(tail -c1 "$_cfg" 2>/dev/null)" ] && printf '\n' >> "$_cfg"
         printf 'active_saver: "ascii"\n' >> "$_cfg"
         ok "Defaulted active_saver to ascii for session shell integration"
@@ -155,7 +155,7 @@ awaken_daemon() {
     fi
 
     for _u_cfg in "${HOME}/.config/idlescreen/config.yaml" "${HOME}/.config/idle/config.yaml"; do
-        if [ -f "$_u_cfg" ] && ! grep -E '^[[:space:]]*active_saver[[:space:]]*:' "$_u_cfg" 2>/dev/null; then
+        if [ -f "$_u_cfg" ] && ! grep -q -E '^[[:space:]]*active_saver[[:space:]]*:' "$_u_cfg" 2>/dev/null; then
             [ -s "$_u_cfg" ] && [ -n "$(tail -c1 "$_u_cfg" 2>/dev/null)" ] && printf '\n' >> "$_u_cfg"
             printf 'active_saver: "ascii"\n' >> "$_u_cfg"
         fi

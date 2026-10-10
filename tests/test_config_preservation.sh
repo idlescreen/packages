@@ -14,7 +14,7 @@ cat > "$MOCKBIN/_dispatch" <<'DISPATCH'
 exit 0
 DISPATCH
 chmod +x "$MOCKBIN/_dispatch"
-for cmd in busctl systemctl idle-daemon; do
+for cmd in busctl systemctl idle-daemon sudo pkexec; do
     ln -sfn "$MOCKBIN/_dispatch" "$MOCKBIN/$cmd"
 done
 
