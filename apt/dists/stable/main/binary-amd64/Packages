@@ -998,32 +998,6 @@ Description: Optional TUI client for IdleScreen (idle-tui)
  Optional live TUI controller for IdleScreen.
 
 Package: idlescreen
-Version: 4.0.5-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 440
-Depends: idle-cli (>= 4.0.0), idle-daemon (>= 3.5.8), idle-savers, idle-tui (>= 3.0.1), libc6
-Recommends: idle-cosmic (>= 3.0.2)
-Breaks: idle-cli (<< 4.0.0)
-Replaces: idle-cli (<< 4.0.0)
-Filename: pool/main/idlescreen_4.0.5-1_amd64.deb
-Size: 178940
-MD5sum: f9c4aac0f3e294c77f211b9ace603ec0
-SHA1: 66392f74c078745630f4a1892c3584d7e7aeed45
-SHA256: 9a9cba162a4f6d58edf6a8d568401286f019a99698a6f741f1ba6a071bae231a
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: IdleScreen router — one front door for cli, tui, studio, cosmic, savers,
- runtime
- IdleScreen product package and router: pulls in the modular host stack and
- provides `idlescreen` — `idlescreen <component>` execs component binaries
- (cli, tui, studio, cosmic); `idlescreen <verb>` forwards daemon commands to
- idle-cli; `idlescreen install` manages components via dnf/apt. Removing this
- package removes the installed product stack; user config under ~/.config/idle
- is left in place.
-
-Package: idlescreen
 Version: 4.0.6-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
@@ -1073,6 +1047,43 @@ Description: IdleScreen router — one front door for cli, tui, studio, cosmic, 
  idle-cli; `idlescreen install` manages components via dnf/apt. Removing this
  package removes the installed product stack; user config under ~/.config/idle
  is left in place.
+
+Package: idlescreen
+Version: 4.1.0-1
+Architecture: amd64
+Maintainer: IdleScreen <team@idlescreen.org>
+Installed-Size: 2782
+Depends: libc6
+Breaks: idle-daemon (<< 4.0.0), idle-cli (<< 4.0.0), idle-savers (<< 4.0.0), idle-tui (<< 4.0.0), idle-cosmic (<< 4.0.0), idle-saver-ascii (<< 4.0.0), idle-saver-aurora (<< 4.0.0), idle-saver-beams (<< 4.0.0), idle-saver-bursts (<< 4.0.0), idle-saver-chaos (<< 4.0.0), idle-saver-cosmos (<< 4.0.0), idle-saver-glyphs (<< 4.0.0), idle-saver-gnats (<< 4.0.0), idle-saver-hearth (<< 4.0.0), idle-saver-radar (<< 4.0.0), idle-saver-ripple (<< 4.0.0), idle-saver-storm (<< 4.0.0), idle-runner (<< 4.0.0)
+Replaces: idle-daemon (<< 4.0.0), idle-cli (<< 4.0.0), idle-savers (<< 4.0.0), idle-tui (<< 4.0.0), idle-cosmic (<< 4.0.0), idle-saver-ascii (<< 4.0.0), idle-saver-aurora (<< 4.0.0), idle-saver-beams (<< 4.0.0), idle-saver-bursts (<< 4.0.0), idle-saver-chaos (<< 4.0.0), idle-saver-cosmos (<< 4.0.0), idle-saver-glyphs (<< 4.0.0), idle-saver-gnats (<< 4.0.0), idle-saver-hearth (<< 4.0.0), idle-saver-radar (<< 4.0.0), idle-saver-ripple (<< 4.0.0), idle-saver-storm (<< 4.0.0), idle-runner (<< 4.0.0)
+Provides: idle-daemon (= 4.1.0), idle-cli (= 4.1.0), idle-savers (= 4.1.0), idle-tui (= 4.1.0), idle-cosmic (= 4.1.0), idle-saver-ascii (= 4.1.0), idle-saver-aurora (= 4.1.0), idle-saver-beams (= 4.1.0), idle-saver-bursts (= 4.1.0), idle-saver-chaos (= 4.1.0), idle-saver-cosmos (= 4.1.0), idle-saver-glyphs (= 4.1.0), idle-saver-gnats (= 4.1.0), idle-saver-hearth (= 4.1.0), idle-saver-radar (= 4.1.0), idle-saver-ripple (= 4.1.0), idle-saver-storm (= 4.1.0), idle-runner (= 4.1.0)
+Filename: pool/main/idlescreen_4.1.0-1_amd64.deb
+Size: 979464
+MD5sum: 065cb37cf5160a89e5af880abe7fb59b
+SHA1: 7edfac08d4ba201126226779004345f73a1184d3
+SHA256: 8b79fc771d443ad01dad73048ecc8388d204b93c7348fab9bfe3a44510f33560
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: IdleScreen standalone screensaver and idle management suite for Linux
+ IdleScreen standalone screensaver and idle management suite for Linux
+
+Package: idlescreen-extras
+Version: 4.1.0-1
+Architecture: amd64
+Maintainer: IdleScreen <team@idlescreen.org>
+Installed-Size: 682
+Depends: idlescreen (= 4.1.0), libc6
+Filename: pool/main/idlescreen-extras_4.1.0-1_amd64.deb
+Size: 297016
+MD5sum: 3116826bdb21d0384483082b82699cc1
+SHA1: 05f1c8884a43907dad5310b72fa69883dd68afd6
+SHA256: 9b6807a559300408784e7f1730849e4e158de5624acb9422c0ba6cfa6e227ca6
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: Mathematical screensaver collection helper for IdleScreen
+ Optional mathematical screensaver collection helper for IdleScreen
 
 Package: render
 Version: 1.0.0-1
