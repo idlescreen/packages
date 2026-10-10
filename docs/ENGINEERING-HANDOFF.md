@@ -49,23 +49,18 @@ Or declare `idle-cosmic` only in an environment-specific subpackage/group. This 
 
 ---
 
-## 4. Issue 3: Digital Rain / ASCII Screensaver Resolution (`glyphs`)
+## 4. Default Screensaver Resolution (`ascii` & `glyphs`)
 
-### Root Cause
-1. In the IdleScreen codebase (`idlescreen/savers`), the falling character / digital rain screensaver is officially named **`glyphs`** (`idle-saver-glyphs` / `libscreensaver_glyphs.so`).
-2. The binary allowlist in `idle-daemon` strictly enforces registered plugin IDs:
-   `aurora`, `beams`, `bursts`, `chaos`, `cosmos`, `glyphs`, `gnats`, `hearth`, `radar`, `ripple`, `storm`.
-   There is no plugin named `ascii`.
-3. In `idlescreen/packages` (`post_install.sh`), the config generator attempted:
-   ```sh
-   printf 'active_saver: "ascii"
-' >> ""
-   ```
-   This mismatch caused users looking for the ASCII/Matrix rain effect to assume the saver was missing or failing to load.
+### Architecture
+1. In the IdleScreen codebase (`idlescreen/savers`), the 13 official screensavers are:
+   `ascii`, `aurora`, `beams`, `bursts`, `chaos`, `cosmos`, `glyphs`, `gnats`, `hearth`, `radar`, `ripple`, `storm`, and `wasm-demo`.
+2. **`ascii`** is the organization-wide default screensaver, featuring 37 randomized text effects dynamically alternating between Host OS, Desktop Environment, and Linux Kernel version with smooth crossfade/dissolve transitions.
+3. The falling matrix / digital rain screensaver is officially named **`glyphs`** (`idle-saver-glyphs` / `libscreensaver_glyphs.so`).
+4. Both plugins are fully allowlisted and packaged across RPM and DEB pools.
 
-### Fix
-* Update `packages/post_install.sh` and any docs/templates to use `active_saver: "glyphs"`.
-* Set `active_saver: "glyphs"` in `~/.config/idlescreen/config.yaml`.
+### Configuration
+* `active_saver: "ascii"` is configured as the default screensaver on new installs.
+* Users desiring digital matrix rain can switch via `idlescreen saver glyphs` or `active_saver: "glyphs"` in `~/.config/idlescreen/config.yaml`.
 
 ---
 
