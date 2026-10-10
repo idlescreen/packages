@@ -26,7 +26,22 @@ SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PACKAGES_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 # packages/ is under idlescreen/; savers are siblings of packages/
 ROOT="$(cd "$PACKAGES_ROOT/.." && pwd)"
-IDLE_API_SRC="$ROOT/runtime"
+# Support Option 2 consolidated monorepo: crates/idlescreen-extras
+if [[ -d "$ROOT/idlescreen/crates/idlescreen-extras" ]]; then
+  echo ">>> idlescreen monorepo (Option 2 consolidated architecture)"
+  cd "$ROOT/idlescreen"
+  if cargo test -p idlescreen-extras --quiet; then
+    echo "=========================================="
+    echo "Savers gate: monorepo extras passed, 0 failed"
+    echo "SAVERS_PACKAGE_GATE_PASS"
+    exit 0
+  else
+    echo "=========================================="
+    echo "Savers gate: monorepo extras FAILED" >&2
+    echo "SAVERS_PACKAGE_GATE_FAIL"
+    exit 1
+  fi
+fi
 
 if [[ ! -d "$IDLE_API_SRC/idle-api" ]]; then
   echo "FAIL: idle-api not found at $IDLE_API_SRC/idle-api" >&2

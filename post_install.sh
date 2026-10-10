@@ -21,6 +21,19 @@ _fix_dbus_activation_file() {
     fi
 }
 
+_ensure_idlescreen_symlinks() {
+    _idlescreen_bin="$(command -v idlescreen 2>/dev/null || echo "/usr/bin/idlescreen")"
+    [ -x "$_idlescreen_bin" ] || return 0
+    for _alias in idle-tui idle-cli idle-daemon idlescreen-tui idlescreen-daemon; do
+        _dest="/usr/bin/$_alias"
+        if [ -w "/usr/bin" ]; then
+            ln -sf "$_idlescreen_bin" "$_dest" 2>/dev/null || true
+        elif command -v sudo >/dev/null 2>&1; then
+            sudo ln -sf "$_idlescreen_bin" "$_dest" 2>/dev/null || true
+        fi
+    done
+}
+
 # Session-shell integration: when the shell owns idle timing, IdleScreen must
 # not also present on its own timer or the user gets two savers at two
 # different times.
@@ -132,6 +145,7 @@ awaken_daemon() {
     done
 
     _fix_dbus_activation_file
+    _ensure_idlescreen_symlinks
 
     apply_shell_integration
 
