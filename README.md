@@ -76,10 +76,9 @@ cd packages/arch/idlescreen
 makepkg -si
 ```
 
-That PKGBUILD compiles the runtime, CLI, TUI and saver crates from their
-release tags and produces `idle-daemon`, `idle-cli`, `idle-tui`,
-`idle-savers` and the `idlescreen` metapackage. It is a full source build —
-expect tens of minutes.
+That PKGBUILD compiles the unified `idlescreen` and `idlescreen-extras`
+crates from the `idlescreen` release tag and produces the `/usr/bin/idlescreen`
+binary suite.
 
 ## Uninstall
 
@@ -88,11 +87,10 @@ curl -fsSL https://idlescreen.github.io/install.sh -o install.sh
 ./install.sh --uninstall
 ```
 
-This stops and disables `idle-daemon` in every desktop session, removes the
-product stack and all saver plugins through your package manager, then
-removes the repo drop-in, the GPG key and the pacman sync database. It does
-**not** need the channel to be reachable — a removal path that depends on the
-repo being up isn't a removal path.
+This stops and disables `idlescreen.service` in every desktop session, removes the
+product package through your package manager, then removes the repo drop-in,
+the GPG key, and the pacman sync database. It does **not** need the channel to be
+reachable — a removal path that depends on the repo being up isn't a removal path.
 
 Your configuration is kept. To wipe it as well:
 
@@ -104,15 +102,14 @@ Your configuration is kept. To wipe it as well:
 config under `/etc/xdg/idlescreen` for **every** desktop user on the machine,
 not just the one running the command.
 
-Removing through the package manager still works and triggers the metapackage
-removal hook: `dnf remove idlescreen`, `apt remove idlescreen`,
-`pacman -R idlescreen`.
+Removing through the package manager still works:
+`dnf remove idlescreen`, `apt remove idlescreen`, `pacman -R idlescreen`.
 
 ## Configuration & Preservation
 
 The IdleScreen installer preserves existing user and system configurations without clobbering:
-- User configs: `~/.config/idlescreen/config.yaml` and `~/.config/idle/config.yaml`
-- System defaults: `/etc/xdg/idlescreen/config.yaml`, `/etc/idlescreen/config.yaml`, and `/etc/idle/config.yaml`
+- User configs: `~/.config/idlescreen/config.toml` (or legacy `config.yaml`)
+- System defaults: `/etc/xdg/idlescreen/config.toml`, `/etc/idlescreen/config.toml`
 
 Existing files are preserved completely across installs, upgrades, and channel re-syncs.
 
