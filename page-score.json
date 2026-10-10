@@ -1,6 +1,6 @@
 {
  "repo": "packages",
- "rev": "69d9a3f",
+ "rev": "05915cc",
  "dirty": true,
  "pages": [
   {
@@ -54,7 +54,7 @@
   },
   {
    "path": "./src/install_bin/start_daemon.rs",
-   "lines": 231,
+   "lines": 240,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 1

@@ -155,6 +155,15 @@ pub fn start_daemon() -> bool {
         ]));
         let _ = run_status(Command::new("systemctl").args([
             "--user",
+            "stop",
+            "idlescreen.service",
+        ]));
+        let _ = Command::new("pkill").args(["-x", "idlescreen"]).status();
+        let _ = Command::new("pkill").args(["-f", "/usr/bin/idlescreen daemon"]).status();
+        let _ = Command::new("pkill").args(["-x", "idle-daemon"]).status();
+        let _ = Command::new("pkill").args(["-f", "/usr/bin/idle-daemon"]).status();
+        let _ = run_status(Command::new("systemctl").args([
+            "--user",
             "reset-failed",
             "idlescreen.service",
         ]));

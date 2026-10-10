@@ -37,7 +37,7 @@ _runtime_ref=v3.5.31
 _cli_ref=v4.0.12
 _savers_ref=v3.3.20
 _tui_ref=v3.2.10
-_idlescreen_ref=v4.1.5
+_idlescreen_ref=v4.1.6
 
 source=(
     "runtime::git+https://github.com/idlescreen/runtime#tag=$_runtime_ref"

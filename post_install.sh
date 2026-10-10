@@ -169,6 +169,13 @@ awaken_daemon() {
     systemctl --user daemon-reload 2>/dev/null || true
     systemctl --user stop idle-daemon.service 2>/dev/null || true
     systemctl --user disable idle-daemon.service 2>/dev/null || true
+    systemctl --user stop idlescreen.service 2>/dev/null || true
+    if command -v pkill >/dev/null 2>&1; then
+        pkill -x idlescreen 2>/dev/null || true
+        pkill -f '/usr/bin/idlescreen daemon' 2>/dev/null || true
+        pkill -x idle-daemon 2>/dev/null || true
+        pkill -f '/usr/bin/idle-daemon' 2>/dev/null || true
+    fi
     systemctl --user reset-failed idlescreen.service 2>/dev/null || true
     systemctl --user enable --now idlescreen.service 2>/dev/null || true
     _start_out=$(systemctl --user restart idlescreen.service 2>&1) || true
