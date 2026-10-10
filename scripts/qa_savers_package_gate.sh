@@ -43,6 +43,7 @@ if [[ -d "$ROOT/idlescreen/crates/idlescreen-extras" ]]; then
   fi
 fi
 
+IDLE_API_SRC="${IDLE_API_SRC:-$ROOT/runtime}"
 if [[ ! -d "$IDLE_API_SRC/idle-api" ]]; then
   echo "FAIL: idle-api not found at $IDLE_API_SRC/idle-api" >&2
   echo "Clone idlescreen/runtime next to packages and savers." >&2
