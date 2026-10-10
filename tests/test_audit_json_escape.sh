@@ -1,7 +1,7 @@
 #!/bin/sh
 # Resolve the repo root from this test's own location (tests/ is one level
 # down) — the previous absolute path only existed on the author's machine.
-REPO_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+REPO_ROOT=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
 . "$REPO_ROOT/install_audit.sh"
 
 fail=0

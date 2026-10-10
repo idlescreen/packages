@@ -297,7 +297,7 @@ uninstall_stack() {
 }
 
 if [ "${0##*/}" = "uninstall.sh" ]; then
-    _script_dir="$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)"
+    _script_dir="$(CDPATH='' cd -- "$(dirname -- "$0")" && pwd)"
     if [ -f "$_script_dir/ui.sh" ]; then
         # shellcheck disable=SC1091
         . "$_script_dir/ui.sh"

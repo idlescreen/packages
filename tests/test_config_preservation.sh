@@ -5,7 +5,7 @@ set -eu
 TMP=$(mktemp -d)
 trap 'rm -rf "$TMP"' EXIT INT TERM
 
-REPO_ROOT=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd)
+REPO_ROOT=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
 MOCKBIN="$TMP/bin"
 mkdir -p "$MOCKBIN"
 
