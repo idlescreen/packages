@@ -84,10 +84,16 @@ _rtdir()  { echo "$srcdir/runtime"; }
 prepare() {
     cd "$(_rtdir)" || return 1
 
-    # `savers` declares `idle-api = { path = "runtime/idle-api" }`, so the
-    # engine link MUST be named `runtime` inside the savers tree.
+    # Link the runtime workspace into consumers that declare path dependencies
+    # relative to runtime/ (savers, cli, tui).
     if [ ! -e "$srcdir/savers/runtime" ]; then
         ln -s "$(_rtdir)" "$srcdir/savers/runtime"
+    fi
+    if [ ! -e "$srcdir/cli/runtime" ]; then
+        ln -s "$(_rtdir)" "$srcdir/cli/runtime"
+    fi
+    if [ ! -e "$srcdir/tui/runtime" ]; then
+        ln -s "$(_rtdir)" "$srcdir/tui/runtime"
     fi
 
     # Remove workspace-level .cargo/config.toml so linker flags are not dropped
