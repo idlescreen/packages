@@ -34,9 +34,9 @@ options=('!lto')
 # numbers here were a crate version (savers is tagged v3.3.14 while its crate
 # is 2.4.9). Pin to the tags that actually exist.
 _runtime_ref=v3.6.0
-_cli_ref=v4.0.12
+_cli_ref=v4.1.0
 _savers_ref=v3.3.20
-_tui_ref=v3.2.10
+_tui_ref=v3.2.11
 _idlescreen_ref=v4.1.6
 
 source=(
