@@ -187,7 +187,7 @@ jobs:
         run: pacman -Sy --noconfirm --disable-download-timeout
 
       - name: Install repo tooling
-        run: pacman -S --noconfirm --needed --disable-download-timeout gnupg
+        run: pacman -S --noconfirm --needed --disable-download-timeout gnupg git
 
       - name: Download built packages
         uses: actions/download-artifact@v4
@@ -271,6 +271,7 @@ jobs:
           rm -rf arch/idlescreen/src arch/idlescreen/pkg arch/idlescreen/*.pkg.tar.zst*
           ls -la arch/
 
+          git config --global --add safe.directory '*'
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add arch/
