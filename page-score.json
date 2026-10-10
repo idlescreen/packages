@@ -1,6 +1,6 @@
 {
  "repo": "packages",
- "rev": "d97e665",
+ "rev": "69d9a3f",
  "dirty": true,
  "pages": [
   {
@@ -54,7 +54,7 @@
   },
   {
    "path": "./src/install_bin/start_daemon.rs",
-   "lines": 209,
+   "lines": 231,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 1
@@ -75,7 +75,7 @@
   },
   {
    "path": "./src/install_honesty/constants.rs",
-   "lines": 171,
+   "lines": 169,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 3

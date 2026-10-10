@@ -27,8 +27,12 @@ set -eu
 DRY_RUN=0
 UNINSTALL=0
 UNINSTALL_PURGE=0
+WITH_EXTRAS="${WITH_EXTRAS:-0}"
 for arg in "$@"; do
     case "$arg" in
+        --with-extras|--extras)
+            WITH_EXTRAS=1
+            ;;
         --plan|--dry-run)
             DRY_RUN=1
             ;;
@@ -44,6 +48,7 @@ for arg in "$@"; do
 Usage: install.sh [options]
 
   (no options)        install / update IdleScreen
+  --with-extras       install optional extras (11 mathematical screensavers)
   --uninstall         remove IdleScreen, keeping user configuration
   --purge             with --uninstall: also remove user and system config
   --plan | --dry-run  print the install plan and exit
@@ -54,6 +59,7 @@ USAGE
             ;;
     esac
 done
+export WITH_EXTRAS
 REPO_BASE="${IDLESCREEN_REPO_BASE:-https://idlescreen.github.io/packages}"
 MODULES="ui.sh detect.sh repo.sh install_core.sh install_audit.sh post_install.sh uninstall.sh"
 
@@ -96,9 +102,9 @@ case "${1:-}" in
                 _expected=""
                 case "$_f" in
                     "ui.sh") _expected="e67f1da218c432f88b5ef9a3683942fb79ba986c4930cb97542edba227dd7a73" ;;
-                    "detect.sh") _expected="aa55f78f7f1d95c6128f1daf49aef97489627363c08ba776da0d296ab88ed18d" ;;
+                    "detect.sh") _expected="477f3319b205ed1dbf70f02d20c190513775e018f457303e6ba90426819f549d" ;;
                     "repo.sh") _expected="27f07f8face1703802646efe7accea076068209f8c3867700c203c57785d2677" ;;
-                    "install_core.sh") _expected="689151c513c63b9ab39f7e5d460a402f9d68fc08722e2210fc98fd1072768173" ;;
+                    "install_core.sh") _expected="baf7912a3f7ef4cb45d9c3de2362d422d6036d1c2b101253553ece5b187fd164" ;;
                     "install_audit.sh") _expected="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
                     "post_install.sh") _expected="e502a22bf9d912d548810ac658d7cfea4349fa1ae86a9dd1c7385da26305f1fa" ;;
                     "uninstall.sh") _expected="d64146cae404175b9c0164c6d179163673dfb159c43f631aec40e33087a9d661" ;;
@@ -228,9 +234,9 @@ if [ "$_local_checkout" -eq 0 ]; then
         _expected_hash=""
         case "$f" in
             "ui.sh") _expected_hash="e67f1da218c432f88b5ef9a3683942fb79ba986c4930cb97542edba227dd7a73" ;;
-            "detect.sh") _expected_hash="aa55f78f7f1d95c6128f1daf49aef97489627363c08ba776da0d296ab88ed18d" ;;
+            "detect.sh") _expected_hash="477f3319b205ed1dbf70f02d20c190513775e018f457303e6ba90426819f549d" ;;
             "repo.sh") _expected_hash="27f07f8face1703802646efe7accea076068209f8c3867700c203c57785d2677" ;;
-            "install_core.sh") _expected_hash="689151c513c63b9ab39f7e5d460a402f9d68fc08722e2210fc98fd1072768173" ;;
+            "install_core.sh") _expected_hash="baf7912a3f7ef4cb45d9c3de2362d422d6036d1c2b101253553ece5b187fd164" ;;
             "install_audit.sh") _expected_hash="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
             "post_install.sh") _expected_hash="e502a22bf9d912d548810ac658d7cfea4349fa1ae86a9dd1c7385da26305f1fa" ;;
             "uninstall.sh") _expected_hash="d64146cae404175b9c0164c6d179163673dfb159c43f631aec40e33087a9d661" ;;
