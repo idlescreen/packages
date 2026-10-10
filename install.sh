@@ -336,10 +336,14 @@ main() {
 
     victory "$PKGS"
 
-    if [ "$IS_TTY" -eq 1 ] && [ -t 0 ] && command -v idlescreen >/dev/null 2>&1; then
+    if [ "$IS_TTY" -eq 1 ] && command -v idlescreen >/dev/null 2>&1; then
         say ""
         say "  ${DIM}Previewing screensaver for 5s (press any key to exit)…${RESET}"
-        idlescreen preview --timeout 5 || true
+        if [ -r /dev/tty ]; then
+            idlescreen preview --timeout 5 < /dev/tty || true
+        else
+            idlescreen preview --timeout 5 || true
+        fi
     fi
 }
 
