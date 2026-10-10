@@ -178,16 +178,15 @@ jobs:
     needs: build
     container: archlinux:base
     steps:
+      - name: Refresh package databases and install tooling
+        run: |
+          pacman -Sy --noconfirm --disable-download-timeout
+          pacman -S --noconfirm --needed --disable-download-timeout gnupg git
+
       - name: Checkout packages repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
-
-      - name: Refresh package databases
-        run: pacman -Sy --noconfirm --disable-download-timeout
-
-      - name: Install repo tooling
-        run: pacman -S --noconfirm --needed --disable-download-timeout gnupg git
 
       - name: Download built packages
         uses: actions/download-artifact@v4
