@@ -12,7 +12,7 @@ fn unit_active() -> bool {
     if !run_status(Command::new("which").arg("systemctl")) {
         return false;
     }
-    run_capture(Command::new("systemctl").args(["--user", "is-active", "idle-daemon.service"]))
+    run_capture(Command::new("systemctl").args(["--user", "is-active", "idlescreen.service"]))
         .map(|s| s == "active")
         .unwrap_or(false)
 }
@@ -34,26 +34,38 @@ fn daemon_ready() -> bool {
     }
 }
 
-/// Older RPMs shipped `User=session` which dbus-broker rejects.
+/// Ensure D-Bus service file exists and has no invalid User=session.
 fn fix_dbus_activation_file() {
     let path = "/usr/share/dbus-1/services/io.github.idlescreen.Idle.service";
+    let contents = "[D-BUS Service]\nName=io.github.idlescreen.Idle\nExec=/usr/bin/idlescreen daemon\nSystemdService=idlescreen.service\n";
+    if !std::path::Path::new(path).exists() {
+        story_line("Installing missing D-Bus activation file…");
+        if std::fs::write(path, contents).is_err() {
+            let tmp = format!("/tmp/io.github.idlescreen.Idle.service.{}", std::process::id());
+            if std::fs::write(&tmp, contents).is_ok() {
+                let _ = run_status(Command::new("sudo").args(["install", "-Dm644", &tmp, path]));
+                let _ = std::fs::remove_file(&tmp);
+            }
+        }
+        return;
+    }
     let Ok(text) = std::fs::read_to_string(path) else {
         return;
     };
-    if !text.lines().any(|l| l.trim() == "User=session") {
-        return;
+    if text.lines().any(|l| l.trim() == "User=session") || text.contains("idle-daemon") {
+        story_line("Fixing invalid User=session or idle-daemon in D-Bus activation file…");
+        let cleaned: String = text
+            .lines()
+            .filter(|l| l.trim() != "User=session")
+            .map(|l| l.replace("idle-daemon", "idlescreen"))
+            .collect::<Vec<_>>()
+            .join("\n")
+            + "\n";
+        if std::fs::write(path, &cleaned).is_ok() {
+            return;
+        }
+        let _ = run_status(Command::new("sudo").args(["sed", "-i", "-e", "/^User=session$/d", "-e", "s/idle-daemon/idlescreen/g", path]));
     }
-    story_line("Fixing invalid User=session in D-Bus activation file…");
-    let cleaned: String = text
-        .lines()
-        .filter(|l| l.trim() != "User=session")
-        .collect::<Vec<_>>()
-        .join("\n")
-        + "\n";
-    if std::fs::write(path, &cleaned).is_ok() {
-        return;
-    }
-    let _ = run_status(Command::new("sudo").args(["sed", "-i", "/^User=session$/d", path]));
 }
 
 fn ensure_config_dirs() {
@@ -133,37 +145,47 @@ pub fn start_daemon() -> bool {
         let _ = run_status(Command::new("systemctl").args(["--user", "daemon-reload"]));
         let _ = run_status(Command::new("systemctl").args([
             "--user",
-            "reset-failed",
+            "stop",
             "idle-daemon.service",
         ]));
-        story_line("systemctl --user enable idle-daemon.service…");
+        let _ = run_status(Command::new("systemctl").args([
+            "--user",
+            "disable",
+            "idle-daemon.service",
+        ]));
+        let _ = run_status(Command::new("systemctl").args([
+            "--user",
+            "reset-failed",
+            "idlescreen.service",
+        ]));
+        story_line("systemctl --user enable --now idlescreen.service…");
         let _ =
-            run_status(Command::new("systemctl").args(["--user", "enable", "idle-daemon.service"]));
+            run_status(Command::new("systemctl").args(["--user", "enable", "--now", "idlescreen.service"]));
         // Clean restart so a dying upgrade process releases the bus name.
-        story_line("systemctl --user restart idle-daemon.service…");
-        if !run_status(Command::new("systemctl").args(["--user", "restart", "idle-daemon.service"]))
+        story_line("systemctl --user restart idlescreen.service…");
+        if !run_status(Command::new("systemctl").args(["--user", "restart", "idlescreen.service"]))
         {
             warn("restart not active yet — stop + start…");
             let _ = run_status(Command::new("systemctl").args([
                 "--user",
                 "stop",
-                "idle-daemon.service",
+                "idlescreen.service",
             ]));
             std::thread::sleep(std::time::Duration::from_millis(400));
             let _ = run_status(Command::new("systemctl").args([
                 "--user",
                 "reset-failed",
-                "idle-daemon.service",
+                "idlescreen.service",
             ]));
             let _ = run_status(Command::new("systemctl").args([
                 "--user",
                 "start",
-                "idle-daemon.service",
+                "idlescreen.service",
             ]));
         }
     } else {
-        story_line("Starting idle-daemon…");
-        let _ = Command::new("idle-daemon").arg("daemon").spawn();
+        story_line("Starting idlescreen daemon…");
+        let _ = Command::new("idlescreen").arg("daemon").spawn();
     }
     for _ in 0..30 {
         if daemon_ready() {
@@ -173,37 +195,37 @@ pub fn start_daemon() -> bool {
     }
     if daemon_ready() {
         ok(&format!(
-            "idle-daemon is {C_GREEN}{C_BOLD}active{C_RESET} (D-Bus name claimed)"
+            "idlescreen is {C_GREEN}{C_BOLD}active{C_RESET} (D-Bus name claimed)"
         ));
         return true;
     }
     if !bus_name_up() {
-        warn("trying one-shot idle-daemon spawn…");
-        let _ = Command::new("idle-daemon").arg("daemon").spawn();
+        warn("trying one-shot idlescreen daemon spawn…");
+        let _ = Command::new("idlescreen").arg("daemon").spawn();
         std::thread::sleep(std::time::Duration::from_millis(800));
         if has_systemd {
             let _ = run_status(Command::new("systemctl").args([
                 "--user",
                 "reset-failed",
-                "idle-daemon.service",
+                "idlescreen.service",
             ]));
             let _ = run_status(Command::new("systemctl").args([
                 "--user",
                 "start",
-                "idle-daemon.service",
+                "idlescreen.service",
             ]));
             std::thread::sleep(std::time::Duration::from_millis(500));
         }
     }
     if daemon_ready() || bus_name_up() {
         ok(&format!(
-            "idle-daemon is up ({C_GREEN}{C_BOLD}bus/service{C_RESET})"
+            "idlescreen is up ({C_GREEN}{C_BOLD}bus/service{C_RESET})"
         ));
         return true;
     }
-    warn("idle-daemon D-Bus service is not ready.");
-    println!("    systemctl --user status idle-daemon.service");
-    println!("    journalctl --user -u idle-daemon.service -n 30 --no-pager");
+    warn("idlescreen D-Bus service is not ready.");
+    println!("    systemctl --user status idlescreen.service");
+    println!("    journalctl --user -u idlescreen.service -n 30 --no-pager");
     println!("    or: idlescreen doctor --fix");
     false
 }

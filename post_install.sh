@@ -6,17 +6,34 @@ _bus_name_up() {
 }
 
 _daemon_ready() {
-    systemctl --user is-active --quiet idle-daemon.service 2>/dev/null && _bus_name_up
+    systemctl --user is-active --quiet idlescreen.service 2>/dev/null && _bus_name_up
 }
 
-# Patch known-bad activation line from older packages (dbus-broker rejects User=session).
+# Patch known-bad activation line from older packages (dbus-broker rejects User=session)
+# and ensure the activation file is installed.
 _fix_dbus_activation_file() {
     _f="/usr/share/dbus-1/services/io.github.idlescreen.Idle.service"
+    if [ ! -f "$_f" ]; then
+        story_line "Installing missing D-Bus activation file…"
+        _tmp_f="/tmp/io.github.idlescreen.Idle.service.$$"
+        printf '[D-BUS Service]\nName=io.github.idlescreen.Idle\nExec=/usr/bin/idlescreen daemon\nSystemdService=idlescreen.service\n' > "$_tmp_f"
+        if [ -w "/usr/share/dbus-1/services" ]; then
+            install -m 644 "$_tmp_f" "$_f" 2>/dev/null || cp "$_tmp_f" "$_f" 2>/dev/null || true
+        elif command -v sudo >/dev/null 2>&1; then
+            sudo install -Dm644 "$_tmp_f" "$_f" 2>/dev/null || sudo cp "$_tmp_f" "$_f" 2>/dev/null || true
+        fi
+        rm -f "$_tmp_f" 2>/dev/null || true
+    fi
     [ -f "$_f" ] || return 0
     if grep -q '^User=session$' "$_f" 2>/dev/null; then
         story_line "Fixing invalid User=session in D-Bus activation file…"
         if command -v sudo >/dev/null 2>&1; then
             sudo sed -i '/^User=session$/d' "$_f" 2>/dev/null || true
+        fi
+    fi
+    if grep -q 'idle-daemon' "$_f" 2>/dev/null; then
+        if command -v sudo >/dev/null 2>&1; then
+            sudo sed -i 's/idle-daemon/idlescreen/g' "$_f" 2>/dev/null || true
         fi
     fi
 }
@@ -91,7 +108,7 @@ apply_shell_integration() {
         fi
     fi
 
-    systemctl --user restart idle-daemon.service >/dev/null 2>&1 || true
+    systemctl --user restart idlescreen.service >/dev/null 2>&1 || true
 }
 
 awaken_daemon() {
@@ -150,16 +167,18 @@ awaken_daemon() {
     apply_shell_integration
 
     systemctl --user daemon-reload 2>/dev/null || true
-    systemctl --user reset-failed idle-daemon.service 2>/dev/null || true
-    systemctl --user enable idle-daemon.service 2>/dev/null || true
-    _start_out=$(systemctl --user restart idle-daemon.service 2>&1) || true
-    if ! systemctl --user is-active --quiet idle-daemon.service 2>/dev/null; then
+    systemctl --user stop idle-daemon.service 2>/dev/null || true
+    systemctl --user disable idle-daemon.service 2>/dev/null || true
+    systemctl --user reset-failed idlescreen.service 2>/dev/null || true
+    systemctl --user enable --now idlescreen.service 2>/dev/null || true
+    _start_out=$(systemctl --user restart idlescreen.service 2>&1) || true
+    if ! systemctl --user is-active --quiet idlescreen.service 2>/dev/null; then
         warn "restart not active yet — stop + start…"
         [ -n "$_start_out" ] && dim "   ${_start_out}"
-        systemctl --user stop idle-daemon.service 2>/dev/null || true
+        systemctl --user stop idlescreen.service 2>/dev/null || true
         sleep 0.4
-        systemctl --user reset-failed idle-daemon.service 2>/dev/null || true
-        _start_out=$(systemctl --user start idle-daemon.service 2>&1) || true
+        systemctl --user reset-failed idlescreen.service 2>/dev/null || true
+        _start_out=$(systemctl --user start idlescreen.service 2>&1) || true
         [ -n "$_start_out" ] && dim "   ${_start_out}"
     fi
 
@@ -174,35 +193,35 @@ awaken_daemon() {
     done
 
     if _daemon_ready; then
-        ok "idle-daemon.service is ${GREEN}${BOLD}active${RESET} (D-Bus name claimed)"
+        ok "idlescreen.service is ${GREEN}${BOLD}active${RESET} (D-Bus name claimed)"
         return 0
     fi
 
     # Fallback: direct spawn only if nothing owns the name (unit race).
-    if ! _bus_name_up && command -v idle-daemon >/dev/null 2>&1; then
-        warn "user unit not ready — trying one-shot idle-daemon spawn…"
-        idle-daemon daemon >/dev/null 2>&1 &
+    if ! _bus_name_up && command -v idlescreen >/dev/null 2>&1; then
+        warn "user unit not ready — trying one-shot idlescreen daemon spawn…"
+        idlescreen daemon >/dev/null 2>&1 &
         sleep 0.8
-        systemctl --user reset-failed idle-daemon.service 2>/dev/null || true
-        systemctl --user start idle-daemon.service 2>/dev/null || true
+        systemctl --user reset-failed idlescreen.service 2>/dev/null || true
+        systemctl --user start idlescreen.service 2>/dev/null || true
         sleep 0.5
     fi
 
     if _daemon_ready || _bus_name_up; then
-        ok "idle-daemon is up (bus/service)"
+        ok "idlescreen is up (bus/service)"
         return 0
     fi
 
-    warn "idle-daemon D-Bus service is not ready."
+    warn "idlescreen D-Bus service is not ready."
     dim "   Packages may still be installed. Diagnose with:"
-    dim "   systemctl --user status idle-daemon.service"
-    dim "   journalctl --user -u idle-daemon.service -n 30 --no-pager"
+    dim "   systemctl --user status idlescreen.service"
+    dim "   journalctl --user -u idlescreen.service -n 30 --no-pager"
     dim "   or: idlescreen doctor --fix"
     if command -v systemctl >/dev/null 2>&1; then
-        dim "   unit: $(systemctl --user is-active idle-daemon.service 2>&1 || true)"
-        dim "   $(systemctl --user status idle-daemon.service --no-pager -l 2>&1 | head -n 8 | tr '\n' ' ')"
+        dim "   unit: $(systemctl --user is-active idlescreen.service 2>&1 || true)"
+        dim "   $(systemctl --user status idlescreen.service --no-pager -l 2>&1 | head -n 8 | tr '\n' ' ')"
     fi
-    journalctl --user -u idle-daemon.service -n 12 --no-pager 2>/dev/null \
+    journalctl --user -u idlescreen.service -n 12 --no-pager 2>/dev/null \
         | while IFS= read -r _line; do dim "   ${_line}"; done || true
 }
 
@@ -214,7 +233,7 @@ victory() {
     if command -v audit_installed_plugins >/dev/null 2>&1; then
         audit_installed_plugins
     fi
-    if [ -z "${MISSING_AFTER:-}" ] && systemctl --user is-active --quiet idle-daemon.service 2>/dev/null; then
+    if [ -z "${MISSING_AFTER:-}" ] && (systemctl --user is-active --quiet idlescreen.service 2>/dev/null || systemctl --user is-active --quiet idle-daemon.service 2>/dev/null); then
         _banner_title="INSTALL FINISHED"
         _banner_note="packages present · daemon active"
     elif [ -z "${MISSING_AFTER:-}" ]; then

@@ -40,7 +40,7 @@ _u_is_desktop_uid() {
     [ "$1" -ge 1000 ]
 }
 
-# Stop and disable idle-daemon for every logged-in desktop session. Runs
+# Stop and disable idlescreen and idle-daemon for every logged-in desktop session. Runs
 # before and after package removal: once the unit file is gone the second
 # pass is the only thing that can stop a surviving process.
 uninstall_stop_user_daemons() {
@@ -50,25 +50,32 @@ uninstall_stop_user_daemons() {
             [ -n "$user" ] || continue
             [ -S "/run/user/$uid/bus" ] || continue
             if command -v runuser >/dev/null 2>&1; then
-                runuser -u "$user" -- env \
-                    XDG_RUNTIME_DIR="/run/user/$uid" \
-                    DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
-                    systemctl --user stop idle-daemon.service 2>/dev/null || true
-                runuser -u "$user" -- env \
-                    XDG_RUNTIME_DIR="/run/user/$uid" \
-                    DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
-                    systemctl --user disable idle-daemon.service 2>/dev/null || true
+                for _svc in idlescreen.service idle-daemon.service; do
+                    runuser -u "$user" -- env \
+                        XDG_RUNTIME_DIR="/run/user/$uid" \
+                        DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+                        systemctl --user stop "$_svc" 2>/dev/null || true
+                    runuser -u "$user" -- env \
+                        XDG_RUNTIME_DIR="/run/user/$uid" \
+                        DBUS_SESSION_BUS_ADDRESS="unix:path=/run/user/$uid/bus" \
+                        systemctl --user disable "$_svc" 2>/dev/null || true
+                done
             else
-                systemctl --user --machine="${user}@" stop idle-daemon.service 2>/dev/null || true
-                systemctl --user --machine="${user}@" disable idle-daemon.service 2>/dev/null || true
+                for _svc in idlescreen.service idle-daemon.service; do
+                    systemctl --user --machine="${user}@" stop "$_svc" 2>/dev/null || true
+                    systemctl --user --machine="${user}@" disable "$_svc" 2>/dev/null || true
+                done
             fi
         done
     fi
     if command -v pkill >/dev/null 2>&1; then
+        pkill -x idlescreen 2>/dev/null || true
+        pkill -f '/usr/bin/idlescreen daemon' 2>/dev/null || true
         pkill -x idle-daemon 2>/dev/null || true
         pkill -f '/usr/bin/idle-daemon' 2>/dev/null || true
     fi
     if command -v systemctl >/dev/null 2>&1; then
+        systemctl --user disable idlescreen.service 2>/dev/null || true
         systemctl --user disable idle-daemon.service 2>/dev/null || true
         systemctl --user daemon-reload 2>/dev/null || true
     fi
