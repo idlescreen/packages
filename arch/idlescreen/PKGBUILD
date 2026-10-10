@@ -117,12 +117,12 @@ _build_cli() {
 
 _build_tui() {
     cd "$srcdir/tui" || return 1
-    cargo build --release --locked -p idle-tui
+    cargo build --release -p idle-tui
 }
 
 _build_savers() {
     cd "$srcdir/savers" || return 1
-    cargo build --release --locked \
+    cargo build --release \
         -p ascii \
         -p aurora \
         -p beams \
@@ -139,7 +139,7 @@ _build_savers() {
 
 _build_idlescreen() {
     cd "$srcdir/idlescreen" || return 1
-    cargo build --release --locked -p idlescreen
+    cargo build --release -p idlescreen
 }
 
 build() {
