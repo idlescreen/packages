@@ -229,19 +229,25 @@ jobs:
           gpg --list-secret-keys --keyid-format=long
 
       - name: Build and sign the sync database
+        env:
+          GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
         run: |
           set -euo pipefail
           cd arch/idlescreen
           if [ -n "${GPG_PASSPHRASE:-}" ]; then
             export GNUPGHOME="${HOME}/.gnupg"
+            if [ -x /tmp/gpg-wrapper ]; then
+              ln -sf /tmp/gpg-wrapper /tmp/gpg
+              export PATH="/tmp:$PATH"
+            fi
             KEYID="$(gpg --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" \
                        --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5; exit}')"
-            repo-add --include-sigs --sign "$KEYID" ./*.pkg.tar.zst
+            repo-add --include-sigs --sign --key "$KEYID" idlescreen.db.tar.gz ./*.pkg.tar.zst
             gpg --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" \
                 --yes --detach-sign --armor idlescreen.db.tar.gz
           else
             KEYID="$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5; exit}')"
-            repo-add --include-sigs --sign "$KEYID" ./*.pkg.tar.zst
+            repo-add --include-sigs --sign --key "$KEYID" idlescreen.db.tar.gz ./*.pkg.tar.zst
             gpg --yes --detach-sign idlescreen.db.tar.gz
           fi
           ls -la idlescreen.db*
@@ -259,10 +265,10 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p arch
-          cp arch/idlescreen/idlescreen.db.tar.gz arch/ 2>/dev/null || true
-          cp arch/idlescreen/idlescreen.db.tar.gz.sig arch/ 2>/dev/null || true
-          cp arch/idlescreen/*.pkg.tar.zst arch/ 2>/dev/null || true
-          rm -rf arch/idlescreen/src arch/idlescreen/pkg arch/idlescreen/*.pkg.tar.zst
+          cp -a arch/idlescreen/idlescreen.db* arch/ 2>/dev/null || true
+          cp -a arch/idlescreen/idlescreen.files* arch/ 2>/dev/null || true
+          cp -a arch/idlescreen/*.pkg.tar.zst* arch/ 2>/dev/null || true
+          rm -rf arch/idlescreen/src arch/idlescreen/pkg arch/idlescreen/*.pkg.tar.zst*
           ls -la arch/
 
           git config user.name "github-actions[bot]"
