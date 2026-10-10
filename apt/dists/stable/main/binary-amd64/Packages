@@ -998,31 +998,6 @@ Description: Optional TUI client for IdleScreen (idle-tui)
  Optional live TUI controller for IdleScreen.
 
 Package: idlescreen
-Version: 4.0.7-1
-Architecture: amd64
-Maintainer: IdleScreen <jerydleuck@gmail.com>
-Installed-Size: 441
-Depends: idle-cli (>= 4.0.0), idle-daemon (>= 3.5.8), idle-savers, idle-tui (>= 3.0.1), libc6
-Breaks: idle-cli (<< 4.0.0)
-Replaces: idle-cli (<< 4.0.0)
-Filename: pool/main/idlescreen_4.0.7-1_amd64.deb
-Size: 179168
-MD5sum: 066107ecb482232c1af07d5ffbf3c936
-SHA1: e4c673f94a0d088a5e13e2ace181e38f5db46752
-SHA256: 0314d00998a3c74912befa9b6ddb603b0272b36f81a2e8cb5686a383ca9ecb53
-Section: utils
-Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: IdleScreen router — one front door for cli, tui, studio, cosmic, savers,
- runtime
- IdleScreen product package and router: pulls in the modular host stack and
- provides `idlescreen` — `idlescreen <component>` execs component binaries
- (cli, tui, studio, cosmic); `idlescreen <verb>` forwards daemon commands to
- idle-cli; `idlescreen install` manages components via dnf/apt. Removing this
- package removes the installed product stack; user config under ~/.config/idle
- is left in place.
-
-Package: idlescreen
 Version: 4.1.0-1
 Architecture: amd64
 Maintainer: IdleScreen <team@idlescreen.org>
@@ -1062,6 +1037,26 @@ Homepage: https://github.com/idlescreen/idlescreen
 Description: IdleScreen standalone screensaver and idle management suite for Linux
  IdleScreen standalone screensaver and idle management suite for Linux
 
+Package: idlescreen
+Version: 4.1.2-1
+Architecture: amd64
+Maintainer: IdleScreen <team@idlescreen.org>
+Installed-Size: 11884
+Depends: libc6
+Breaks: idle-daemon (<< 5.0.0), idle-cli (<< 5.0.0), idle-savers (<< 5.0.0), idle-tui (<< 5.0.0), idle-cosmic (<< 5.0.0), idle-saver-ascii (<< 5.0.0), idle-saver-aurora (<< 5.0.0), idle-saver-beams (<< 5.0.0), idle-saver-bursts (<< 5.0.0), idle-saver-chaos (<< 5.0.0), idle-saver-cosmos (<< 5.0.0), idle-saver-glyphs (<< 5.0.0), idle-saver-gnats (<< 5.0.0), idle-saver-hearth (<< 5.0.0), idle-saver-radar (<< 5.0.0), idle-saver-ripple (<< 5.0.0), idle-saver-storm (<< 5.0.0), idle-runner (<< 5.0.0)
+Replaces: idle-daemon (<< 5.0.0), idle-cli (<< 5.0.0), idle-savers (<< 5.0.0), idle-tui (<< 5.0.0), idle-cosmic (<< 5.0.0), idle-saver-ascii (<< 5.0.0), idle-saver-aurora (<< 5.0.0), idle-saver-beams (<< 5.0.0), idle-saver-bursts (<< 5.0.0), idle-saver-chaos (<< 5.0.0), idle-saver-cosmos (<< 5.0.0), idle-saver-glyphs (<< 5.0.0), idle-saver-gnats (<< 5.0.0), idle-saver-hearth (<< 5.0.0), idle-saver-radar (<< 5.0.0), idle-saver-ripple (<< 5.0.0), idle-saver-storm (<< 5.0.0), idle-runner (<< 5.0.0)
+Provides: idle-daemon (= 4.1.2), idle-cli (= 4.1.2), idle-savers (= 4.1.2), idle-tui (= 4.1.2), idle-cosmic (= 4.1.2), idle-saver-ascii (= 4.1.2), idle-saver-aurora (= 4.1.2), idle-saver-beams (= 4.1.2), idle-saver-bursts (= 4.1.2), idle-saver-chaos (= 4.1.2), idle-saver-cosmos (= 4.1.2), idle-saver-glyphs (= 4.1.2), idle-saver-gnats (= 4.1.2), idle-saver-hearth (= 4.1.2), idle-saver-radar (= 4.1.2), idle-saver-ripple (= 4.1.2), idle-saver-storm (= 4.1.2), idle-runner (= 4.1.2)
+Filename: pool/main/idlescreen_4.1.2-1_amd64.deb
+Size: 1041212
+MD5sum: 6b9ea1528fbff228a3ff8b0931227561
+SHA1: 62bbdc7ffc2f27c68211be6fbe41807e21752cca
+SHA256: 856c7d750357067122cc6cd183c2a9cf959ea20c33d4d509d33daa775d594097
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: IdleScreen standalone screensaver and idle management suite for Linux
+ IdleScreen standalone screensaver and idle management suite for Linux
+
 Package: idlescreen-extras
 Version: 4.1.0-1
 Architecture: amd64
@@ -1090,6 +1085,23 @@ Size: 296972
 MD5sum: 62055e30164afb5f8d3bf0b5377cbc15
 SHA1: 84c70837db8be35c38425522d8882b2790d98209
 SHA256: ac30ab34153113469c37a39cd006b554b670b8be175e2ac34fb88c976d9ffc1e
+Section: utils
+Priority: optional
+Homepage: https://github.com/idlescreen/idlescreen
+Description: Mathematical screensaver collection helper for IdleScreen
+ Optional mathematical screensaver collection helper for IdleScreen
+
+Package: idlescreen-extras
+Version: 4.1.2-1
+Architecture: amd64
+Maintainer: IdleScreen <team@idlescreen.org>
+Installed-Size: 682
+Depends: idlescreen (= 4.1.2), libc6
+Filename: pool/main/idlescreen-extras_4.1.2-1_amd64.deb
+Size: 297160
+MD5sum: d7adf690ff57019c4ade9f87e109b40e
+SHA1: ed8411b0336671000a46b7562093f385271cbc90
+SHA256: c8b4ab2dd87ddcd5c8d7bbfc0a30fcfdafbed10ba0c3c11fd56fd8b86d6c5104
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idlescreen
