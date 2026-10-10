@@ -30,6 +30,7 @@ idle-saver-ripple
 idle-saver-storm
 idle-daemon
 idlescreen
+idlescreen-extras
 "
 
 _u_is_desktop_uid() {

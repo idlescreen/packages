@@ -96,12 +96,12 @@ case "${1:-}" in
                 _expected=""
                 case "$_f" in
                     "ui.sh") _expected="e67f1da218c432f88b5ef9a3683942fb79ba986c4930cb97542edba227dd7a73" ;;
-                    "detect.sh") _expected="a293a11e01be7e0c978035ddf3795f1d5abc047658a08aef09eb5b2a0f95c01f" ;;
+                    "detect.sh") _expected="aa55f78f7f1d95c6128f1daf49aef97489627363c08ba776da0d296ab88ed18d" ;;
                     "repo.sh") _expected="27f07f8face1703802646efe7accea076068209f8c3867700c203c57785d2677" ;;
-                    "install_core.sh") _expected="23c1f962a3df73f96fc8ae698bb886aad0facfe5a4f2f739b2b395fc9614989a" ;;
+                    "install_core.sh") _expected="689151c513c63b9ab39f7e5d460a402f9d68fc08722e2210fc98fd1072768173" ;;
                     "install_audit.sh") _expected="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
                     "post_install.sh") _expected="e2f411dd08b87ca7883432ec51768213ffa3b95c690feeef55339bd97e68f205" ;;
-                    "uninstall.sh") _expected="b58506e67439835c1e65756c81aa75ece32d34935a2160fc42bc008a778c542a" ;;
+                    "uninstall.sh") _expected="1c5d1419d5fe373d92791eae89e29d0207fa86c5fe13ed715e29df7cc4a7e5dc" ;;
                 esac
                 if [ -n "$_dir" ]; then
                     echo "$_expected  $_dir/$_f (pinned bootstrap hash)"
@@ -228,12 +228,12 @@ if [ "$_local_checkout" -eq 0 ]; then
         _expected_hash=""
         case "$f" in
             "ui.sh") _expected_hash="e67f1da218c432f88b5ef9a3683942fb79ba986c4930cb97542edba227dd7a73" ;;
-            "detect.sh") _expected_hash="a293a11e01be7e0c978035ddf3795f1d5abc047658a08aef09eb5b2a0f95c01f" ;;
+            "detect.sh") _expected_hash="aa55f78f7f1d95c6128f1daf49aef97489627363c08ba776da0d296ab88ed18d" ;;
             "repo.sh") _expected_hash="27f07f8face1703802646efe7accea076068209f8c3867700c203c57785d2677" ;;
-            "install_core.sh") _expected_hash="23c1f962a3df73f96fc8ae698bb886aad0facfe5a4f2f739b2b395fc9614989a" ;;
+            "install_core.sh") _expected_hash="689151c513c63b9ab39f7e5d460a402f9d68fc08722e2210fc98fd1072768173" ;;
             "install_audit.sh") _expected_hash="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
             "post_install.sh") _expected_hash="e2f411dd08b87ca7883432ec51768213ffa3b95c690feeef55339bd97e68f205" ;;
-            "uninstall.sh") _expected_hash="b58506e67439835c1e65756c81aa75ece32d34935a2160fc42bc008a778c542a" ;;
+            "uninstall.sh") _expected_hash="1c5d1419d5fe373d92791eae89e29d0207fa86c5fe13ed715e29df7cc4a7e5dc" ;;
             *) echo "install: unknown module $f" >&2; exit 1 ;;
         esac
         

@@ -2,11 +2,8 @@
 
 /// Core packages always requested (every DE).
 pub const CORE_PACKAGES: &[&str] = &[
-    "idle-daemon",
-    "idle-cli",
-    "idle-savers",
-    "idle-tui",
     "idlescreen",
+    "idlescreen-extras",
 ];
 
 /// Extra package only when COSMIC is detected.

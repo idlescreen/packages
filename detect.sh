@@ -144,7 +144,7 @@ detect_de() {
 }
 
 build_pkg_list() {
-    PKGS="idle-daemon idle-cli idle-savers idle-tui idlescreen"
+    PKGS="idlescreen idlescreen-extras"
 
     case "$DE_ID" in
         cosmic)

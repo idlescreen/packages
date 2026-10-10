@@ -11,8 +11,8 @@ survey_modules() {
 
     step "[3/5]  Composing the install plan"
     story_line "Desktop profile → ${BOLD}${DE_LABEL}${RESET}"
-    say "  ${GREEN}→${RESET} Core stack (all DEs): ${BOLD}idle-daemon idle-cli idle-savers idle-tui idlescreen${RESET}"
-    say "  ${DIM}    idlescreen = product metapackage (install|remove by brand name)${RESET}"
+    say "  ${GREEN}→${RESET} Core stack (all DEs): ${BOLD}idlescreen idlescreen-extras${RESET}"
+    say "  ${DIM}    idlescreen = unified screensaver suite (daemon, cli, tui, ascii)${RESET}"
     case "$DE_ID" in
         cosmic)
             say "  ${GREEN}→${RESET} COSMIC: also ${BOLD}idle-cosmic${RESET} (panel applet package)"
@@ -118,26 +118,16 @@ install_packages() {
             exit 1
         fi
         story_line "Verifying RPM database…"
-        if ! rpm -q idle-daemon idle-cli >/dev/null 2>&1; then
-            err "idle-daemon / idle-cli missing after install — dnf did not install packages"
-            exit 1
-        fi
-        if ! rpm -q idlescreen >/dev/null 2>&1; then
-            warn "Product package idlescreen missing — installing metapackage…"
-            if ! sudo dnf install -y --refresh $_weak_flag idlescreen; then
-                err "failed to install idlescreen metapackage"
-                exit 1
-            fi
-        fi
-        if ! rpm -q idlescreen >/dev/null 2>&1; then
-            err "idlescreen metapackage still missing after install — aborting"
+        if ! rpm -q idlescreen >/dev/null 2>&1 && ! rpm -q idle-daemon >/dev/null 2>&1 && ! rpm -q --whatprovides idle-daemon >/dev/null 2>&1; then
+            err "idlescreen missing after install — dnf did not install packages"
             exit 1
         fi
         say ""
         _missing=0
         for _pkg in $_pkgs; do
-            if rpm -q "$_pkg" >/dev/null 2>&1; then
-                ok "$(rpm -q "$_pkg")"
+            if rpm -q "$_pkg" >/dev/null 2>&1 || rpm -q --whatprovides "$_pkg" >/dev/null 2>&1; then
+                _name=$(rpm -q "$_pkg" 2>/dev/null || rpm -q --whatprovides "$_pkg" 2>/dev/null | head -n1)
+                ok "$_name"
             else
                 err "$_pkg not present after deploy"
                 _missing=1
@@ -169,8 +159,8 @@ install_packages() {
             exit 1
         fi
         story_line "Verifying pacman database…"
-        if ! pacman -Q idle-daemon idle-cli >/dev/null 2>&1; then
-            err "idle-daemon / idle-cli missing after install"
+        if ! pacman -Q idlescreen >/dev/null 2>&1 && ! pacman -Q idle-daemon >/dev/null 2>&1; then
+            err "idlescreen missing after install"
             exit 1
         fi
         say ""
@@ -213,8 +203,8 @@ install_packages() {
             exit 1
         fi
         story_line "Verifying dpkg database…"
-        if ! dpkg-query -W idle-daemon idle-cli >/dev/null 2>&1; then
-            err "idle-daemon / idle-cli missing after install"
+        if ! dpkg-query -W idlescreen >/dev/null 2>&1 && ! dpkg-query -W idle-daemon >/dev/null 2>&1; then
+            err "idlescreen missing after install"
             exit 1
         fi
         say ""

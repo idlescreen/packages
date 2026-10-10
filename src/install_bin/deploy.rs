@@ -46,8 +46,8 @@ fn deploy_dnf(all: &[String], survey: &Survey, pkgs: &[&str], cosmic: bool) {
         exit(1);
     }
     story_line("Verifying RPM database…");
-    if rpm_installed("idle-daemon").is_none() || rpm_installed("idle-cli").is_none() {
-        err("idle-daemon / idle-cli missing after install");
+    if rpm_installed("idlescreen").is_none() && rpm_installed("idle-daemon").is_none() {
+        err("idlescreen missing after install");
         exit(1);
     }
     if !cosmic && rpm_installed("idle-cosmic").is_some() {
@@ -91,8 +91,8 @@ fn deploy_apt(all: &[String], survey: &Survey, pkgs: &[&str], cosmic: bool) {
         }
     }
     story_line("Verifying dpkg database…");
-    if apt_installed("idle-daemon").is_none() || apt_installed("idle-cli").is_none() {
-        err("idle-daemon / idle-cli missing after install");
+    if apt_installed("idlescreen").is_none() && apt_installed("idle-daemon").is_none() {
+        err("idlescreen missing after install");
         exit(1);
     }
     if !cosmic && apt_installed("idle-cosmic").is_some() {
