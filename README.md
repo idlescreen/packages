@@ -59,7 +59,7 @@ Then, by channel:
 Once a channel is configured, the product package is a one-liner:
 
 ```sh
-dnf install idlescreen        # Fedora, Nobara, RHEL family
+dnf install idlescreen        # SuperFedora, Fedora, Nobara, RHEL family
 apt-get install idlescreen    # Debian, Ubuntu, Mint, Pop!_OS, elementary
 pacman -S idlescreen          # Arch, EndeavourOS, Garuda, CachyOS
 ```
@@ -115,9 +115,9 @@ Existing files are preserved completely across installs, upgrades, and channel r
 
 ### Session shells that own idle and lock
 
-If your session shell already owns idle timing and screen lock, IdleScreen draws
+If your session shell (such as SuperFedora or Omarchy) already owns idle timing and screen lock, IdleScreen draws
 the screensaver while the shell decides when to show it — so you never get two
-savers on two different clocks. Installers set `idle_enabled: false` in that
+savers on two different clocks. Installers set `idle_enabled = false` in that
 case, and `idlescreen doctor` reports exactly what happened.
 
 See [docs/SESSION-SHELLS.md](docs/SESSION-SHELLS.md) for the hand-off, how to

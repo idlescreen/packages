@@ -61,10 +61,10 @@ jobs:
       - name: Prepare Rust toolchain and a non-root build user
         run: |
           # Pin the toolchain the project declares, rather than whatever
-          # `stable` happens to be today. The file lives in the runtime repo,
+          # `stable` happens to be today. The file lives in the idlescreen repo,
           # which is only fetched later by makepkg, so read it from a shallow
           # clone up front.
-          git clone --depth 1 https://github.com/idlescreen/runtime /tmp/rt
+          git clone --depth 1 https://github.com/idlescreen/idlescreen /tmp/rt
           TOOLCHAIN="$(sed -n 's/^channel *= *"\(.*\)"/\1/p' /tmp/rt/rust-toolchain.toml | head -n1)"
           echo "project toolchain: ${TOOLCHAIN:-<unpinned>}"
           if [ -n "$TOOLCHAIN" ]; then
@@ -158,9 +158,9 @@ jobs:
           produced="$(ls -1 ./*.pkg.tar.zst 2>/dev/null | wc -l)"
           echo "produced $produced package(s)"
           ls -la ./*.pkg.tar.zst || true
-          # Five splits: idle-daemon, idle-cli, idle-tui, idle-savers, idlescreen
-          if [ "$produced" -lt 5 ]; then
-            echo "ERROR: expected at least 5 split packages, got $produced"
+          # Two splits: idlescreen, idlescreen-extras
+          if [ "$produced" -lt 2 ]; then
+            echo "ERROR: expected at least 2 split packages, got $produced"
             exit 1
           fi
 

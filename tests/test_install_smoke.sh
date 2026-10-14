@@ -273,8 +273,8 @@ fi
 # 6b. Session-shell integration. Both `omarchy-shell` and the shim are on the
 #     mock PATH, so the installer must stand IdleScreen's own idle timer down
 #     — otherwise two screensavers fire at two different delays.
-_arch_home="$TMP/home-arch/.config/idlescreen/config.yaml"
-if [ -f "$_arch_home" ] && grep -q '^idle_enabled: false' "$_arch_home"; then
+_arch_home="$TMP/home-arch/.config/idlescreen/config.toml"
+if [ -f "$_arch_home" ] && grep -q '^idle_enabled = false' "$_arch_home"; then
     echo "ok: shell integration stood the own idle timer down"
 else
     echo "FAIL: idle_enabled was not set false (config: ${_arch_home:-absent})"

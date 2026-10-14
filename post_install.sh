@@ -65,10 +65,10 @@ apply_shell_integration() {
         return 0
     fi
     story_line "Session shell owns idle timing — checking IdleScreen's own idle trigger…"
-    _cfg="${HOME}/.config/idlescreen/config.yaml"
+    _cfg="${HOME}/.config/idlescreen/config.toml"
     mkdir -p "$(dirname "$_cfg")"
 
-    _existing=$(grep -E '^[[:space:]]*idle_enabled[[:space:]]*:' "$_cfg" 2>/dev/null | head -n1 || true)
+    _existing=$(grep -E '^[[:space:]]*idle_enabled[[:space:]]*=' "$_cfg" 2>/dev/null | head -n1 || true)
     case "$_existing" in
         *false*)
             ok "idle_enabled is already false — no change needed"
@@ -81,19 +81,19 @@ apply_shell_integration() {
         *)
             if [ -n "$_existing" ]; then
                 say "  ${DIM}config:${RESET} ${BOLD}${_cfg}${RESET} already sets idle_enabled — leaving it"
+            elif [ ! -f "$_cfg" ]; then
+                printf '[general]\nidle_enabled = false\n\n[saver]\nactive = "ascii"\n' > "$_cfg"
+                ok "Set ${BOLD}idle_enabled = false${RESET} — the shell drives the screensaver"
             else
-                [ -s "$_cfg" ] && [ -n "$(tail -c1 "$_cfg" 2>/dev/null)" ] && printf '\n' >> "$_cfg"
-                printf 'idle_enabled: false\n' >> "$_cfg"
-                ok "Set ${BOLD}idle_enabled: false${RESET} — the shell drives the screensaver"
+                if grep -q '^\[general\]' "$_cfg" 2>/dev/null; then
+                    sed -i '/^\[general\]/a idle_enabled = false' "$_cfg" 2>/dev/null || true
+                else
+                    printf '\n[general]\nidle_enabled = false\n' >> "$_cfg"
+                fi
+                ok "Set ${BOLD}idle_enabled = false${RESET} — the shell drives the screensaver"
             fi
             ;;
     esac
-
-    if [ -f "$_cfg" ] && ! grep -q -E '^[[:space:]]*active_saver[[:space:]]*:' "$_cfg" 2>/dev/null; then
-        [ -s "$_cfg" ] && [ -n "$(tail -c1 "$_cfg" 2>/dev/null)" ] && printf '\n' >> "$_cfg"
-        printf 'active_saver: "ascii"\n' >> "$_cfg"
-        ok "Defaulted active_saver to ascii for session shell integration"
-    fi
 
     _shim="${SESSION_SHIM:-/usr/local/bin/omarchy-launch-screensaver}"
     if [ ! -f "$_shim" ] && [ -f "$SCRIPT_DIR/arch/idlescreen/omarchy-launch-screensaver" ]; then
@@ -117,47 +117,13 @@ awaken_daemon() {
     # Leftover atomic-write temps confuse nothing useful and clutter the dir.
     rm -f "${HOME}/.config/idle"/config.tmp.* "${HOME}/.config/idlescreen"/config.tmp.* 2>/dev/null || true
 
-    for _cfg in "${HOME}/.config/idlescreen/config.yaml" \
+    for _cfg in "${HOME}/.config/idlescreen/config.toml" \
+                "${HOME}/.config/idlescreen/config.yaml" \
                 "${HOME}/.config/idle/config.yaml" \
-                "/etc/xdg/idlescreen/config.yaml" \
-                "/etc/idlescreen/config.yaml" \
-                "/etc/idle/config.yaml"; do
+                "/etc/xdg/idlescreen/config.toml" \
+                "/etc/idlescreen/config.toml"; do
         if [ -f "$_cfg" ]; then
             story_line "Preserving existing configuration at ${_cfg}…"
-        fi
-    done
-
-    _sys_cfg=""
-    if [ -f "/etc/xdg/idlescreen/config.yaml" ]; then
-        _sys_cfg="/etc/xdg/idlescreen/config.yaml"
-    elif [ -f "/etc/idlescreen/config.yaml" ]; then
-        _sys_cfg="/etc/idlescreen/config.yaml"
-    elif [ -f "/etc/idle/config.yaml" ]; then
-        _sys_cfg="/etc/idle/config.yaml"
-    fi
-
-    # Preserve existing user configuration across runs and updates:
-    # never clobber existing user or system config files.
-    if [ -f "${HOME}/.config/idlescreen/config.yaml" ]; then
-        if [ ! -f "${HOME}/.config/idle/config.yaml" ]; then
-            cp -p "${HOME}/.config/idlescreen/config.yaml" "${HOME}/.config/idle/config.yaml" 2>/dev/null || true
-        fi
-    elif [ -f "${HOME}/.config/idle/config.yaml" ]; then
-        if [ ! -f "${HOME}/.config/idlescreen/config.yaml" ]; then
-            cp -p "${HOME}/.config/idle/config.yaml" "${HOME}/.config/idlescreen/config.yaml" 2>/dev/null || true
-        fi
-    elif [ -n "$_sys_cfg" ]; then
-        [ -f "${HOME}/.config/idlescreen/config.yaml" ] || cp -p "$_sys_cfg" "${HOME}/.config/idlescreen/config.yaml" 2>/dev/null || true
-        [ -f "${HOME}/.config/idle/config.yaml" ] || cp -p "$_sys_cfg" "${HOME}/.config/idle/config.yaml" 2>/dev/null || true
-    else
-        printf 'active_saver: "ascii"\n' > "${HOME}/.config/idlescreen/config.yaml" 2>/dev/null || true
-        cp -p "${HOME}/.config/idlescreen/config.yaml" "${HOME}/.config/idle/config.yaml" 2>/dev/null || true
-    fi
-
-    for _u_cfg in "${HOME}/.config/idlescreen/config.yaml" "${HOME}/.config/idle/config.yaml"; do
-        if [ -f "$_u_cfg" ] && ! grep -q -E '^[[:space:]]*active_saver[[:space:]]*:' "$_u_cfg" 2>/dev/null; then
-            [ -s "$_u_cfg" ] && [ -n "$(tail -c1 "$_u_cfg" 2>/dev/null)" ] && printf '\n' >> "$_u_cfg"
-            printf 'active_saver: "ascii"\n' >> "$_u_cfg"
         fi
     done
 
@@ -165,6 +131,12 @@ awaken_daemon() {
     _ensure_idlescreen_symlinks
 
     apply_shell_integration
+
+    # Preserve existing user configuration across runs and updates:
+    # never clobber existing user or system config files.
+    if [ ! -f "${HOME}/.config/idlescreen/config.toml" ] && [ ! -f "${HOME}/.config/idlescreen/config.yaml" ]; then
+        printf '[general]\nidle_timeout_secs = 300\n\n[saver]\nactive = "ascii"\n' > "${HOME}/.config/idlescreen/config.toml" 2>/dev/null || true
+    fi
 
     systemctl --user daemon-reload 2>/dev/null || true
     systemctl --user stop idle-daemon.service 2>/dev/null || true

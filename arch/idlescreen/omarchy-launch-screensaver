@@ -23,17 +23,22 @@ if [ "$(omarchy-shell lock isLocked 2>/dev/null || echo false)" = "true" ]; then
     exit 0
 fi
 
-# Idempotent: exit 0 if already presenting.
-if idlescreen status --json 2>/dev/null | grep -q '"presentation_active":true'; then
+# Idempotent: exit 0 if already presenting (`active:true` or legacy `presentation_active:true`).
+_status_json="$(idlescreen status --json 2>/dev/null || true)"
+if printf '%s' "$_status_json" | grep -q -E '"(presentation_)?active"[[:space:]]*:[[:space:]]*true'; then
     exit 0
 fi
 
 # Respect media/session inhibitors. The shell's own idle monitor honours only
 # idle-inhibit-unstable-v1, so portal-derived inhibitors reach IdleScreen alone.
 # `force` wins over inhibitors when the user explicitly forces the screensaver.
-if [ "${1:-}" != "force" ] \
-    && idlescreen inhibitors --json 2>/dev/null | grep -q '"inhibited":true'; then
-    exit 0
+if [ "${1:-}" != "force" ]; then
+    if printf '%s' "$_status_json" | grep -q -E '"inhibited"[[:space:]]*:[[:space:]]*true'; then
+        exit 0
+    fi
+    if idlescreen inhibitors --json 2>/dev/null | grep -q -E '"inhibited"[[:space:]]*:[[:space:]]*true'; then
+        exit 0
+    fi
 fi
 
 exec idlescreen start
