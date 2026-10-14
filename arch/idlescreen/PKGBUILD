@@ -8,7 +8,7 @@
 # Split-package PKGBUILD for IdleScreen on Arch Linux and derivatives.
 pkgbase=idlescreen
 pkgname=('idlescreen' 'idlescreen-extras')
-pkgver=4.2.0
+pkgver=4.2.1
 pkgrel=1
 pkgdesc="Modular Wayland idle host and procedural screensaver plugins"
 arch=('x86_64')
