@@ -27,7 +27,6 @@ pub const OFFICIAL_SAVERS: &[&str] = &[
 /// Full product stack erased by `dnf/apt remove idlescreen` (idlescreen 2.6+).
 /// Does not include `idlescreen` itself (already being removed) or user config.
 pub const PRODUCT_STACK_ON_REMOVE: &[&str] = &[
-    "idlescreen-extras",
     "idle-cosmic",
     "idle-tui",
     "idle-cli",
@@ -135,7 +134,6 @@ mod tests {
     #[test]
     fn product_stack_on_remove_covers_installer_and_savers() {
         for p in [
-            "idlescreen-extras",
             "idle-daemon",
             "idle-cli",
             "idle-savers",

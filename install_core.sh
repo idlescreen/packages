@@ -11,12 +11,8 @@ survey_modules() {
 
     step "[3/5]  Composing the install plan"
     story_line "Desktop profile → ${BOLD}${DE_LABEL}${RESET}"
-    if [ "${WITH_EXTRAS:-0}" = "1" ] || case "$_pkgs" in *idlescreen-extras*) true;; *) false;; esac; then
-        say "  ${GREEN}→${RESET} Core stack (all DEs): ${BOLD}idlescreen idlescreen-extras${RESET}"
-    else
-        say "  ${GREEN}→${RESET} Core stack (all DEs): ${BOLD}idlescreen${RESET}"
-    fi
-    say "  ${DIM}    idlescreen = unified screensaver suite (daemon, cli, tui, ascii)${RESET}"
+    say "  ${GREEN}→${RESET} Core stack (all DEs): ${BOLD}idlescreen${RESET}"
+    say "  ${DIM}    idlescreen = unified screensaver suite (daemon, cli, tui, 50 built-in 16-bit scenes)${RESET}"
     case "$DE_ID" in
         cosmic)
             say "  ${GREEN}→${RESET} COSMIC: also ${BOLD}idle-cosmic${RESET} (panel applet package)"

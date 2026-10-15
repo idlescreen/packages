@@ -1,6 +1,6 @@
 {
  "repo": "packages",
- "rev": "cac2636",
+ "rev": "92e6f29",
  "dirty": true,
  "pages": [
   {
@@ -75,7 +75,7 @@
   },
   {
    "path": "./src/install_honesty/constants.rs",
-   "lines": 169,
+   "lines": 167,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 3
@@ -256,5 +256,5 @@
    "reach": 0
   }
  ],
- "notes": "reach counts referencing files (shared file names qualified by ancestor dir);"
+ "notes": "reach counts referencing files (shared file names qualified by ancestor dir); bin_bytes from newest workspace dev rlib per crate via nm (inlining approx, bins re-link the same code; shims excluded, foreign paths never attributed);"
 }

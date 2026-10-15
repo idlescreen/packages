@@ -145,9 +145,6 @@ detect_de() {
 
 build_pkg_list() {
     PKGS="idlescreen"
-    if [ "${WITH_EXTRAS:-0}" = "1" ]; then
-        PKGS="$PKGS idlescreen-extras"
-    fi
 
     case "$DE_ID" in
         cosmic)

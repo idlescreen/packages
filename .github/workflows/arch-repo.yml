@@ -151,16 +151,16 @@ jobs:
           echo "=== produced ==="
           ls -la "$GITHUB_WORKSPACE/arch/idlescreen"/*.pkg.tar.zst || true
 
-      - name: Verify the expected split packages were produced
+      - name: Verify the expected package was produced
         working-directory: arch/idlescreen
         run: |
           set -uo pipefail
           produced="$(ls -1 ./*.pkg.tar.zst 2>/dev/null | wc -l)"
           echo "produced $produced package(s)"
           ls -la ./*.pkg.tar.zst || true
-          # Two splits: idlescreen, idlescreen-extras
-          if [ "$produced" -lt 2 ]; then
-            echo "ERROR: expected at least 2 split packages, got $produced"
+          # Unified package: idlescreen (+ optional debug split)
+          if [ "$produced" -lt 1 ]; then
+            echo "ERROR: expected at least 1 package, got $produced"
             exit 1
           fi
 

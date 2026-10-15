@@ -5,12 +5,12 @@
 # makepkg supplies $srcdir, $pkgdir, $startdir and $BUILDDIR.
 # shellcheck disable=SC2154,SC2178
 #
-# Split-package PKGBUILD for IdleScreen on Arch Linux and derivatives.
+# PKGBUILD for IdleScreen on Arch Linux and derivatives.
 pkgbase=idlescreen
-pkgname=('idlescreen' 'idlescreen-extras')
-pkgver=4.2.1
+pkgname=('idlescreen')
+pkgver=4.3.0
 pkgrel=1
-pkgdesc="Modular Wayland idle host and procedural screensaver plugins"
+pkgdesc="Unified Wayland idle host and 50 built-in 16-bit arcade screensaver scenes"
 arch=('x86_64')
 url="https://idlescreen.github.io"
 license=('Apache-2.0')
@@ -38,7 +38,6 @@ depends=(
 )
 
 optdepends=(
-    'idlescreen-extras: Additional GPU/procedural screensavers'
     'idle-cosmic: COSMIC panel applet'
 )
 
@@ -61,11 +60,11 @@ build() {
 
 package_idlescreen() {
     pkgname=idlescreen
-    pkgdesc="IdleScreen Wayland daemon, CLI, and TUI"
+    pkgdesc="IdleScreen Wayland daemon, CLI, TUI, and 50 built-in 16-bit arcade scenes"
     install=idlescreen.install
-    provides=('idle-daemon' 'idle-cli' 'idle-tui' 'idle-saver-ascii')
-    replaces=('idle-daemon' 'idle-cli' 'idle-tui' 'idle-saver-ascii')
-    conflicts=('idle-daemon' 'idle-cli' 'idle-tui' 'idle-saver-ascii')
+    provides=('idle-daemon' 'idle-cli' 'idle-tui' 'idle-saver-ascii' 'idle-savers' 'idlescreen-extras')
+    replaces=('idle-daemon' 'idle-cli' 'idle-tui' 'idle-saver-ascii' 'idle-savers' 'idlescreen-extras')
+    conflicts=('idle-daemon' 'idle-cli' 'idle-tui' 'idle-saver-ascii' 'idle-savers' 'idlescreen-extras')
     depends=("${depends[@]}")
 
     install -Dm755 "$srcdir/idlescreen/target/release/idlescreen" \
@@ -87,16 +86,4 @@ package_idlescreen() {
         "$pkgdir/usr/libexec/idlescreen/schedule-remove-stack"
     install -Dm755 "$startdir/omarchy-launch-screensaver" \
         "$pkgdir/usr/local/bin/omarchy-launch-screensaver"
-}
-
-package_idlescreen-extras() {
-    pkgname=idlescreen-extras
-    pkgdesc="All official IdleScreen extra screensaver plugins"
-    depends=("${depends[@]}" 'idlescreen')
-    provides=('idle-savers')
-    replaces=('idle-savers')
-    conflicts=('idle-savers')
-
-    install -Dm755 "$srcdir/idlescreen/target/release/idlescreen-extras" \
-        "$pkgdir/usr/libexec/idlescreen/idlescreen-extras"
 }

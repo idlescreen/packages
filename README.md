@@ -28,8 +28,8 @@
 
 The signed package channel — APT, RPM and pacman repos served at
 `idlescreen.github.io/packages`, fed by release imports from every product
-repo. Part of [IdleScreen](https://idlescreen.github.io) — modular Wayland
-screensavers for Linux.
+repo. Part of [IdleScreen](https://idlescreen.github.io) (`v4.3.0`) — unified single-binary Wayland
+screensavers for Linux with 50 built-in 16-bit arcade scenes.
 
 ## Install
 
@@ -66,7 +66,7 @@ pacman -S idlescreen          # Arch, EndeavourOS, Garuda, CachyOS
 
 ### Arch without the binary channel
 
-The pacman channel is served from a signed dylib database, so `install.sh`
+The pacman channel is served from a signed sync database, so `install.sh`
 needs `arch/idlescreen.db.tar.gz` published for the current release. If it is
 not yet there, build from source instead:
 
@@ -76,8 +76,8 @@ cd packages/arch/idlescreen
 makepkg -si
 ```
 
-That PKGBUILD compiles the unified `idlescreen` and `idlescreen-extras`
-crates from the `idlescreen` release tag and produces the `/usr/bin/idlescreen`
+That PKGBUILD compiles the unified `idlescreen` crate (daemon, CLI, TUI, and all 50 built-in 16-bit arcade scenes)
+from the `idlescreen` release tag and produces the `/usr/bin/idlescreen`
 binary suite.
 
 ## Uninstall

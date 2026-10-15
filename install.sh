@@ -47,8 +47,7 @@ for arg in "$@"; do
             cat <<'USAGE'
 Usage: install.sh [options]
 
-  (no options)        install / update IdleScreen
-  --with-extras       install optional extras (11 mathematical screensavers)
+  (no options)        install / update IdleScreen (all 50 scenes built-in)
   --uninstall         remove IdleScreen, keeping user configuration
   --purge             with --uninstall: also remove user and system config
   --plan | --dry-run  print the install plan and exit
@@ -102,12 +101,12 @@ case "${1:-}" in
                 _expected=""
                 case "$_f" in
                     "ui.sh") _expected="e67f1da218c432f88b5ef9a3683942fb79ba986c4930cb97542edba227dd7a73" ;;
-                    "detect.sh") _expected="477f3319b205ed1dbf70f02d20c190513775e018f457303e6ba90426819f549d" ;;
+                    "detect.sh") _expected="d26b8de54dca300084b2454ff8596cf93b3747652fbb6bb3f6e11aaffbd94fce" ;;
                     "repo.sh") _expected="27f07f8face1703802646efe7accea076068209f8c3867700c203c57785d2677" ;;
-                    "install_core.sh") _expected="baf7912a3f7ef4cb45d9c3de2362d422d6036d1c2b101253553ece5b187fd164" ;;
+                    "install_core.sh") _expected="7676e6664f4029e5e640226c6f2aac7a0500b9c4f4333492bc569f7d6bd65587" ;;
                     "install_audit.sh") _expected="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
                     "post_install.sh") _expected="f79b7804b97e7694cce24ec847489174cf3322a2f1e6cf8bc4aee6f065cfe2dc" ;;
-                    "uninstall.sh") _expected="0dc7a316a8625a4b37ad45fd93ad9c9946207099b71e1fbc79d7fd03c695f1bd" ;;
+                    "uninstall.sh") _expected="12e987e0166d33b00a7a17f57976b0d59987eb35683bc5e22516addcba372079" ;;
                 esac
                 if [ -n "$_dir" ]; then
                     echo "$_expected  $_dir/$_f (pinned bootstrap hash)"
@@ -234,12 +233,12 @@ if [ "$_local_checkout" -eq 0 ]; then
         _expected_hash=""
         case "$f" in
             "ui.sh") _expected_hash="e67f1da218c432f88b5ef9a3683942fb79ba986c4930cb97542edba227dd7a73" ;;
-            "detect.sh") _expected_hash="477f3319b205ed1dbf70f02d20c190513775e018f457303e6ba90426819f549d" ;;
+            "detect.sh") _expected_hash="d26b8de54dca300084b2454ff8596cf93b3747652fbb6bb3f6e11aaffbd94fce" ;;
             "repo.sh") _expected_hash="27f07f8face1703802646efe7accea076068209f8c3867700c203c57785d2677" ;;
-            "install_core.sh") _expected_hash="baf7912a3f7ef4cb45d9c3de2362d422d6036d1c2b101253553ece5b187fd164" ;;
+            "install_core.sh") _expected_hash="7676e6664f4029e5e640226c6f2aac7a0500b9c4f4333492bc569f7d6bd65587" ;;
             "install_audit.sh") _expected_hash="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
             "post_install.sh") _expected_hash="f79b7804b97e7694cce24ec847489174cf3322a2f1e6cf8bc4aee6f065cfe2dc" ;;
-            "uninstall.sh") _expected_hash="0dc7a316a8625a4b37ad45fd93ad9c9946207099b71e1fbc79d7fd03c695f1bd" ;;
+            "uninstall.sh") _expected_hash="12e987e0166d33b00a7a17f57976b0d59987eb35683bc5e22516addcba372079" ;;
             *) echo "install: unknown module $f" >&2; exit 1 ;;
         esac
         

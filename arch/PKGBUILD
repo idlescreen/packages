@@ -1,15 +1,12 @@
 # PKGBUILD for Arch Linux / AUR
 pkgname=idle-cosmic
-pkgver=4.2.1
+pkgver=4.3.0
 pkgrel=1
 pkgdesc="IdleScreen for COSMIC Desktop"
 arch=('x86_64')
 url="https://github.com/idlescreen/idlescreen"
 license=('Apache-2.0')
 depends=('idlescreen')
-optdepends=(
-  'idlescreen-extras: Official screensaver plugins'
-)
 source=("https://github.com/idlescreen/idlescreen/archive/refs/tags/v${pkgver}.tar.gz")
 sha256sums=('SKIP')
 
