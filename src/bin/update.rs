@@ -5,6 +5,8 @@
 //! create the directory skeleton, then call the steps in the order
 //! the publish contract requires.
 
+#![deny(unsafe_code)]
+
 use std::fs;
 use std::path::Path;
 

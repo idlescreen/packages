@@ -1,12 +1,7 @@
 // SPDX-License-Identifier: Apache-2.0
 
 /// Core packages always requested (every DE).
-pub const CORE_PACKAGES: &[&str] = &[
-    "idlescreen",
-];
-
-/// Extra package only when COSMIC is detected.
-pub const COSMIC_EXTRA: &str = "idle-cosmic";
+pub const CORE_PACKAGES: &[&str] = &["idlescreen"];
 
 /// Official saver plugins pulled by `idle-savers` (and wiped when idlescreen is removed).
 pub const OFFICIAL_SAVERS: &[&str] = &[
@@ -48,7 +43,7 @@ pub const PRODUCT_STACK_ON_REMOVE: &[&str] = &[
 
 /// Honest one-liner for uninstall docs / victory footer.
 pub const REMOVE_BLURB: &str =
-    "sudo dnf remove idlescreen   # also removes modules, savers, idle-cosmic, repo drop-in";
+    "sudo dnf remove idlescreen   # also removes modules, savers, repo drop-in";
 
 /// Truthful DNF channel disclaimer (packages + repo metadata both GPG-checked).
 pub const DNF_GPG_DISCLAIMER: &str = "package gpgcheck=1 · repo_gpgcheck=1";
@@ -128,7 +123,6 @@ mod tests {
                 "install.sh must mention core package {pkg}"
             );
         }
-        assert!(s.contains(COSMIC_EXTRA));
     }
 
     #[test]

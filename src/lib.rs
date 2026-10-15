@@ -9,6 +9,8 @@
 
 // SPDX-License-Identifier: Apache-2.0
 
+#![deny(unsafe_code)]
+
 pub mod install_honesty;
 pub mod package_parse;
 pub mod paths;
@@ -19,11 +21,10 @@ pub mod update_steps;
 pub mod version_cmp;
 
 pub use install_honesty::{
-    CORE_PACKAGES, COSMIC_EXTRA, DNF_GPG_DISCLAIMER, OFFICIAL_SAVERS, PRODUCT_STACK_ON_REMOVE,
-    REMOVE_BLURB, SurveyClass, VICTORY_BOX_INNER, VICTORY_ORNAMENT, center_in_width,
-    classify_package, format_cosmic_line, format_deploy_result, format_plan_blurb,
-    format_survey_row_plain, format_survey_summary, format_victory_box,
-    format_victory_box_title_row, format_victory_title_body, lines_same_width,
+    CORE_PACKAGES, DNF_GPG_DISCLAIMER, OFFICIAL_SAVERS, PRODUCT_STACK_ON_REMOVE, REMOVE_BLURB,
+    SurveyClass, VICTORY_BOX_INNER, VICTORY_ORNAMENT, center_in_width, classify_package,
+    format_deploy_result, format_plan_blurb, format_survey_row_plain, format_survey_summary,
+    format_victory_box, format_victory_box_title_row, format_victory_title_body, lines_same_width,
     packages_for_profile, strip_ansi, version_is_older, victory_banner,
     victory_box_border_inner_width,
 };

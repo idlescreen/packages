@@ -6,9 +6,9 @@
 
 1. Detects the distro family (DNF / APT / Arch).
 2. Adds the IdleScreen package signing key + repo drop-in.
-3. Installs `idlescreen` (the metapackage: `idle-daemon`, `idle-cli`,
-   `idle-savers`, `idle-tui`) and, on COSMIC, `idle-cosmic`.
-4. Enables + starts the `idle-daemon.service` user unit.
+3. Installs `idlescreen` (providing `idle-daemon`, `idle-cli`,
+   `idle-savers`, `idle-tui`).
+4. Enables + starts the `idlescreen.service` user unit.
 5. Writes an install-time plugin-capability audit log to
    `/var/log/idlescreen/install-audit.jsonl`.
 

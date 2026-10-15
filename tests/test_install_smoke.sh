@@ -186,20 +186,11 @@ else
     fail=$((fail + 1))
 fi
 
-# 4c. On non-COSMIC desktops, idlescreen.repo must exclude idle-cosmic and
-#     dnf must be invoked with install_weak_deps=False.
-if [ -f "$TMP/yum.repos.d/idlescreen.repo" ]; then
-    if grep -q "^excludepkgs=idle-cosmic$" "$TMP/yum.repos.d/idlescreen.repo"; then
-        echo "ok: non-COSMIC repo excludes idle-cosmic"
-    else
-        echo "FAIL: idlescreen.repo did not exclude idle-cosmic on non-COSMIC desktop"
-        fail=$((fail + 1))
-    fi
-fi
+# 4c. dnf must be invoked with install_weak_deps=False.
 if grep -q -- '--setopt=install_weak_deps=False' "$LOG" 2>/dev/null; then
-    echo "ok: dnf disabled weak dependencies on non-COSMIC desktop"
+    echo "ok: dnf disabled weak dependencies"
 else
-    echo "FAIL: dnf was not invoked with --setopt=install_weak_deps=False on non-COSMIC desktop"
+    echo "FAIL: dnf was not invoked with --setopt=install_weak_deps=False"
     fail=$((fail + 1))
 fi
 

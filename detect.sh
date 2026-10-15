@@ -145,12 +145,5 @@ detect_de() {
 
 build_pkg_list() {
     PKGS="idlescreen"
-
-    case "$DE_ID" in
-        cosmic)
-            PKGS="$PKGS idle-cosmic"
-            ;;
-    esac
-
     printf '%s\n' "$PKGS"
 }

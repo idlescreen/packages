@@ -41,7 +41,10 @@ fn fix_dbus_activation_file() {
     if !std::path::Path::new(path).exists() {
         story_line("Installing missing D-Bus activation file…");
         if std::fs::write(path, contents).is_err() {
-            let tmp = format!("/tmp/io.github.idlescreen.Idle.service.{}", std::process::id());
+            let tmp = format!(
+                "/tmp/io.github.idlescreen.Idle.service.{}",
+                std::process::id()
+            );
             if std::fs::write(&tmp, contents).is_ok() {
                 let _ = run_status(Command::new("sudo").args(["install", "-Dm644", &tmp, path]));
                 let _ = std::fs::remove_file(&tmp);
@@ -64,7 +67,15 @@ fn fix_dbus_activation_file() {
         if std::fs::write(path, &cleaned).is_ok() {
             return;
         }
-        let _ = run_status(Command::new("sudo").args(["sed", "-i", "-e", "/^User=session$/d", "-e", "s/idle-daemon/idlescreen/g", path]));
+        let _ = run_status(Command::new("sudo").args([
+            "sed",
+            "-i",
+            "-e",
+            "/^User=session$/d",
+            "-e",
+            "s/idle-daemon/idlescreen/g",
+            path,
+        ]));
     }
 }
 
@@ -143,33 +154,35 @@ pub fn start_daemon() -> bool {
     if has_systemd {
         story_line("Reloading user systemd units…");
         let _ = run_status(Command::new("systemctl").args(["--user", "daemon-reload"]));
-        let _ = run_status(Command::new("systemctl").args([
-            "--user",
-            "stop",
-            "idle-daemon.service",
-        ]));
+        let _ =
+            run_status(Command::new("systemctl").args(["--user", "stop", "idle-daemon.service"]));
         let _ = run_status(Command::new("systemctl").args([
             "--user",
             "disable",
             "idle-daemon.service",
         ]));
-        let _ = run_status(Command::new("systemctl").args([
-            "--user",
-            "stop",
-            "idlescreen.service",
-        ]));
+        let _ =
+            run_status(Command::new("systemctl").args(["--user", "stop", "idlescreen.service"]));
         let _ = Command::new("pkill").args(["-x", "idlescreen"]).status();
-        let _ = Command::new("pkill").args(["-f", "/usr/bin/idlescreen daemon"]).status();
+        let _ = Command::new("pkill")
+            .args(["-f", "/usr/bin/idlescreen daemon"])
+            .status();
         let _ = Command::new("pkill").args(["-x", "idle-daemon"]).status();
-        let _ = Command::new("pkill").args(["-f", "/usr/bin/idle-daemon"]).status();
+        let _ = Command::new("pkill")
+            .args(["-f", "/usr/bin/idle-daemon"])
+            .status();
         let _ = run_status(Command::new("systemctl").args([
             "--user",
             "reset-failed",
             "idlescreen.service",
         ]));
         story_line("systemctl --user enable --now idlescreen.service…");
-        let _ =
-            run_status(Command::new("systemctl").args(["--user", "enable", "--now", "idlescreen.service"]));
+        let _ = run_status(Command::new("systemctl").args([
+            "--user",
+            "enable",
+            "--now",
+            "idlescreen.service",
+        ]));
         // Clean restart so a dying upgrade process releases the bus name.
         story_line("systemctl --user restart idlescreen.service…");
         if !run_status(Command::new("systemctl").args(["--user", "restart", "idlescreen.service"]))

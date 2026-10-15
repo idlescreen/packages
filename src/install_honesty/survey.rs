@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: Apache-2.0
 
-use super::constants::{CORE_PACKAGES, COSMIC_EXTRA};
+use super::constants::CORE_PACKAGES;
 use crate::compare_versions;
 use std::cmp::Ordering;
 
@@ -34,26 +34,14 @@ pub fn classify_package(installed: Option<&str>, candidate: Option<&str>) -> Sur
     }
 }
 
-/// Package list for a desktop profile (pure).
-pub fn packages_for_profile(cosmic: bool) -> Vec<&'static str> {
-    let mut p: Vec<&'static str> = CORE_PACKAGES.to_vec();
-    if cosmic {
-        p.push(COSMIC_EXTRA);
-    }
-    p
+/// Package list for a desktop profile (pure, unified across all DEs).
+pub fn packages_for_profile(_cosmic: bool) -> Vec<&'static str> {
+    CORE_PACKAGES.to_vec()
 }
 
 /// Honest one-liner describing the package plan (no DE gets a fake "full" vs "core" split).
-pub fn format_plan_blurb(cosmic: bool) -> String {
-    if cosmic {
-        format!(
-            "Core stack (all DEs): {}  ·  COSMIC: also {}",
-            CORE_PACKAGES.join(" "),
-            COSMIC_EXTRA
-        )
-    } else {
-        format!("Core stack (all DEs): {}", CORE_PACKAGES.join(" "))
-    }
+pub fn format_plan_blurb(_cosmic: bool) -> String {
+    format!("Core stack (all DEs): {}", CORE_PACKAGES.join(" "))
 }
 
 /// Human survey row without ANSI (for goldens / tests).
@@ -136,29 +124,17 @@ mod tests {
     }
 
     #[test]
-    fn packages_core_same_without_cosmic() {
-        let p = packages_for_profile(false);
-        assert_eq!(p, CORE_PACKAGES);
-        assert!(!p.contains(&COSMIC_EXTRA));
-    }
-
-    #[test]
-    fn packages_cosmic_adds_only_extra() {
-        let p = packages_for_profile(true);
-        assert_eq!(p.len(), CORE_PACKAGES.len() + 1);
-        assert_eq!(p.last().copied(), Some(COSMIC_EXTRA));
-        for c in CORE_PACKAGES {
-            assert!(p.contains(c));
-        }
+    fn packages_core_same_on_all_profiles() {
+        assert_eq!(packages_for_profile(false), CORE_PACKAGES);
+        assert_eq!(packages_for_profile(true), CORE_PACKAGES);
     }
 
     #[test]
     fn plan_blurb_never_implies_generic_gets_less() {
         let g = format_plan_blurb(false);
         let c = format_plan_blurb(true);
+        assert_eq!(g, c);
         assert!(g.contains("Core stack (all DEs)"));
-        assert!(c.contains("Core stack (all DEs)"));
-        assert!(c.contains(COSMIC_EXTRA));
         assert!(!g.contains("full saver set"));
         assert!(!g.contains("core package set") || g.contains("Core stack"));
     }

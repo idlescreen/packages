@@ -2,6 +2,8 @@
 //! User-facing text must not overclaim.
 // SPDX-License-Identifier: Apache-2.0
 
+#![deny(unsafe_code)]
+
 mod deploy;
 mod host;
 mod pkg;
@@ -162,22 +164,15 @@ fn setup_repo(dnf: bool) {
     ok("APT index updated with IdleScreen source");
 }
 
-fn print_plan(de_label: &str, cosmic: bool, pkgs: &[&str]) {
+fn print_plan(de_label: &str, _cosmic: bool, pkgs: &[&str]) {
     story_line(&format!("Desktop profile → {de_label}"));
-    // Honest plan: same core on every DE; COSMIC only adds idle-cosmic.
+    // Honest plan: same unified core on every DE.
     let core = idlescreen_packages::CORE_PACKAGES.join(" ");
     println!("  {C_GREEN}→{C_RESET} Core stack (all DEs): {C_BOLD}{core}{C_RESET}");
     println!(
         "  {C_DIM}    idlescreen = product metapackage (install|remove by brand name){C_RESET}"
     );
-    if cosmic {
-        println!(
-            "  {C_GREEN}→{C_RESET} COSMIC: also {C_BOLD}{}{C_RESET} (panel applet package)",
-            idlescreen_packages::COSMIC_EXTRA
-        );
-    } else {
-        println!("  {C_GREEN}→{C_RESET} {de_label}: no extra DE-specific packages");
-    }
+    println!("  {C_GREEN}→{C_RESET} {de_label}: no extra DE-specific packages");
     println!();
     story_line("Surveying what is already on this host (installed vs channel)…");
     println!(

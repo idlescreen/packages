@@ -45,21 +45,6 @@ pub fn format_deploy_result(present: usize, planned: usize) -> String {
     }
 }
 
-/// COSMIC line after deploy (truthful about package presence, not panel dock state).
-pub fn format_cosmic_line(planned: bool, installed: bool) -> Option<String> {
-    if !planned {
-        return None;
-    }
-    if installed {
-        Some(
-            "COSMIC  Package idle-cosmic is installed — add from panel settings if not docked."
-                .into(),
-        )
-    } else {
-        Some("COSMIC  idle-cosmic was planned but is not installed.".into())
-    }
-}
-
 #[cfg(test)]
 mod tests {
     use super::super::constants::DNF_GPG_DISCLAIMER;
@@ -79,16 +64,6 @@ mod tests {
         assert!(!s.contains("all 3"));
         let all = format_deploy_result(5, 5);
         assert!(all.contains("all 5"));
-    }
-
-    #[test]
-    fn cosmic_line_truth_table() {
-        assert!(format_cosmic_line(false, false).is_none());
-        let inst = format_cosmic_line(true, true).unwrap();
-        assert!(inst.contains("is installed"));
-        assert!(inst.contains("if not docked"));
-        let miss = format_cosmic_line(true, false).unwrap();
-        assert!(miss.contains("not installed"));
     }
 
     #[test]

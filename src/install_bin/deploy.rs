@@ -50,12 +50,6 @@ fn deploy_dnf(all: &[String], survey: &Survey, pkgs: &[&str], cosmic: bool) {
         err("idlescreen missing after install");
         exit(1);
     }
-    if !cosmic && rpm_installed("idle-cosmic").is_some() {
-        story_line("Pruning unintended idle-cosmic package from non-COSMIC desktop…");
-        let _ = Command::new("sudo")
-            .args(["dnf", "remove", "-y", "idle-cosmic"])
-            .status();
-    }
     println!();
     for p in pkgs {
         if let Some(v) = run_capture(Command::new("rpm").args(["-q", p])) {
@@ -94,12 +88,6 @@ fn deploy_apt(all: &[String], survey: &Survey, pkgs: &[&str], cosmic: bool) {
     if apt_installed("idlescreen").is_none() && apt_installed("idle-daemon").is_none() {
         err("idlescreen missing after install");
         exit(1);
-    }
-    if !cosmic && apt_installed("idle-cosmic").is_some() {
-        story_line("Pruning unintended idle-cosmic package from non-COSMIC desktop…");
-        let _ = Command::new("sudo")
-            .args(["apt-get", "remove", "-y", "idle-cosmic"])
-            .status();
     }
     println!();
     for p in pkgs {

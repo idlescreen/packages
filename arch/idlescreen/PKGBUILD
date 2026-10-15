@@ -8,7 +8,7 @@
 # PKGBUILD for IdleScreen on Arch Linux and derivatives.
 pkgbase=idlescreen
 pkgname=('idlescreen')
-pkgver=4.4.1
+pkgver=4.4.2
 pkgrel=1
 pkgdesc="Unified Wayland idle host and 50 built-in 16-bit arcade screensaver scenes"
 arch=('x86_64')
@@ -37,10 +37,6 @@ depends=(
     'dbus'
 )
 
-optdepends=(
-    'idle-cosmic: COSMIC panel applet'
-)
-
 prepare() {
     cd "$srcdir/idlescreen" || return 1
     rm -f .cargo/config.toml 2>/dev/null || true
@@ -63,8 +59,8 @@ package_idlescreen() {
     pkgdesc="IdleScreen Wayland daemon, CLI, TUI, and 50 built-in 16-bit arcade scenes"
     install=idlescreen.install
     provides=('idle-daemon' 'idle-cli' 'idle-tui' 'idle-saver-ascii' 'idle-savers' 'idlescreen-extras')
-    replaces=('idle-daemon' 'idle-cli' 'idle-tui' 'idle-saver-ascii' 'idle-savers' 'idlescreen-extras')
-    conflicts=('idle-daemon' 'idle-cli' 'idle-tui' 'idle-saver-ascii' 'idle-savers' 'idlescreen-extras')
+    replaces=('idle-daemon' 'idle-cli' 'idle-tui' 'idle-cosmic' 'idle-saver-ascii' 'idle-savers' 'idlescreen-extras')
+    conflicts=('idle-daemon' 'idle-cli' 'idle-tui' 'idle-cosmic' 'idle-saver-ascii' 'idle-savers' 'idlescreen-extras')
     depends=("${depends[@]}")
 
     install -Dm755 "$srcdir/idlescreen/target/release/idlescreen" \

@@ -1,6 +1,8 @@
 //! Prune old package versions from apt and rpm pools.
 // SPDX-License-Identifier: Apache-2.0
 
+#![deny(unsafe_code)]
+
 use idlescreen_packages::package_parse::{parse_deb_filename, parse_rpm_filename};
 use idlescreen_packages::paths::{is_under_base, safe_join_under};
 use idlescreen_packages::prune_core::{PackageFile, group_by_name, select_to_remove};

@@ -75,7 +75,7 @@ pub fn desktop_label() -> (&'static str, &'static str) {
     ("other", "Generic / unknown DE")
 }
 
-/// Same core on every DE; COSMIC only adds idle-cosmic.
+/// Same unified core on every DE.
 pub fn packages(cosmic: bool) -> Vec<&'static str> {
     idlescreen_packages::packages_for_profile(cosmic)
 }

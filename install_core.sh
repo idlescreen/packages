@@ -13,14 +13,7 @@ survey_modules() {
     story_line "Desktop profile → ${BOLD}${DE_LABEL}${RESET}"
     say "  ${GREEN}→${RESET} Core stack (all DEs): ${BOLD}idlescreen${RESET}"
     say "  ${DIM}    idlescreen = unified screensaver suite (daemon, cli, tui, 50 built-in 16-bit scenes)${RESET}"
-    case "$DE_ID" in
-        cosmic)
-            say "  ${GREEN}→${RESET} COSMIC: also ${BOLD}idle-cosmic${RESET} (panel applet package)"
-            ;;
-        *)
-            say "  ${GREEN}→${RESET} ${DE_LABEL}: no extra DE-specific packages"
-            ;;
-    esac
+    say "  ${GREEN}→${RESET} ${DE_LABEL}: no extra DE-specific packages"
     say ""
     story_line "Surveying what is already on this host (installed vs channel)…"
     say "  ${DIM}plan:${RESET} ${BOLD}${_pkgs}${RESET}"
@@ -88,10 +81,7 @@ install_packages() {
     step "[4/5]  Deploying modules into the system"
 
     if [ "$PKG_MGR" = "dnf" ]; then
-        _weak_flag=""
-        if [ "$DE_ID" != "cosmic" ]; then
-            _weak_flag="--setopt=install_weak_deps=False"
-        fi
+        _weak_flag="--setopt=install_weak_deps=False"
         if [ -n "${UPGRADE_PKGS:-}" ]; then
             story_line "Raising outdated IdleScreen modules to the current channel…"
             # shellcheck disable=SC2086
@@ -178,10 +168,7 @@ install_packages() {
             exit 1
         fi
     elif [ "$PKG_MGR" = "apt" ]; then
-        _weak_flag=""
-        if [ "$DE_ID" != "cosmic" ]; then
-            _weak_flag="--no-install-recommends"
-        fi
+        _weak_flag="--no-install-recommends"
         if [ -n "${UPGRADE_PKGS:-}" ]; then
             story_line "Raising outdated IdleScreen modules to the current channel…"
             # shellcheck disable=SC2086
@@ -222,31 +209,13 @@ install_packages() {
             exit 1
         fi
     fi
-    story_line "Scrubbing legacy dual-icon desktop leftovers…"
-    sudo rm -f \
-        /usr/share/applications/com.system76.CosmicAppletIdle.desktop \
-        /usr/share/icons/hicolor/scalable/apps/com.system76.CosmicAppletIdle-symbolic.svg \
-        /usr/share/icons/hicolor/scalable/status/com.system76.CosmicAppletIdle-symbolic.svg \
-        /usr/share/applications/idlescreen.desktop \
-        2>/dev/null || true
+    story_line "Scrubbing legacy desktop leftovers…"
+    sudo rm -f /usr/share/applications/idlescreen.desktop 2>/dev/null || true
     if command -v gtk-update-icon-cache >/dev/null 2>&1; then
         sudo gtk-update-icon-cache -f /usr/share/icons/hicolor 2>/dev/null || true
     fi
     if command -v update-desktop-database >/dev/null 2>&1; then
         sudo update-desktop-database /usr/share/applications 2>/dev/null || true
-    fi
-
-    if [ "$DE_ID" != "cosmic" ]; then
-        if [ "$PKG_MGR" = "dnf" ] && rpm -q idle-cosmic >/dev/null 2>&1; then
-            story_line "Pruning unintended idle-cosmic package from non-COSMIC desktop…"
-            sudo dnf remove -y idle-cosmic >/dev/null 2>&1 || true
-        elif [ "$PKG_MGR" = "apt" ] && dpkg-query -W idle-cosmic >/dev/null 2>&1; then
-            story_line "Pruning unintended idle-cosmic package from non-COSMIC desktop…"
-            sudo apt-get remove -y idle-cosmic >/dev/null 2>&1 || true
-        elif [ "$PKG_MGR" = "pacman" ] && pacman -Q idle-cosmic >/dev/null 2>&1; then
-            story_line "Pruning unintended idle-cosmic package from non-COSMIC desktop…"
-            sudo pacman -R --noconfirm idle-cosmic >/dev/null 2>&1 || true
-        fi
     fi
 
     PRESENT_COUNT=0

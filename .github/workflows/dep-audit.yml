@@ -27,26 +27,14 @@ jobs:
       fail-fast: false
       matrix:
         repo:
-          - { name: runtime }
-          - { name: cli }
-          - { name: tui }
-          - { name: studio, runtime: true }
-          - { name: cosmic }
-          - { name: savers, runtime: true }
           - { name: idlescreen }
           - { name: packages }
+          - { name: studio }
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           repository: idlescreen/${{ matrix.repo.name }}
           path: repo
-
-      - name: Checkout runtime engine (path deps)
-        if: matrix.repo.runtime
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          repository: idlescreen/runtime
-          path: repo/runtime
 
       - name: Install Rust
         run: |
@@ -71,32 +59,3 @@ jobs:
       - name: cargo machete
         working-directory: repo
         run: cargo machete
-
-  miri:
-    name: miri (runtime std-only)
-    runs-on: ubuntu-latest
-    timeout-minutes: 90
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-        with:
-          repository: idlescreen/runtime
-          path: repo
-
-      - name: Install nightly Rust + Miri
-        run: |
-          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
-          echo "$HOME/.cargo/bin" >> $GITHUB_PATH
-          rustup toolchain install nightly --profile minimal --component miri,rust-src
-
-      - name: Miri — pure-std crates
-        working-directory: repo
-        run: cargo +nightly miri test -p idle-err -p idle-log
-
-      - name: Miri — RawWaker paths in idle-runner
-        working-directory: repo
-        # spin_block_on + waker_clone filters cover the pure-std waker
-        # tests; block_on_future_* spin real tokio runtimes, which Miri
-        # cannot execute.
-        run: |
-          cargo +nightly miri test -p idle-runner spin_block_on
-          cargo +nightly miri test -p idle-runner waker_clone

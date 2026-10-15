@@ -1,32 +1,32 @@
 {
  "repo": "packages",
- "rev": "c22f5d1",
+ "rev": "540c78f",
  "dirty": true,
  "pages": [
   {
    "path": "./src/bin/prune.rs",
-   "lines": 192,
+   "lines": 194,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 0
   },
   {
    "path": "./src/bin/sign.rs",
-   "lines": 213,
+   "lines": 215,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 0
   },
   {
    "path": "./src/bin/update.rs",
-   "lines": 120,
+   "lines": 122,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 0
   },
   {
    "path": "./src/install_bin/deploy.rs",
-   "lines": 139,
+   "lines": 127,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 1
@@ -40,7 +40,7 @@
   },
   {
    "path": "./src/install_bin/main.rs",
-   "lines": 208,
+   "lines": 203,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 0
@@ -54,7 +54,7 @@
   },
   {
    "path": "./src/install_bin/start_daemon.rs",
-   "lines": 240,
+   "lines": 253,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 1
@@ -68,22 +68,22 @@
   },
   {
    "path": "./src/install_bin/victory.rs",
-   "lines": 89,
+   "lines": 79,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 1
   },
   {
    "path": "./src/install_honesty/constants.rs",
-   "lines": 167,
+   "lines": 161,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 3
   },
   {
    "path": "./src/install_honesty/format.rs",
-   "lines": 105,
-   "bin_bytes": null,
+   "lines": 80,
+   "bin_bytes": 1577,
    "heat_pct": null,
    "reach": 2
   },
@@ -96,21 +96,21 @@
   },
   {
    "path": "./src/install_honesty/survey.rs",
-   "lines": 208,
-   "bin_bytes": null,
+   "lines": 184,
+   "bin_bytes": 2619,
    "heat_pct": null,
    "reach": 2
   },
   {
    "path": "./src/install_honesty/victory.rs",
    "lines": 148,
-   "bin_bytes": null,
+   "bin_bytes": 2981,
    "heat_pct": null,
    "reach": 1
   },
   {
    "path": "./src/lib.rs",
-   "lines": 37,
+   "lines": 38,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 0
@@ -118,84 +118,84 @@
   {
    "path": "./src/package_parse.rs",
    "lines": 125,
-   "bin_bytes": null,
+   "bin_bytes": 2101,
    "heat_pct": null,
    "reach": 2
   },
   {
    "path": "./src/paths.rs",
    "lines": 142,
-   "bin_bytes": null,
+   "bin_bytes": 1683,
    "heat_pct": null,
    "reach": 4
   },
   {
    "path": "./src/prune_core.rs",
    "lines": 112,
-   "bin_bytes": null,
+   "bin_bytes": 1406,
    "heat_pct": null,
    "reach": 2
   },
   {
    "path": "./src/sign_macros.rs",
    "lines": 157,
-   "bin_bytes": null,
+   "bin_bytes": 4064,
    "heat_pct": null,
    "reach": 5
   },
   {
    "path": "./src/sweep.rs",
    "lines": 85,
-   "bin_bytes": null,
+   "bin_bytes": 3855,
    "heat_pct": null,
    "reach": 2
   },
   {
    "path": "./src/update_steps/dearmor_key.rs",
    "lines": 69,
-   "bin_bytes": null,
+   "bin_bytes": 1829,
    "heat_pct": null,
    "reach": 1
   },
   {
    "path": "./src/update_steps/mod.rs",
    "lines": 56,
-   "bin_bytes": null,
+   "bin_bytes": 536,
    "heat_pct": null,
    "reach": 0
   },
   {
    "path": "./src/update_steps/run_createrepo.rs",
    "lines": 76,
-   "bin_bytes": null,
+   "bin_bytes": 2103,
    "heat_pct": null,
    "reach": 1
   },
   {
    "path": "./src/update_steps/sign_apt_release.rs",
    "lines": 82,
-   "bin_bytes": null,
+   "bin_bytes": 2548,
    "heat_pct": null,
    "reach": 1
   },
   {
    "path": "./src/update_steps/sign_rpm_metadata.rs",
    "lines": 98,
-   "bin_bytes": null,
+   "bin_bytes": 2362,
    "heat_pct": null,
    "reach": 1
   },
   {
    "path": "./src/update_steps/sign_rpms.rs",
    "lines": 86,
-   "bin_bytes": null,
+   "bin_bytes": 3147,
    "heat_pct": null,
    "reach": 1
   },
   {
    "path": "./src/version_cmp.rs",
    "lines": 251,
-   "bin_bytes": null,
+   "bin_bytes": 6136,
    "heat_pct": null,
    "reach": 2
   },

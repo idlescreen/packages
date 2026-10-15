@@ -2,8 +2,8 @@
 
 //! Final summary screen (truthful post-deploy counts).
 
-use super::pkg::{Survey, pkg_present};
-use super::ui::{C_BOLD, C_CYAN, C_DIM, C_GREEN, C_ORANGE, C_RESET, C_YELLOW};
+use super::pkg::Survey;
+use super::ui::{C_BOLD, C_CYAN, C_DIM, C_GREEN, C_RESET, C_YELLOW};
 
 const REPO_BASE: &str = "https://idlescreen.github.io/packages";
 
@@ -13,7 +13,7 @@ pub fn print_victory(
     arch: &str,
     de_label: &str,
     channel: &str,
-    cosmic: bool,
+    _cosmic: bool,
     dnf: bool,
     pkgs: &[&str],
     present: &[&str],
@@ -57,16 +57,6 @@ pub fn print_victory(
     if !missing.is_empty() {
         println!("  {C_YELLOW}missing{C_RESET}  {}", missing.join(" "));
     }
-    if let Some(line) =
-        idlescreen_packages::format_cosmic_line(cosmic, pkg_present("idle-cosmic", dnf))
-    {
-        // format_cosmic_line returns "COSMIC  …" — color the label.
-        if let Some(rest) = line.strip_prefix("COSMIC  ") {
-            println!("  {C_ORANGE}COSMIC{C_RESET}  {rest}");
-        } else {
-            println!("  {C_ORANGE}{line}{C_RESET}");
-        }
-    }
     println!();
     println!("  {C_BOLD}Quick start{C_RESET}");
     println!("    {C_CYAN}idlescreen tui{C_RESET}        interactive dashboard");
@@ -80,7 +70,7 @@ pub fn print_victory(
     } else {
         println!("    {C_CYAN}sudo apt remove idlescreen{C_RESET}");
     }
-    println!("    {C_DIM}# 2.6+ also removes modules, savers, idle-cosmic, repo drop-in{C_RESET}");
+    println!("    {C_DIM}# 2.6+ also removes modules, savers, repo drop-in{C_RESET}");
     println!();
     println!("  {C_DIM}docs  {C_RESET}https://idlescreen.github.io");
     println!("  {C_DIM}pkgs  {C_RESET}{REPO_BASE}/");

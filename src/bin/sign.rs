@@ -1,6 +1,8 @@
 //! Sign all RPMs in the pool and refresh repository metadata.
 // SPDX-License-Identifier: Apache-2.0
 
+#![deny(unsafe_code)]
+
 use idlescreen_packages::paths::{is_rpm_path, safe_join_under};
 use idlescreen_packages::sign_macros::{
     build_rpmmacros, resolve_gpg_bin_from_env, resolve_gpg_name_from_env,

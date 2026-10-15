@@ -260,19 +260,7 @@ victory() {
     say ""
 
     case "$DE_ID" in
-        cosmic)
-            if [ "$PKG_MGR" = "dnf" ] && rpm -q idle-cosmic >/dev/null 2>&1; then
-                say "  ${ORANGE}${BOLD}COSMIC${RESET}  Package ${BOLD}idle-cosmic${RESET} is installed."
-                say "           Add the applet from panel settings if it is not docked yet."
-            elif [ "$PKG_MGR" = "apt" ] && dpkg-query -W idle-cosmic >/dev/null 2>&1; then
-                say "  ${ORANGE}${BOLD}COSMIC${RESET}  Package ${BOLD}idle-cosmic${RESET} is installed."
-                say "           Add the applet from panel settings if it is not docked yet."
-            else
-                say "  ${ORANGE}${BOLD}COSMIC${RESET}  idle-cosmic was planned but is not installed."
-            fi
-            say ""
-            ;;
-        hyprland|sway)
+        cosmic|hyprland|sway)
             say "  ${CYAN}${BOLD}Compositor${RESET}  Control IdleScreen from the terminal:"
             say "             ${BOLD}idlescreen tui${RESET}"
             say ""
@@ -290,7 +278,7 @@ victory() {
     case "$PKG_MGR" in
         dnf)
             say "    ${CYAN}sudo dnf remove idlescreen${RESET}"
-            say "    ${DIM}# 2.6+ also removes modules, savers, idle-cosmic, repo drop-in${RESET}"
+            say "    ${DIM}# 2.6+ also removes modules, savers, repo drop-in${RESET}"
             ;;
         pacman)
             say "    ${CYAN}sudo pacman -R idlescreen${RESET}"
@@ -298,7 +286,7 @@ victory() {
             ;;
         *)
             say "    ${CYAN}sudo apt remove idlescreen${RESET}"
-            say "    ${DIM}# 2.6+ also removes modules, savers, idle-cosmic, APT list drop-in${RESET}"
+            say "    ${DIM}# 2.6+ also removes modules, savers, APT list drop-in${RESET}"
             ;;
     esac
     say "    ${CYAN}./install.sh --uninstall${RESET}  ${DIM}(standalone; add --purge to drop config)${RESET}"
