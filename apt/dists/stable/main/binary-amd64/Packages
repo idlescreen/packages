@@ -332,19 +332,19 @@ Description: Optional TUI client for IdleScreen (idle-tui)
  Optional live TUI controller for IdleScreen.
 
 Package: idlescreen
-Version: 4.3.0-1
+Version: 4.4.0-1
 Architecture: amd64
 Maintainer: IdleScreen <team@idlescreen.org>
-Installed-Size: 25394
+Installed-Size: 25534
 Depends: libc6
 Breaks: idle-daemon (<< 5.0.0), idle-cli (<< 5.0.0), idle-savers (<< 5.0.0), idle-tui (<< 5.0.0), idle-saver-ascii (<< 5.0.0), idle-saver-aurora (<< 5.0.0), idle-saver-beams (<< 5.0.0), idle-saver-bursts (<< 5.0.0), idle-saver-chaos (<< 5.0.0), idle-saver-cosmos (<< 5.0.0), idle-saver-glyphs (<< 5.0.0), idle-saver-gnats (<< 5.0.0), idle-saver-hearth (<< 5.0.0), idle-saver-radar (<< 5.0.0), idle-saver-ripple (<< 5.0.0), idle-saver-storm (<< 5.0.0), idle-runner (<< 5.0.0), idlescreen-extras (<< 5.0.0)
 Replaces: idle-daemon (<< 5.0.0), idle-cli (<< 5.0.0), idle-savers (<< 5.0.0), idle-tui (<< 5.0.0), idle-saver-ascii (<< 5.0.0), idle-saver-aurora (<< 5.0.0), idle-saver-beams (<< 5.0.0), idle-saver-bursts (<< 5.0.0), idle-saver-chaos (<< 5.0.0), idle-saver-cosmos (<< 5.0.0), idle-saver-glyphs (<< 5.0.0), idle-saver-gnats (<< 5.0.0), idle-saver-hearth (<< 5.0.0), idle-saver-radar (<< 5.0.0), idle-saver-ripple (<< 5.0.0), idle-saver-storm (<< 5.0.0), idle-runner (<< 5.0.0), idlescreen-extras (<< 5.0.0)
-Provides: idle-daemon (= 4.3.0), idle-cli (= 4.3.0), idle-savers (= 4.3.0), idle-tui (= 4.3.0), idle-saver-ascii (= 4.3.0), idle-saver-aurora (= 4.3.0), idle-saver-beams (= 4.3.0), idle-saver-bursts (= 4.3.0), idle-saver-chaos (= 4.3.0), idle-saver-cosmos (= 4.3.0), idle-saver-glyphs (= 4.3.0), idle-saver-gnats (= 4.3.0), idle-saver-hearth (= 4.3.0), idle-saver-radar (= 4.3.0), idle-saver-ripple (= 4.3.0), idle-saver-storm (= 4.3.0), idle-runner (= 4.3.0), idlescreen-extras (= 4.3.0)
-Filename: pool/main/idlescreen_4.3.0-1_amd64.deb
-Size: 2225912
-MD5sum: ea2f7bdfd6a85a3702568ee719abd1d9
-SHA1: bb015d05b7b66ed8181858f640fd6858ff2ab3f9
-SHA256: a3afb82f23f28f20389461cc17f3d2bf5476571849dfc99c3cc680644a635cfa
+Provides: idle-daemon (= 4.4.0), idle-cli (= 4.4.0), idle-savers (= 4.4.0), idle-tui (= 4.4.0), idle-saver-ascii (= 4.4.0), idle-saver-aurora (= 4.4.0), idle-saver-beams (= 4.4.0), idle-saver-bursts (= 4.4.0), idle-saver-chaos (= 4.4.0), idle-saver-cosmos (= 4.4.0), idle-saver-glyphs (= 4.4.0), idle-saver-gnats (= 4.4.0), idle-saver-hearth (= 4.4.0), idle-saver-radar (= 4.4.0), idle-saver-ripple (= 4.4.0), idle-saver-storm (= 4.4.0), idle-runner (= 4.4.0), idlescreen-extras (= 4.4.0)
+Filename: pool/main/idlescreen_4.4.0-1_amd64.deb
+Size: 2280804
+MD5sum: b606018c1500eda1567dacc43aa3d491
+SHA1: 567aefcaf73efc0612f367c323e8ecf1618321a6
+SHA256: 6c782089bb52301594a3f0405a4f968c43db5c65e931b6f2825fc9bb4e950f31
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idlescreen
