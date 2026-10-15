@@ -233,6 +233,7 @@ jobs:
         run: |
           set -euo pipefail
           cd arch/idlescreen
+          rm -f idlescreen.db.tar.gz* idlescreen.files.tar.gz*
           if [ -n "${GPG_PASSPHRASE:-}" ]; then
             export GNUPGHOME="${HOME}/.gnupg"
             if [ -x /tmp/gpg-wrapper ]; then
@@ -264,6 +265,7 @@ jobs:
         run: |
           set -euo pipefail
           mkdir -p arch
+          rm -f arch/*.pkg.tar.zst* arch/idlescreen.db.tar.gz* arch/idlescreen.files.tar.gz*
           cp -a arch/idlescreen/idlescreen.db* arch/ 2>/dev/null || true
           cp -a arch/idlescreen/idlescreen.files* arch/ 2>/dev/null || true
           cp -a arch/idlescreen/*.pkg.tar.zst* arch/ 2>/dev/null || true
