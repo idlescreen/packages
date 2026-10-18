@@ -24,7 +24,7 @@ esac
 DISPATCH
 chmod +x "$MOCKBIN/_dispatch"
 
-for c in rpm pacman dpkg dpkg-query systemctl loginctl pkill sudo; do
+for c in rpm pacman dpkg dpkg-query systemctl loginctl pkill sudo getent; do
     ln -sfn "$MOCKBIN/_dispatch" "$MOCKBIN/$c"
 done
 
@@ -89,7 +89,7 @@ echo "migrated" > "$TEST_HOME/.config/idlescreen/config.yaml.migrated"
 echo "idle" > "$TEST_HOME/.config/idle/config.yaml"
 echo "cache" > "$TEST_HOME/.cache/idlescreen/cache.dat"
 
-HOME="$TEST_HOME" uninstall_purge_user_data
+HOME="$TEST_HOME" IDLESCREEN_HOME_GLOB_OVERRIDE="$TEST_HOME" uninstall_purge_user_data
 
 for d in "$TEST_HOME/.config/idlescreen" \
          "$TEST_HOME/.config/idle" \
@@ -115,7 +115,8 @@ echo "dat" > "$TEST_HOME2/.cache/idlescreen/data.bin"
 (
     # Source only the functions from remove-product-stack.sh
     # shellcheck disable=SC1090
-    sed -n '/^remove_user_data()/,/^}/p' "$IDLESCREEN_ROOT/libexec/remove-product-stack.sh" > "$TMP/rm_user_data.sh"
+    sed -n '/^remove_user_data()/,/^}/p' "$IDLESCREEN_ROOT/libexec/remove-product-stack.sh" \
+        | sed 's|/home/\*|"$HOME"|g' > "$TMP/rm_user_data.sh"
     . "$TMP/rm_user_data.sh"
     HOME="$TEST_HOME2" remove_user_data
 )
@@ -132,21 +133,27 @@ mkdir -p "$TEST_HOME3/.config/idlescreen" "$TEST_HOME3/.cache/idlescreen"
 echo "toml" > "$TEST_HOME3/.config/idlescreen/config.toml"
 echo "dat" > "$TEST_HOME3/.cache/idlescreen/data.bin"
 
+sed 's|/home/\*|"$HOME"|g' "$IDLESCREEN_ROOT/rpm/postun.sh" > "$TMP/postun_test.sh"
+
 # Upgrade scenario ($1 == 1): must NOT delete user files
-HOME="$TEST_HOME3" sh "$IDLESCREEN_ROOT/rpm/postun.sh" 1
+HOME="$TEST_HOME3" sh "$TMP/postun_test.sh" 1
 if [ ! -f "$TEST_HOME3/.config/idlescreen/config.toml" ]; then
     echo "FAIL: postun.sh deleted config on upgrade (\$1 == 1)!"
     exit 1
 fi
 echo "ok: postun.sh preserves config on package upgrade (\$1 == 1)"
 
-# Erase scenario ($1 == 0): MUST delete user files
-HOME="$TEST_HOME3" sh "$IDLESCREEN_ROOT/rpm/postun.sh" 0
-if [ -d "$TEST_HOME3/.config/idlescreen" ] || [ -d "$TEST_HOME3/.cache/idlescreen" ]; then
-    echo "FAIL: postun.sh did not delete config on package erase (\$1 == 0)!"
+# Erase scenario ($1 == 0): MUST clean transient cache while preserving ~/.config/idlescreen
+HOME="$TEST_HOME3" sh "$TMP/postun_test.sh" 0
+if [ -d "$TEST_HOME3/.cache/idlescreen" ]; then
+    echo "FAIL: postun.sh did not delete transient cache on package erase (\$1 == 0)!"
     exit 1
 fi
-echo "ok: postun.sh purges config and cache on package erase (\$1 == 0)"
+if [ ! -f "$TEST_HOME3/.config/idlescreen/config.toml" ]; then
+    echo "FAIL: postun.sh deleted user config on package erase (\$1 == 0)!"
+    exit 1
+fi
+echo "ok: postun.sh cleans cache and preserves user config on package erase (\$1 == 0)"
 
 echo "=== ALL UNINSTALL TESTS PASSED ==="
 exit 0

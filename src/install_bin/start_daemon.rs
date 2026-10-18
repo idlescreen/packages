@@ -96,17 +96,23 @@ fn ensure_config_dirs() {
             }
         }
     }
-    let idle_file = std::path::Path::new(&idle_cfg).join("config.yaml");
+    let idlescreen_toml = std::path::Path::new(&idlescreen_cfg).join("config.toml");
     let idlescreen_file = std::path::Path::new(&idlescreen_cfg).join("config.yaml");
-    let etc_xdg_idlescreen = std::path::Path::new("/etc/xdg/idlescreen/config.yaml");
-    let etc_idlescreen = std::path::Path::new("/etc/idlescreen/config.yaml");
+    let idle_file = std::path::Path::new(&idle_cfg).join("config.yaml");
+    let etc_xdg_toml = std::path::Path::new("/etc/xdg/idlescreen/config.toml");
+    let etc_toml = std::path::Path::new("/etc/idlescreen/config.toml");
+    let etc_xdg_yaml = std::path::Path::new("/etc/xdg/idlescreen/config.yaml");
+    let etc_yaml = std::path::Path::new("/etc/idlescreen/config.yaml");
     let etc_idle = std::path::Path::new("/etc/idle/config.yaml");
 
     for p in [
-        &idlescreen_file,
-        &idle_file,
-        etc_xdg_idlescreen,
-        etc_idlescreen,
+        idlescreen_toml.as_path(),
+        idlescreen_file.as_path(),
+        idle_file.as_path(),
+        etc_xdg_toml,
+        etc_toml,
+        etc_xdg_yaml,
+        etc_yaml,
         etc_idle,
     ] {
         if p.is_file() {
@@ -117,30 +123,24 @@ fn ensure_config_dirs() {
         }
     }
 
-    let sys_file = if etc_xdg_idlescreen.is_file() {
-        Some(etc_xdg_idlescreen)
-    } else if etc_idlescreen.is_file() {
-        Some(etc_idlescreen)
-    } else if etc_idle.is_file() {
-        Some(etc_idle)
-    } else {
-        None
-    };
-
-    if idlescreen_file.is_file() {
-        if !idle_file.exists() {
-            let _ = std::fs::copy(&idlescreen_file, &idle_file);
-        }
-    } else if idle_file.is_file() {
-        if !idlescreen_file.exists() {
-            let _ = std::fs::copy(&idle_file, &idlescreen_file);
-        }
-    } else if let Some(sys) = sys_file {
-        if !idlescreen_file.exists() {
-            let _ = std::fs::copy(sys, &idlescreen_file);
-        }
-        if !idle_file.exists() {
-            let _ = std::fs::copy(sys, &idle_file);
+    if idlescreen_file.is_file() && !idle_file.exists() {
+        let _ = std::fs::copy(&idlescreen_file, &idle_file);
+    } else if idle_file.is_file() && !idlescreen_file.exists() {
+        let _ = std::fs::copy(&idle_file, &idlescreen_file);
+    }
+    if !idlescreen_toml.exists() && !idlescreen_file.exists() {
+        if let Some(sys_toml) = [etc_xdg_toml, etc_toml].into_iter().find(|p| p.is_file()) {
+            let _ = std::fs::copy(sys_toml, &idlescreen_toml);
+        } else if let Some(sys_yaml) = [etc_xdg_yaml, etc_yaml, etc_idle]
+            .into_iter()
+            .find(|p| p.is_file())
+        {
+            let _ = std::fs::copy(sys_yaml, &idlescreen_file);
+        } else {
+            let _ = std::fs::write(
+                &idlescreen_toml,
+                "[general]\nidle_timeout_secs = 300\n\n[saver]\nactive = \"ascii\"\n",
+            );
         }
     }
 }

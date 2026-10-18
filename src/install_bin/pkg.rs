@@ -112,57 +112,60 @@ pub fn survey(pkgs: &[&str], dnf: bool) -> Survey {
     s
 }
 
-pub fn dnf_upgrade(pkgs: &[String], cosmic: bool) -> bool {
+pub fn dnf_upgrade(pkgs: &[String], _cosmic: bool) -> bool {
     if pkgs.is_empty() {
         return true;
     }
     let mut cmd = Command::new("sudo");
-    cmd.arg("dnf").arg("upgrade").arg("-y").arg("--refresh");
-    if !cosmic {
-        cmd.arg("--setopt=install_weak_deps=False");
-    }
+    cmd.args([
+        "dnf",
+        "upgrade",
+        "-y",
+        "--refresh",
+        "--setopt=install_weak_deps=False",
+    ]);
     cmd.args(pkgs);
     run_status(&mut cmd)
 }
 
-pub fn dnf_install(pkgs: &[String], cosmic: bool) -> bool {
+pub fn dnf_install(pkgs: &[String], _cosmic: bool) -> bool {
     if pkgs.is_empty() {
         return true;
     }
     let mut cmd = Command::new("sudo");
-    cmd.arg("dnf").arg("install").arg("-y").arg("--refresh");
-    if !cosmic {
-        cmd.arg("--setopt=install_weak_deps=False");
-    }
+    cmd.args([
+        "dnf",
+        "install",
+        "-y",
+        "--refresh",
+        "--setopt=install_weak_deps=False",
+    ]);
     cmd.args(pkgs);
     run_status(&mut cmd)
 }
 
-pub fn apt_only_upgrade(pkgs: &[String], cosmic: bool) -> bool {
+pub fn apt_only_upgrade(pkgs: &[String], _cosmic: bool) -> bool {
     if pkgs.is_empty() {
         return true;
     }
     let mut cmd = Command::new("sudo");
-    cmd.arg("apt-get")
-        .arg("install")
-        .arg("-y")
-        .arg("--only-upgrade");
-    if !cosmic {
-        cmd.arg("--no-install-recommends");
-    }
+    cmd.args([
+        "apt-get",
+        "install",
+        "-y",
+        "--only-upgrade",
+        "--no-install-recommends",
+    ]);
     cmd.args(pkgs);
     run_status(&mut cmd)
 }
 
-pub fn apt_install(pkgs: &[String], cosmic: bool) -> bool {
+pub fn apt_install(pkgs: &[String], _cosmic: bool) -> bool {
     if pkgs.is_empty() {
         return true;
     }
     let mut cmd = Command::new("sudo");
-    cmd.arg("apt-get").arg("install").arg("-y");
-    if !cosmic {
-        cmd.arg("--no-install-recommends");
-    }
+    cmd.args(["apt-get", "install", "-y", "--no-install-recommends"]);
     cmd.args(pkgs);
     run_status(&mut cmd)
 }

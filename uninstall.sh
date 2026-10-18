@@ -185,7 +185,11 @@ uninstall_prune_dirs() {
 # session, which is exactly why it is not the default.
 uninstall_purge_user_data() {
     story_line "Purging user configuration…"
-    _u_uids="$(_u_desktop_uids)"
+    if [ -n "${IDLESCREEN_HOME_GLOB_OVERRIDE:-}" ]; then
+        _u_uids=""
+    else
+        _u_uids="$(_u_desktop_uids)"
+    fi
     for _u_uid in $_u_uids; do
         _u_home=$(getent passwd "$_u_uid" 2>/dev/null | cut -d: -f6)
         [ -n "$_u_home" ] || continue
@@ -216,7 +220,8 @@ uninstall_purge_user_data() {
             fi
         done
     fi
-    for _h in /home/*; do
+    # shellcheck disable=SC2086
+    for _h in ${IDLESCREEN_HOME_GLOB_OVERRIDE:-/home/*}; do
         [ -d "$_h" ] || continue
         for _u_d in \
             "$_h/.config/idlescreen" \
@@ -231,13 +236,15 @@ uninstall_purge_user_data() {
             fi
         done
     done
-    for _u_d in /etc/xdg/idlescreen /etc/idlescreen /etc/idle; do
-        if [ -d "$_u_d" ]; then
-            say "  ${DIM}rm -rf${RESET} ${BOLD}${_u_d}${RESET}"
-            sudo rm -rf "$_u_d" 2>/dev/null || true
-        fi
-    done
-    sudo rm -rf /run/user/*/idlescreen* /tmp/idlescreen* /var/tmp/idlescreen* 2>/dev/null || true
+    if [ -z "${IDLESCREEN_HOME_GLOB_OVERRIDE:-}" ]; then
+        for _u_d in /etc/xdg/idlescreen /etc/idlescreen /etc/idle; do
+            if [ -d "$_u_d" ]; then
+                say "  ${DIM}rm -rf${RESET} ${BOLD}${_u_d}${RESET}"
+                sudo rm -rf "$_u_d" 2>/dev/null || true
+            fi
+        done
+        sudo rm -rf /run/user/*/idlescreen* /tmp/idlescreen* /var/tmp/idlescreen* 2>/dev/null || true
+    fi
     ok "User and system configuration purged."
 }
 
