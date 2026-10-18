@@ -8,7 +8,7 @@
 # PKGBUILD for IdleScreen on Arch Linux and derivatives.
 pkgbase=idlescreen
 pkgname=('idlescreen')
-pkgver=4.6.2
+pkgver=4.6.3
 pkgrel=1
 pkgdesc="Unified Wayland idle host and 52 built-in 16-bit arcade screensaver scenes"
 arch=('x86_64')
