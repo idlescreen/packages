@@ -12,7 +12,7 @@ survey_modules() {
     step "[3/5]  Composing the install plan"
     story_line "Desktop profile → ${BOLD}${DE_LABEL}${RESET}"
     say "  ${GREEN}→${RESET} Core stack (all DEs): ${BOLD}idlescreen${RESET}"
-    say "  ${DIM}    idlescreen = unified screensaver suite (daemon, cli, tui, 50 built-in 16-bit scenes)${RESET}"
+    say "  ${DIM}    idlescreen = unified screensaver suite (daemon, cli, tui, 52 built-in 16-bit scenes)${RESET}"
     say "  ${GREEN}→${RESET} ${DE_LABEL}: no extra DE-specific packages"
     say ""
     story_line "Surveying what is already on this host (installed vs channel)…"

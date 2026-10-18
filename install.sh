@@ -43,7 +43,7 @@ for arg in "$@"; do
             cat <<'USAGE'
 Usage: install.sh [options]
 
-  (no options)        install / update IdleScreen (all 50 scenes built-in)
+  (no options)        install / update IdleScreen (all 52 scenes built-in)
   --uninstall         remove IdleScreen, keeping user configuration
   --purge             with --uninstall: also remove user and system config
   --plan | --dry-run  print the install plan and exit
@@ -98,7 +98,7 @@ case "${1:-}" in
                     "ui.sh") _expected="e67f1da218c432f88b5ef9a3683942fb79ba986c4930cb97542edba227dd7a73" ;;
                     "detect.sh") _expected="6a32f8e8979018900be6be6a014c798b8e2d68690bb353b099fd9413fb19eab0" ;;
                     "repo.sh") _expected="7a9adb65d6d9d7c7f4d1040180d2ce6752c66759289e137548479e94d850e251" ;;
-                    "install_core.sh") _expected="e9c375760cdac268f885f909bbff5ba7ef5b77b32de243d889ed3509de7a7d36" ;;
+                    "install_core.sh") _expected="5ac019670de0a4b78f8073b07b699ece63c2f686a9ed44d8fd935f889917de41" ;;
                     "install_audit.sh") _expected="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
                     "post_install.sh") _expected="f4cf3c7382a3d8721fd23a3ca03cb9a359de7af0ccea068073e35bad2c716625" ;;
                     "uninstall.sh") _expected="d66c57f6a418990efd36e74f134d1bb8b01eef4ad7de9a2180548878d3fa164c" ;;
@@ -230,7 +230,7 @@ if [ "$_local_checkout" -eq 0 ]; then
             "ui.sh") _expected_hash="e67f1da218c432f88b5ef9a3683942fb79ba986c4930cb97542edba227dd7a73" ;;
             "detect.sh") _expected_hash="6a32f8e8979018900be6be6a014c798b8e2d68690bb353b099fd9413fb19eab0" ;;
             "repo.sh") _expected_hash="7a9adb65d6d9d7c7f4d1040180d2ce6752c66759289e137548479e94d850e251" ;;
-            "install_core.sh") _expected_hash="e9c375760cdac268f885f909bbff5ba7ef5b77b32de243d889ed3509de7a7d36" ;;
+            "install_core.sh") _expected_hash="5ac019670de0a4b78f8073b07b699ece63c2f686a9ed44d8fd935f889917de41" ;;
             "install_audit.sh") _expected_hash="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
             "post_install.sh") _expected_hash="f4cf3c7382a3d8721fd23a3ca03cb9a359de7af0ccea068073e35bad2c716625" ;;
             "uninstall.sh") _expected_hash="d66c57f6a418990efd36e74f134d1bb8b01eef4ad7de9a2180548878d3fa164c" ;;
