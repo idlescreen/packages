@@ -19,10 +19,15 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: dep-audit-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   audit:
     name: audit ${{ matrix.repo.name }}
     runs-on: ubuntu-latest
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:

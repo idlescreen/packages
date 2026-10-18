@@ -8,7 +8,7 @@ on:
   # GITHUB_TOKEN pushes from import-release don't trigger `push` workflows —
   # deploy again after every successful import so the repo metadata goes live.
   workflow_run:
-    workflows: ["Import Product Release"]
+    workflows: ["Import Product Release", "Build Arch Repository"]
     types: [completed]
     branches: [master]
 
