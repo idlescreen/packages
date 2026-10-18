@@ -16,19 +16,19 @@ Description: IdleScreen Studio — TUI Director for the render capability
  IdleScreen Studio — TUI Director for offline video renders.
 
 Package: idlescreen
-Version: 4.6.2-1
+Version: 4.6.3-1
 Architecture: amd64
 Maintainer: IdleScreen <team@idlescreen.org>
-Installed-Size: 16446
+Installed-Size: 16603
 Depends: libc6
 Breaks: idle-daemon (<< 5.0.0), idle-cli (<< 5.0.0), idle-savers (<< 5.0.0), idle-tui (<< 5.0.0), idle-cosmic (<< 5.0.0), idle-saver-ascii (<< 5.0.0), idle-saver-aurora (<< 5.0.0), idle-saver-beams (<< 5.0.0), idle-saver-bursts (<< 5.0.0), idle-saver-chaos (<< 5.0.0), idle-saver-cosmos (<< 5.0.0), idle-saver-glyphs (<< 5.0.0), idle-saver-gnats (<< 5.0.0), idle-saver-hearth (<< 5.0.0), idle-saver-radar (<< 5.0.0), idle-saver-ripple (<< 5.0.0), idle-saver-storm (<< 5.0.0), idle-runner (<< 5.0.0), idlescreen-extras (<< 5.0.0)
 Replaces: idle-daemon (<< 5.0.0), idle-cli (<< 5.0.0), idle-savers (<< 5.0.0), idle-tui (<< 5.0.0), idle-cosmic (<< 5.0.0), idle-saver-ascii (<< 5.0.0), idle-saver-aurora (<< 5.0.0), idle-saver-beams (<< 5.0.0), idle-saver-bursts (<< 5.0.0), idle-saver-chaos (<< 5.0.0), idle-saver-cosmos (<< 5.0.0), idle-saver-glyphs (<< 5.0.0), idle-saver-gnats (<< 5.0.0), idle-saver-hearth (<< 5.0.0), idle-saver-radar (<< 5.0.0), idle-saver-ripple (<< 5.0.0), idle-saver-storm (<< 5.0.0), idle-runner (<< 5.0.0), idlescreen-extras (<< 5.0.0)
-Provides: idle-daemon (= 4.6.2), idle-cli (= 4.6.2), idle-savers (= 4.6.2), idle-tui (= 4.6.2), idle-saver-ascii (= 4.6.2), idle-saver-aurora (= 4.6.2), idle-saver-beams (= 4.6.2), idle-saver-bursts (= 4.6.2), idle-saver-chaos (= 4.6.2), idle-saver-cosmos (= 4.6.2), idle-saver-glyphs (= 4.6.2), idle-saver-gnats (= 4.6.2), idle-saver-hearth (= 4.6.2), idle-saver-radar (= 4.6.2), idle-saver-ripple (= 4.6.2), idle-saver-storm (= 4.6.2), idle-runner (= 4.6.2), idlescreen-extras (= 4.6.2)
-Filename: pool/main/idlescreen_4.6.2-1_amd64.deb
-Size: 1335352
-MD5sum: 29b7a372474ee4a424e73bde978f0882
-SHA1: 34dbbb680c912cfd6f495b85a171e4ad2f5ab312
-SHA256: 5e9c4fe9b49614c080c3e1373efd80812beb000ad32fbd8cf24289ac7e74f303
+Provides: idle-daemon (= 4.6.3), idle-cli (= 4.6.3), idle-savers (= 4.6.3), idle-tui (= 4.6.3), idle-saver-ascii (= 4.6.3), idle-saver-aurora (= 4.6.3), idle-saver-beams (= 4.6.3), idle-saver-bursts (= 4.6.3), idle-saver-chaos (= 4.6.3), idle-saver-cosmos (= 4.6.3), idle-saver-glyphs (= 4.6.3), idle-saver-gnats (= 4.6.3), idle-saver-hearth (= 4.6.3), idle-saver-radar (= 4.6.3), idle-saver-ripple (= 4.6.3), idle-saver-storm (= 4.6.3), idle-runner (= 4.6.3), idlescreen-extras (= 4.6.3)
+Filename: pool/main/idlescreen_4.6.3-1_amd64.deb
+Size: 1347020
+MD5sum: 83e61324d6aaeaf8aa6c5533eaf1f3be
+SHA1: 82d357ea2dbd45015cca4746d2fd27e713e42d74
+SHA256: b29f29a83c1669cc727759e80db0e7d0c0348fe5958d0221da6b6fa5b94d44fd
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/idlescreen
