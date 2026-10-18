@@ -1,14 +1,14 @@
 Package: idle-studio
-Version: 4.6.2-1
+Version: 4.6.3-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
 Installed-Size: 883
 Depends: libc6, render
-Filename: pool/main/idle-studio_4.6.2-1_amd64.deb
-Size: 355148
-MD5sum: 0d630c18703fa7c73652e902a547efcb
-SHA1: 8794ab049a98c50163111b0a5334c1d41b607245
-SHA256: 395bb8d033e153a1234f42665fd20d9c6ba08050a8cf50761a1e7a24d77f4a3c
+Filename: pool/main/idle-studio_4.6.3-1_amd64.deb
+Size: 355000
+MD5sum: 26ff6b22f376ac591d4d75189c506b15
+SHA1: 16ab5b348acf8baaaea820cb638df3cd46472d5e
+SHA256: ec071a574fd0580e3907cf6f4f8a0c663f4ac18f0b2dc757562b64039ca48793
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/studio
@@ -36,16 +36,16 @@ Description: IdleScreen standalone screensaver and idle management suite for Lin
  IdleScreen standalone screensaver and idle management suite for Linux
 
 Package: render
-Version: 4.6.2-1
+Version: 4.6.3-1
 Architecture: amd64
 Maintainer: IdleScreen <jerydleuck@gmail.com>
 Installed-Size: 1458
 Depends: ffmpeg | ffmpeg-free | ffmpeg-full, libc6
-Filename: pool/main/render_4.6.2-1_amd64.deb
-Size: 301176
-MD5sum: f84f03e5ab4484e68148eeeb38da6e8c
-SHA1: b7d83680204f6b0cfe869f85fc092756446c53e4
-SHA256: 910c5fe51ca0d26fc459707266b4a15ba5aa3cdd92ec19faa85039ceb2030837
+Filename: pool/main/render_4.6.3-1_amd64.deb
+Size: 298724
+MD5sum: 53b10cec243ce4893c8863521b88eec1
+SHA1: 30a4008180fbae2b7c8a57bf81600a909fd49461
+SHA256: 02068352ce31d0c9984c62925a7722a12158d63dab1b62c4109092370cf6b166
 Section: utils
 Priority: optional
 Homepage: https://github.com/idlescreen/studio
