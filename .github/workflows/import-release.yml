@@ -140,6 +140,11 @@ jobs:
           # signature BEFORE it enters the pool. Re-signing an unverified
           # download with the org key would turn a tampered upstream release
           # into a trusted channel artifact.
+          # The signature must come from the release workflow of the very
+          # repo the artefact was downloaded from, not from any repo in the
+          # org. A package signed by a different repository must not enter
+          # the channel.
+          _src_slug="${DISPATCH_REPO#*/}"
           for f in "$_staging"/deb/*.deb "$_staging"/rpm/*.rpm; do
             [ -e "$f" ] || continue
             if [ ! -f "${f}.sig" ] || [ ! -f "${f}.pem" ]; then
@@ -150,7 +155,7 @@ jobs:
               --certificate "${f}.pem" \
               --signature "${f}.sig" \
               --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-              --certificate-identity-regexp "^https://github\\.com/idlescreen/[a-z0-9-]+/\\.github/workflows/release\\.yml@refs/tags/v[0-9A-Za-z._-]+$" \
+              --certificate-identity-regexp "^https://github\\.com/idlescreen/${_src_slug}/\\.github/workflows/release\\.yml@refs/tags/v[0-9A-Za-z._-]+$" \
               "$f" || {
                 echo "ERROR: cosign verification failed for $(basename "$f") — refusing to import" >&2
                 exit 1
@@ -202,11 +207,12 @@ jobs:
                 continue
               fi
               # Same rule as the dispatch import: no signature, no import.
+              _src_slug="${repo#*/}"
               if ! cosign verify-blob \
                   --certificate "${_staging}/dl/${name}.pem" \
                   --signature "${_staging}/dl/${name}.sig" \
                   --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-                  --certificate-identity-regexp "^https://github\\.com/idlescreen/[a-z0-9-]+/\\.github/workflows/release\\.yml@refs/tags/v[0-9A-Za-z._-]+$" \
+                  --certificate-identity-regexp "^https://github\\.com/idlescreen/${_src_slug}/\\.github/workflows/release\\.yml@refs/tags/v[0-9A-Za-z._-]+$" \
                   "${_staging}/dl/${name}"; then
                 echo "ERROR: cosign verification failed for ${repo} ${_tag} ${name} — not importing" >&2
                 exit 1
