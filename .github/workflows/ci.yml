@@ -62,7 +62,7 @@ jobs:
         shellcheck scripts/sync_installer_checksums.sh
         shellcheck tests/test_install_smoke.sh
         shellcheck tests/test_verify_self_edge.sh
-        shellcheck tests/test_studio_preflight.sh
+        shellcheck tests/test_studio_installer.sh
         shellcheck arch/idlescreen/omarchy-launch-screensaver
         shellcheck -s bash arch/idlescreen/PKGBUILD
         shellcheck arch/idlescreen/idlescreen.install
@@ -118,8 +118,8 @@ jobs:
           preflight_packages
         '
 
-    - name: Run studio pre-flight regression test
-      run: bash tests/test_studio_preflight.sh
+    - name: Run studio installer contract test
+      run: bash tests/test_studio_installer.sh
 
     - name: Run --verify-self edge cases
       run: bash tests/test_verify_self_edge.sh

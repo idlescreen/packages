@@ -1,13 +1,18 @@
 #!/bin/sh
-# Regression test: the studio installer's pre-flight must accept a virtual
-# provide, not only a real package.
+# Regression tests for the IdleScreen Studio installer's contract.
 #
-# idle-savers has no .deb of its own — the idlescreen package provides it.
-# The pre-flight used to require a `Package:` entry for every requested name,
-# so it aborted on every host with "package is not published in the IdleScreen
-# channel: idle-savers" and the studio installer never got past step 2.
+# 1. The pre-flight must accept a virtual provide, not only a real
+#    package. idle-savers has no .deb of its own — the idlescreen package
+#    provides it — and the pre-flight used to require a `Package:` entry
+#    for every requested name, so it aborted on every host with "package
+#    is not published in the IdleScreen channel: idle-savers".
 #
-# The fixture index is local: this test must not depend on the network.
+# 2. Every package-manager call must be non-interactive. The documented
+#    install is `curl … | sh`, so stdin is the script pipe and sits at EOF
+#    by the time the package manager prompts. A call that can prompt reads
+#    EOF at "Is this ok [y/N]?" and aborts the whole install.
+#
+# The fixture index is local: these tests must not depend on the network.
 REPO_ROOT=$(CDPATH='' cd -- "$(dirname -- "$0")/.." && pwd)
 
 fail=0
@@ -73,8 +78,23 @@ esac
 check 0 "$(run_preflight "$REAL_ALL_PKGS" "$REPO_ROOT")" \
     'the shipped index satisfies the shipped request list'
 
+# No package-manager install call may prompt. Match only real invocations —
+# a command word at the start of the line — so an error message that merely
+# mentions "dnf install" is not mistaken for one.
+interactive=$(grep -rnE '^[[:space:]]*(if[[:space:]]+(![[:space:]]+)?)?(sudo[[:space:]]+)?(dnf|apt-get)[[:space:]]+install' \
+    "$REPO_ROOT"/install-studio-lib/*.sh "$REPO_ROOT"/install.sh "$REPO_ROOT"/install_core.sh \
+    "$REPO_ROOT"/install_audit.sh "$REPO_ROOT"/post_install.sh "$REPO_ROOT"/update.sh 2>/dev/null \
+    | grep -vE '(-y|--assumeyes)' || true)
+if [ -z "$interactive" ]; then
+    echo "  ok   every package-manager install call is non-interactive"
+else
+    echo "  FAIL an install call can prompt and will abort a piped install:"
+    echo "$interactive" | sed 's/^/       /'
+    fail=$((fail + 1))
+fi
+
 if [ "$fail" -ne 0 ]; then
-    echo "studio pre-flight regression test FAILED ($fail check(s))"
+    echo "studio installer contract test FAILED ($fail check(s))"
     exit 1
 fi
-echo "studio pre-flight regression test passed"
+echo "studio installer contract test passed"

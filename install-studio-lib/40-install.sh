@@ -14,10 +14,14 @@ install_packages() {
         # receive as separate arguments. Quoting them would install one
         # package literally named "idle-studio render".
     if [ "$PKG" = "dnf" ]; then
+        # -y is required, not a convenience: the documented install is
+        # `curl … | sh`, so stdin is the script pipe and is at EOF by the
+        # time the package manager prompts. Without -y dnf reads EOF at
+        # "Is this ok [y/N]?" and aborts the whole install.
         # shellcheck disable=SC2086
-        if ! sudo dnf install --refresh --setopt=idlescreen.metadata_expire=0 $ALL_PKGS; then
+        if ! sudo dnf install -y --refresh --setopt=idlescreen.metadata_expire=0 $ALL_PKGS; then
             # shellcheck disable=SC2086
-            if ! sudo dnf install --refresh --setopt=idlescreen.metadata_expire=0 $STUDIO_PKGS; then
+            if ! sudo dnf install -y --refresh --setopt=idlescreen.metadata_expire=0 $STUDIO_PKGS; then
                 err "dnf could not install: ${STUDIO_PKGS}"
                 say "  ${DIM}If checksum errors: sudo dnf clean all --repo=idlescreen${RESET}"
                 exit 1
