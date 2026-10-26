@@ -104,6 +104,23 @@ else
     fail=$((fail + 1))
 fi
 
+# Every removal path must cover the studio suite. The three lists are kept
+# in sync by comment, which is not a mechanism — the studio packages were
+# left behind by every removal path for exactly that reason. These two
+# lists live in this repo; the third (the package scriptlet) is pinned by
+# the idlescreen repo's removal_stack_check.sh.
+for list in "$REPO_ROOT/uninstall.sh" "$REPO_ROOT/src/install_honesty/constants.rs"; do
+    for pkg in idle-studio render; do
+        # uninstall.sh lists the names bare, the Rust constant quotes them.
+        if grep -qE "^[[:space:]]*\"?${pkg}\"?,?[[:space:]]*$" "$list"; then
+            echo "  ok   $(basename "$list") removes $pkg"
+        else
+            echo "  FAIL $(basename "$list") does not remove $pkg"
+            fail=$((fail + 1))
+        fi
+    done
+done
+
 if [ "$fail" -ne 0 ]; then
     echo "studio installer contract test FAILED ($fail check(s))"
     exit 1

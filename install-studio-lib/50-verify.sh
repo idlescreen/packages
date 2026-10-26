@@ -57,10 +57,10 @@ verify_install() {
     say "  ${DIM}export${RESET}   ${CYAN}render -e beams --duration 10s -o ~/Videos/beams.mkv${RESET}"
     if [ "$PKG" = "dnf" ]; then
         say "  ${DIM}remove${RESET}   ${CYAN}sudo dnf remove ${STUDIO_PKGS}${RESET}"
-        say "            ${DIM}# also removes idle-savers if you drop it${RESET}"
+        say "            ${DIM}# or remove the whole suite: curl -fsSL https://idlescreen.github.io/install.sh | sh -s -- --uninstall${RESET}"
     else
         say "  ${DIM}remove${RESET}   ${CYAN}sudo apt remove ${STUDIO_PKGS}${RESET}"
-        say "            ${DIM}# also removes idle-savers if you drop it${RESET}"
+        say "            ${DIM}# or remove the whole suite: curl -fsSL https://idlescreen.github.io/install.sh | sh -s -- --uninstall${RESET}"
     fi
     say "  ${DIM}docs${RESET}     https://idlescreen.github.io/#studio"
     say "  ${DIM}pkgs${RESET}     ${REPO_BASE}/"

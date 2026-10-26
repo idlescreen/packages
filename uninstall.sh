@@ -9,8 +9,14 @@
 #
 # User configuration is preserved unless --purge is passed.
 
-# Product stack + official savers. Keep in sync with
+# Product stack + official savers + the studio suite. Keep in sync with
 # install_honesty::PRODUCT_STACK_ON_REMOVE and remove-product-stack.sh.
+#
+# idle-studio and render belong here too: they are IdleScreen packages
+# from the same signed channel, and leaving them behind meant this tool
+# printed "IdleScreen removed" while two packages it had installed were
+# still on disk — and then dropped the channel they would have been
+# removed from.
 UNINSTALL_PKGS="
 idle-cosmic
 idle-tui
@@ -30,6 +36,8 @@ idle-saver-ripple
 idle-saver-storm
 idle-daemon
 idlescreen
+idle-studio
+render
 "
 
 _u_is_desktop_uid() {

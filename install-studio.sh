@@ -53,7 +53,7 @@ _expected_hash() {
         "20-ffmpeg.sh") echo "89d4c292950eb098ed9f89619b7c8f4fbe9deddb3cb2ff4d612a4556d228e89d" ;;
         "30-channel.sh") echo "51fa0a6957be45fb2c56f158f5a621e34a8d27abb96a325f39b9f0d18178fbee" ;;
         "40-install.sh") echo "b6f95813be67ca29920268c2e7b077869a90c12bafbbecf34cf713b1139eee38" ;;
-        "50-verify.sh") echo "c04bea0390f86549eba9f299add3cb798b1e90d56668de015cc69cc741f72cca" ;;
+        "50-verify.sh") echo "ab458c3a12083899ab8b46626389f1e8672ba49201d509ded5dd60846c5e2416" ;;
         *) echo "install-studio: unknown module $1" >&2; exit 1 ;;
     esac
 }

@@ -21,6 +21,11 @@ pub const OFFICIAL_SAVERS: &[&str] = &[
 
 /// Full product stack erased by `dnf/apt remove idlescreen` (idlescreen 2.6+).
 /// Does not include `idlescreen` itself (already being removed) or user config.
+///
+/// The studio suite is part of the stack: `idle-studio` and `render` come
+/// from the same signed channel, so removing the daemon has to take them
+/// with it. Leaving them behind orphaned the packages *and* the channel
+/// they would have been removed from.
 pub const PRODUCT_STACK_ON_REMOVE: &[&str] = &[
     "idle-cosmic",
     "idle-tui",
@@ -39,11 +44,13 @@ pub const PRODUCT_STACK_ON_REMOVE: &[&str] = &[
     "idle-saver-ripple",
     "idle-saver-storm",
     "idle-daemon",
+    "idle-studio",
+    "render",
 ];
 
 /// Honest one-liner for uninstall docs / victory footer.
 pub const REMOVE_BLURB: &str =
-    "sudo dnf remove idlescreen   # also removes modules, savers, repo drop-in";
+    "sudo dnf remove idlescreen   # also removes modules, savers, studio, repo drop-in";
 
 /// Truthful DNF channel disclaimer (packages + repo metadata both GPG-checked).
 pub const DNF_GPG_DISCLAIMER: &str = "package gpgcheck=1 · repo_gpgcheck=1";
@@ -133,6 +140,8 @@ mod tests {
             "idle-savers",
             "idle-tui",
             "idle-cosmic",
+            "idle-studio",
+            "render",
         ] {
             assert!(
                 PRODUCT_STACK_ON_REMOVE.contains(&p),
