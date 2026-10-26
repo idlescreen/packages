@@ -43,7 +43,12 @@ jobs:
           fetch-depth: 0
 
       - name: Refresh package databases
-        run: pacman -Sy --noconfirm --disable-download-timeout
+        # A partial upgrade (`-Sy` without `-u`) leaves the installed
+        # systemd older than the systemd-libs in the database, and the next
+        # install dies with "installing systemd-libs (262.1-1) breaks
+        # dependency 'systemd-libs=262' required by systemd". Upgrade the
+        # whole base system instead, so the packages stay consistent.
+        run: pacman -Syu --noconfirm --disable-download-timeout
 
       - name: Install build dependencies
         run: |
@@ -180,7 +185,7 @@ jobs:
     steps:
       - name: Refresh package databases and install tooling
         run: |
-          pacman -Sy --noconfirm --disable-download-timeout
+          pacman -Syu --noconfirm --disable-download-timeout
           pacman -S --noconfirm --needed --disable-download-timeout gnupg git
 
       - name: Checkout packages repository
