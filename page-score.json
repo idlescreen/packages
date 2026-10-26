@@ -1,6 +1,6 @@
 {
  "repo": "packages",
- "rev": "91579eb",
+ "rev": "4ae67e0",
  "dirty": false,
  "pages": [
   {
@@ -89,7 +89,7 @@
   },
   {
    "path": "./src/install_honesty/constants.rs",
-   "lines": 161,
+   "lines": 170,
    "bin_bytes": null,
    "heat_pct": null,
    "reach": 3
