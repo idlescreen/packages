@@ -89,16 +89,15 @@ fn setup_repo(dnf: bool) {
             err("could not create the RPM key directory");
             exit(1);
         }
-        if !trust::install_verified_key(
-            &format!("{REPO_BASE}/rpm/idlescreen-key.gpg"),
-            &key_dest,
-        ) {
+        if !trust::install_verified_key(&format!("{REPO_BASE}/rpm/idlescreen-key.gpg"), &key_dest) {
             err(&format!(
                 "RPM signing key fingerprint mismatch ({CHANNEL_KEY_FPR} not present)"
             ));
             exit(1);
         }
-        ok(&format!("{RPM_GPG_DIR}/idlescreen-key.gpg (fingerprint verified)"));
+        ok(&format!(
+            "{RPM_GPG_DIR}/idlescreen-key.gpg (fingerprint verified)"
+        ));
         let _ = run_status(
             Command::new("sudo")
                 .args(["rpm", "--import"])

@@ -40,10 +40,7 @@ pub fn key_fingerprint_matches(key_path: &Path) -> bool {
 
 /// Downloads `url` into a fresh temporary file. Returns `None` on failure.
 pub fn download_to_temp(url: &str) -> Option<PathBuf> {
-    let path = std::env::temp_dir().join(format!(
-        "idlescreen-key-{}.gpg",
-        std::process::id()
-    ));
+    let path = std::env::temp_dir().join(format!("idlescreen-key-{}.gpg", std::process::id()));
     let ok = Command::new("curl")
         .args(["-fsSL", url, "-o"])
         .arg(&path)
@@ -131,10 +128,7 @@ pub fn write_apt_source(dest: &Path, repo_base: &str) -> bool {
 
 /// Writes `body` to a temporary file and returns its path.
 fn write_temp(body: &str) -> Option<PathBuf> {
-    let path = std::env::temp_dir().join(format!(
-        "idlescreen-repo-{}.tmp",
-        std::process::id()
-    ));
+    let path = std::env::temp_dir().join(format!("idlescreen-repo-{}.tmp", std::process::id()));
     std::fs::write(&path, body).ok()?;
     Some(path)
 }
