@@ -38,7 +38,12 @@ verify_install() {
         _n=$#
         ok "plugins: ${_n} under /usr/libexec/idle/screensavers"
     else
-        warn "no plugins under /usr/libexec/idle/screensavers — install idle-savers"
+        # Not a problem, and not worth a warning: the scenes are compiled
+        # into the idlescreen binary, and idle-savers is a virtual name the
+        # idlescreen package already provides — so this branch used to ask
+        # users to install a package they already had, for content that
+        # ships in-tree. The directory only holds optional external plugins.
+        ok "no external plugins — the built-in scenes are used"
     fi
     if render -e beams --duration 1s --dry-run >/dev/null 2>&1; then
         ok "render dry-run: beams · 1s"

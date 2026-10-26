@@ -78,6 +78,17 @@ esac
 check 0 "$(run_preflight "$REAL_ALL_PKGS" "$REPO_ROOT")" \
     'the shipped index satisfies the shipped request list'
 
+# The installer must never tell a user to install a package the channel
+# already provides. idle-savers is a virtual name: the idlescreen package
+# provides it and no .deb of its own exists, so "install idle-savers" is
+# advice a user cannot act on — and the scenes ship in-tree regardless.
+if grep -q 'install idle-savers' "$REPO_ROOT/install-studio-lib/50-verify.sh"; then
+    echo "  FAIL the installer tells users to install a package that is already provided"
+    fail=$((fail + 1))
+else
+    echo "  ok   the installer never asks for a package the channel already provides"
+fi
+
 # No package-manager install call may prompt. Match only real invocations —
 # a command word at the start of the line — so an error message that merely
 # mentions "dnf install" is not mistaken for one.
