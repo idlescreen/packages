@@ -189,6 +189,19 @@ uninstall_prune_dirs() {
     sudo rmdir /usr/share/idlescreen 2>/dev/null || true
 }
 
+# Dependencies do not come out with the package that pulled them in. The
+# render package declares /usr/bin/ffmpeg as a *file* dependency, so rpm
+# and dpkg both leave the ffmpeg package on disk when render is removed.
+# Taking ffmpeg with us would be wrong — it is a common system tool that
+# the user may rely on for something else — but staying quiet about it
+# leaves behind a package the user never asked for, with no explanation.
+uninstall_report_leftovers() {
+    if command -v ffmpeg >/dev/null 2>&1; then
+        dim "  ffmpeg is still installed — IdleScreen no longer needs it."
+        dim "  Remove it with your package manager if you don't need it elsewhere."
+    fi
+}
+
 # Opt-in only. Wipes config for the invoking user and every other desktop
 # session, which is exactly why it is not the default.
 uninstall_purge_user_data() {
@@ -296,6 +309,7 @@ uninstall_stack() {
     step "[3/3]  Final sweep"
     # Units are gone by now; this is what actually stops a surviving process.
     uninstall_stop_user_daemons
+    uninstall_report_leftovers
 
     if [ "${UNINSTALL_PURGE:-0}" -eq 1 ]; then
         uninstall_purge_user_data

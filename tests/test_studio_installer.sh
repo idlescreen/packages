@@ -121,6 +121,30 @@ for list in "$REPO_ROOT/uninstall.sh" "$REPO_ROOT/src/install_honesty/constants.
     done
 done
 
+# The studio installer pulls in ffmpeg, and the render package declares it
+# as a *file* dependency (/usr/bin/ffmpeg), so no package manager takes it
+# away again when render is removed. The uninstaller must say so rather than
+# leave an unexplained package behind — and it must not remove ffmpeg
+# itself, because ffmpeg is a common system tool the user may need.
+if grep -q '^uninstall_report_leftovers()' "$REPO_ROOT/uninstall.sh" \
+    && grep -q 'command -v ffmpeg' "$REPO_ROOT/uninstall.sh" \
+    && grep -qE '^[[:space:]]*uninstall_report_leftovers[[:space:]]*$' "$REPO_ROOT/uninstall.sh"; then
+    echo "  ok   the uninstaller reports the ffmpeg dependency it leaves behind"
+else
+    echo "  FAIL the uninstaller does not report the ffmpeg dependency it leaves behind"
+    fail=$((fail + 1))
+fi
+
+# Anchored to a command position, so a comment that merely mentions rpm and
+# ffmpeg on the same line is not mistaken for an invocation.
+if grep -qE '^[[:space:]]*(sudo[[:space:]]+)?(rpm|dnf|yum|pacman|dpkg)[[:space:]]+[^|]*ffmpeg' \
+    "$REPO_ROOT/uninstall.sh"; then
+    echo "  FAIL the uninstaller removes ffmpeg, which the user may need elsewhere"
+    fail=$((fail + 1))
+else
+    echo "  ok   the uninstaller leaves ffmpeg alone"
+fi
+
 if [ "$fail" -ne 0 ]; then
     echo "studio installer contract test FAILED ($fail check(s))"
     exit 1
