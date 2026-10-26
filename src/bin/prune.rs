@@ -72,6 +72,7 @@ fn prune_directory(
     let to_remove = select_to_remove(packages, keep);
 
     let mut removed = 0usize;
+    let mut planned = 0usize;
     for path in &to_remove {
         if !is_under_base(dir_path, path) {
             return Err(format!(
@@ -86,15 +87,23 @@ fn prune_directory(
             .unwrap_or_else(|| path.display().to_string());
         if is_dry_run {
             println!("  [dry-run] would rm {name:?}");
+            planned += 1;
         } else {
             println!("  rm {name:?}");
             fs::remove_file(path).map_err(|e| e.to_string())?;
+            removed += 1;
         }
-        removed += 1;
     }
 
     // Recount kept files (approximate: total parseable remaining).
     let remaining = collect_packages(dir_path, is_deb)?.len();
+    if is_dry_run {
+        println!(
+            "Would prune {} files; kept {} in {:?}",
+            planned, remaining, dir_path
+        );
+        return Ok(());
+    }
     println!(
         "Pruned {} files; kept {} in {:?}",
         removed, remaining, dir_path

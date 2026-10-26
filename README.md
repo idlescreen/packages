@@ -28,7 +28,7 @@
 
 The signed package channel — APT, RPM and pacman repos served at
 `idlescreen.github.io/packages`, fed by release imports from every product
-repo. Part of [IdleScreen](https://idlescreen.github.io) (`v4.6.3`) — unified single-binary Wayland
+repo. Part of [IdleScreen](https://idlescreen.github.io) (`v4.7.0`) — unified single-binary Wayland
 screensavers for Linux with 52 built-in 16-bit arcade scenes, 10-bit HDR deep color, 4K Hi-Res rendering, and system theme adaptation.
 
 ## Install
@@ -76,7 +76,7 @@ cd packages/arch/idlescreen
 makepkg -si
 ```
 
-That PKGBUILD compiles the unified `idlescreen` crate (daemon, CLI, TUI, and all 52 built-in 16-bit arcade scenes)
+That PKGBUILD compiles the unified `idlescreen` crate (daemon, CLI, TUI, and all 53 built-in 16-bit arcade scenes)
 from the `idlescreen` release tag and produces the `/usr/bin/idlescreen`
 binary suite.
 

@@ -40,6 +40,19 @@ jobs:
         with:
           enablement: true
 
+      # Build the Rust installer from the current source. The binary used to
+      # be committed to the repo, which meant it silently drifted away from
+      # the code it was built from (it still printed the pre-rename
+      # `idle-daemon.service` unit name). Building it here keeps the
+      # published artifact and the source in lockstep.
+      - name: Build installer binary
+        run: |
+          curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
+          echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
+          cargo build --release --bin install
+          mkdir -p bin
+          install -m 0755 target/release/install bin/install
+
       # Publish checksums.sha256 (+ detached sig) covering every installer
       # entry point so users can verify downloads out-of-band: fetch the
       # manifest from Pages, verify it against our key, then sha256sum -c.
@@ -53,6 +66,7 @@ jobs:
           set -e
           sha256sum install.sh install-studio.sh repo.sh ui.sh detect.sh \
             install_core.sh install_audit.sh post_install.sh uninstall.sh \
+            bin/install \
             rpm/idlescreen-key.gpg apt/idlescreen-keyring.gpg \
             > checksums.sha256
 

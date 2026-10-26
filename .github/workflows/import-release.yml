@@ -68,6 +68,15 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y dpkg-dev apt-utils createrepo-c rpm gpg
 
+      - name: Install cosign
+        run: |
+          # cosign verifies the upstream release signature on every imported
+          # package before the org key re-signs it.
+          curl -Lo /tmp/cosign https://github.com/sigstore/cosign/releases/download/v2.2.4/cosign-linux-amd64
+          chmod +x /tmp/cosign
+          sudo mv /tmp/cosign /usr/local/bin/cosign
+          cosign version
+
       - name: Download release assets (no clobber)
         if: github.event_name == 'repository_dispatch'
         env:
@@ -96,6 +105,26 @@ jobs:
             --pattern "*.rpm" \
             --dir "$_staging/rpm" || true
 
+          # The release publishes a cosign signature and certificate next to
+          # every package. Fetch them so the artifacts can be verified
+          # before the org's own signing key blesses them.
+          gh release download "${DISPATCH_TAG}" \
+            --repo "${DISPATCH_REPO}" \
+            --pattern "*.deb.sig" \
+            --dir "$_staging/deb" || true
+          gh release download "${DISPATCH_TAG}" \
+            --repo "${DISPATCH_REPO}" \
+            --pattern "*.deb.pem" \
+            --dir "$_staging/deb" || true
+          gh release download "${DISPATCH_TAG}" \
+            --repo "${DISPATCH_REPO}" \
+            --pattern "*.rpm.sig" \
+            --dir "$_staging/rpm" || true
+          gh release download "${DISPATCH_TAG}" \
+            --repo "${DISPATCH_REPO}" \
+            --pattern "*.rpm.pem" \
+            --dir "$_staging/rpm" || true
+
           _guard() {
             for f in "$1"/*; do
               [ -e "$f" ] || continue
@@ -107,6 +136,27 @@ jobs:
           }
           _guard "$_staging/deb" apt/pool/main
           _guard "$_staging/rpm" rpm/pool
+          # Verify each staged package against the upstream release's cosign
+          # signature BEFORE it enters the pool. Re-signing an unverified
+          # download with the org key would turn a tampered upstream release
+          # into a trusted channel artifact.
+          for f in "$_staging"/deb/*.deb "$_staging"/rpm/*.rpm; do
+            [ -e "$f" ] || continue
+            if [ ! -f "${f}.sig" ] || [ ! -f "${f}.pem" ]; then
+              echo "ERROR: $(basename "$f") has no upstream cosign signature — refusing to import" >&2
+              exit 1
+            fi
+            cosign verify-blob \
+              --certificate "${f}.pem" \
+              --signature "${f}.sig" \
+              --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+              --certificate-identity-regexp "^https://github\\.com/idlescreen/[a-z0-9-]+/\\.github/workflows/release\\.yml@refs/tags/v[0-9A-Za-z._-]+$" \
+              "$f" || {
+                echo "ERROR: cosign verification failed for $(basename "$f") — refusing to import" >&2
+                exit 1
+              }
+            echo "verified: $(basename "$f")"
+          done
           cp "$_staging/deb"/*.deb apt/pool/main/ 2>/dev/null || true
           cp "$_staging/rpm"/*.rpm rpm/pool/ 2>/dev/null || true
 
@@ -138,13 +188,32 @@ jobs:
                 continue
               fi
               echo "sweep: ${repo} ${_tag} missing ${name} — importing"
+              _ok=0
               if gh release download "${_tag}" --repo "${repo}" \
-                  --pattern "${name}" --dir "${_staging}/dl"; then
-                mv "${_staging}/dl/${name}" "${_staging}/${_sub}/${name}"
-                cp "${_staging}/${_sub}/${name}" "${_dst}/"
-              else
-                echo "WARNING: sweep download failed for ${repo} ${_tag} ${name}" >&2
+                  --pattern "${name}" --dir "${_staging}/dl" \
+                && gh release download "${_tag}" --repo "${repo}" \
+                  --pattern "${name}.sig" --dir "${_staging}/dl" \
+                && gh release download "${_tag}" --repo "${repo}" \
+                  --pattern "${name}.pem" --dir "${_staging}/dl"; then
+                _ok=1
               fi
+              if [ "$_ok" -ne 1 ]; then
+                echo "WARNING: sweep download failed for ${repo} ${_tag} ${name}" >&2
+                continue
+              fi
+              # Same rule as the dispatch import: no signature, no import.
+              if ! cosign verify-blob \
+                  --certificate "${_staging}/dl/${name}.pem" \
+                  --signature "${_staging}/dl/${name}.sig" \
+                  --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+                  --certificate-identity-regexp "^https://github\\.com/idlescreen/[a-z0-9-]+/\\.github/workflows/release\\.yml@refs/tags/v[0-9A-Za-z._-]+$" \
+                  "${_staging}/dl/${name}"; then
+                echo "ERROR: cosign verification failed for ${repo} ${_tag} ${name} — not importing" >&2
+                exit 1
+              fi
+              mv "${_staging}/dl/${name}" "${_staging}/${_sub}/${name}"
+              cp "${_staging}/${_sub}/${name}" "${_dst}/"
+              echo "verified and imported: ${name}"
             done
           done
 

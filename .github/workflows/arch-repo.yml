@@ -38,7 +38,7 @@ jobs:
     container: archlinux:base
     steps:
       - name: Checkout packages repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 0
 
@@ -184,7 +184,7 @@ jobs:
           pacman -S --noconfirm --needed --disable-download-timeout gnupg git
 
       - name: Checkout packages repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
         with:
           fetch-depth: 0
 
@@ -240,10 +240,13 @@ jobs:
               ln -sf /tmp/gpg-wrapper /tmp/gpg
               export PATH="/tmp:$PATH"
             fi
-            KEYID="$(gpg --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" \
+            # Use the passphrase *file* the key-import step already wrote:
+            # a passphrase on the command line is visible in `ps` to every
+            # other process on the runner.
+            KEYID="$(gpg --pinentry-mode loopback --passphrase-file /tmp/gpg-passphrase.txt \
                        --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5; exit}')"
             repo-add --include-sigs --sign --key "$KEYID" idlescreen.db.tar.gz ./*.pkg.tar.zst
-            gpg --pinentry-mode loopback --passphrase "$GPG_PASSPHRASE" \
+            gpg --pinentry-mode loopback --passphrase-file /tmp/gpg-passphrase.txt \
                 --yes --detach-sign --armor idlescreen.db.tar.gz
           else
             KEYID="$(gpg --list-secret-keys --with-colons | awk -F: '/^sec:/ {print $5; exit}')"

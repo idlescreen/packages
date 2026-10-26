@@ -78,20 +78,23 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             "jerydleuck@gmail.com",
         );
         let gpg_bin = resolve_gpg_bin_from_env();
-        if let Err(e) = sign_apt_release(&signing_key, &gpg_bin) {
-            println!("Warning: APT release signing skipped: {e}");
-        }
+        // A signing failure must fail the run: publishing an unsigned
+        // channel while reporting success breaks every client that verifies
+        // the repository signature.
+        sign_apt_release(&signing_key, &gpg_bin).map_err(|e| {
+            format!("APT release signing failed — refusing to publish an unsigned channel: {e}")
+        })?;
     } else {
         println!("Skipping APT metadata generation (tools not on PATH)...");
     }
 
-    if let Err(e) = sign_rpms() {
-        println!("Warning: sign_rpms skipped: {e}");
-    }
+    sign_rpms().map_err(|e| {
+        format!("RPM payload signing failed — refusing to publish unsigned packages: {e}")
+    })?;
     run_createrepo()?;
-    if let Err(e) = sign_rpm_metadata() {
-        println!("Warning: sign_rpm_metadata skipped: {e}");
-    }
+    sign_rpm_metadata().map_err(|e| {
+        format!("RPM metadata signing failed — refusing to publish unsigned metadata: {e}")
+    })?;
 
     println!("==========================================");
     println!("Update complete!");

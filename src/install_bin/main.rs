@@ -8,15 +8,18 @@ mod deploy;
 mod host;
 mod pkg;
 mod start_daemon;
+mod trust;
 mod ui;
 mod victory;
 
+use std::path::Path;
 use std::process::{Command, Stdio, exit};
 
 use deploy::{deploy, print_deploy_result, recount};
 use host::{desktop_label, is_apt, is_cosmic, is_dnf, os_pretty, packages, run_status};
 use pkg::survey;
 use start_daemon::start_daemon;
+use trust::{CHANNEL_KEY_FPR, RPM_GPG_DIR};
 use ui::{
     C_BOLD, C_CYAN, C_DIM, C_GREEN, C_ORANGE, C_RESET, err, ok, pause, say, step, story_line, warn,
 };
@@ -80,15 +83,38 @@ fn main() {
 
 fn setup_repo(dnf: bool) {
     if dnf {
-        story_line("Writing IdleScreen DNF repo file…");
-        if !run_status(Command::new("sudo").args([
-            "curl",
-            "-fsSL",
-            &format!("{REPO_BASE}/rpm/idlescreen.repo"),
-            "-o",
-            "/etc/yum.repos.d/idlescreen.repo",
-        ])) {
-            err("repo install failed");
+        story_line("Fetching + fingerprint-checking the IdleScreen RPM signing key…");
+        let key_dest = Path::new(RPM_GPG_DIR).join("idlescreen-key.gpg");
+        if !run_status(Command::new("sudo").args(["mkdir", "-p", RPM_GPG_DIR])) {
+            err("could not create the RPM key directory");
+            exit(1);
+        }
+        if !trust::install_verified_key(
+            &format!("{REPO_BASE}/rpm/idlescreen-key.gpg"),
+            &key_dest,
+        ) {
+            err(&format!(
+                "RPM signing key fingerprint mismatch ({CHANNEL_KEY_FPR} not present)"
+            ));
+            exit(1);
+        }
+        ok(&format!("{RPM_GPG_DIR}/idlescreen-key.gpg (fingerprint verified)"));
+        let _ = run_status(
+            Command::new("sudo")
+                .args(["rpm", "--import"])
+                .arg(&key_dest)
+                .stdout(Stdio::null())
+                .stderr(Stdio::null()),
+        );
+        // The repo file is written from pinned content, never fetched: a
+        // fetched .repo's gpgkey/baseurl could swap the trust anchor.
+        story_line("Writing IdleScreen DNF repo file (pinned content)…");
+        if !run_status(Command::new("sudo").args(["mkdir", "-p", "/etc/yum.repos.d"])) {
+            err("could not create /etc/yum.repos.d");
+            exit(1);
+        }
+        if !trust::write_dnf_repo(Path::new("/etc/yum.repos.d/idlescreen.repo"), REPO_BASE) {
+            err("could not write /etc/yum.repos.d/idlescreen.repo");
             exit(1);
         }
         ok("/etc/yum.repos.d/idlescreen.repo");
@@ -127,32 +153,22 @@ fn setup_repo(dnf: bool) {
         err("mkdir /etc/apt/keyrings failed");
         exit(1);
     }
-    story_line("Downloading IdleScreen APT signing keyring…");
-    let key_ok = Command::new("sh")
-        .arg("-c")
-        .arg(format!(
-            "curl -fsSL {REPO_BASE}/apt/idlescreen-keyring.gpg | sudo tee /etc/apt/keyrings/idlescreen-keyring.gpg >/dev/null"
-        ))
-        .status()
-        .map(|s| s.success())
-        .unwrap_or(false);
-    if !key_ok {
+    story_line("Downloading + fingerprint-checking the IdleScreen APT keyring…");
+    if !trust::install_verified_key(
+        &format!("{REPO_BASE}/apt/idlescreen-keyring.gpg"),
+        Path::new("/etc/apt/keyrings/idlescreen-keyring.gpg"),
+    ) {
         err(&format!(
-            "Could not download APT keyring from {REPO_BASE}/apt/idlescreen-keyring.gpg"
+            "APT keyring fingerprint mismatch ({CHANNEL_KEY_FPR} not present)"
         ));
         exit(1);
     }
-    ok("/etc/apt/keyrings/idlescreen-keyring.gpg");
+    ok("/etc/apt/keyrings/idlescreen-keyring.gpg (fingerprint verified)");
     story_line("Writing APT source list (stable/main, signed-by keyring)…");
-    let list_ok = Command::new("sh")
-        .arg("-c")
-        .arg(format!(
-            "echo 'deb [signed-by=/etc/apt/keyrings/idlescreen-keyring.gpg] {REPO_BASE}/apt/ stable main' | sudo tee /etc/apt/sources.list.d/idlescreen.list >/dev/null"
-        ))
-        .status()
-        .map(|s| s.success())
-        .unwrap_or(false);
-    if !list_ok {
+    if !trust::write_apt_source(
+        Path::new("/etc/apt/sources.list.d/idlescreen.list"),
+        REPO_BASE,
+    ) {
         err("Could not write /etc/apt/sources.list.d/idlescreen.list");
         exit(1);
     }

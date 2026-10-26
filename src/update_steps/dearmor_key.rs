@@ -14,7 +14,11 @@ use std::process::Command;
 /// repository signature.
 pub fn dearmor_key() -> Result<(), String> {
     println!("Regenerating binary GPG keyring...");
-    let gpg_file = fs::File::create("apt/idlescreen-keyring.gpg").map_err(|e| e.to_string())?;
+    // Write to a temporary file and rename on success: dearmoring straight
+    // into the published path would truncate it to zero bytes first, and a
+    // failed gpg run would leave an empty keyring behind.
+    let tmp_path = std::path::Path::new("apt/idlescreen-keyring.gpg.tmp");
+    let gpg_file = fs::File::create(tmp_path).map_err(|e| e.to_string())?;
     let key_file = fs::File::open("apt/idlescreen-key.gpg").map_err(|e| e.to_string())?;
 
     let status = Command::new("gpg")
@@ -25,8 +29,10 @@ pub fn dearmor_key() -> Result<(), String> {
         .map_err(|e| e.to_string())?;
 
     if !status.success() {
+        let _ = fs::remove_file(tmp_path);
         return Err(format!("gpg --dearmor failed with status: {status}"));
     }
+    fs::rename(tmp_path, "apt/idlescreen-keyring.gpg").map_err(|e| e.to_string())?;
     // Root copy for any installers still using the historical root URL.
     let _ = fs::copy("apt/idlescreen-keyring.gpg", "idlescreen-keyring.gpg");
     Ok(())

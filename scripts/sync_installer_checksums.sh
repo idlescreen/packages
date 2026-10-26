@@ -75,6 +75,27 @@ for mod, h in module_hashes.items():
             f"packages/install.sh (--verify): hash mismatch for '{mod}' (in file: {match.group(1)}, actual: {h})"
         )
 
+# 2b. Check / update the install-studio.sh helper pins.
+studio_lib_dir = os.path.join(repo_root, "install-studio-lib")
+studio_sh_path = os.path.join(repo_root, "install-studio.sh")
+if os.path.isdir(studio_lib_dir) and os.path.exists(studio_sh_path):
+    with open(studio_sh_path, "r", encoding="utf-8") as f:
+        studio_sh_content = f.read()
+    for entry in sorted(os.listdir(studio_lib_dir)):
+        if not entry.endswith(".sh"):
+            continue
+        with open(os.path.join(studio_lib_dir, entry), "rb") as f:
+            h = hashlib.sha256(f.read()).hexdigest()
+        pattern = rf'"{re.escape(entry)}"\)\s+echo\s+"([a-f0-9]*)"'
+        match = re.search(pattern, studio_sh_content)
+        if not match:
+            mismatches.append(f"packages/install-studio.sh: missing hash entry for '{entry}'")
+        elif match.group(1) != h:
+            mismatches.append(
+                f"packages/install-studio.sh: hash mismatch for '{entry}' "
+                f"(in file: {match.group(1)}, actual: {h})"
+            )
+
 # 3. Check / update idlescreen.github.io/install.sh if available
 gh_io_dir = os.environ.get("IDLESCREEN_GITHUB_IO_DIR")
 if not gh_io_dir:
@@ -127,6 +148,22 @@ for mod, h in module_hashes.items():
     # Update --verify case block if present
     verify_pattern = rf'("{re.escape(mod)}"\)\s+_expected=)"[a-f0-9]*"'
     updated_install_sh = re.sub(verify_pattern, rf'\1"{h}"', updated_install_sh)
+
+if os.path.isdir(studio_lib_dir) and os.path.exists(studio_sh_path):
+    updated_studio = studio_sh_content
+    for entry in sorted(os.listdir(studio_lib_dir)):
+        if not entry.endswith(".sh"):
+            continue
+        with open(os.path.join(studio_lib_dir, entry), "rb") as f:
+            h = hashlib.sha256(f.read()).hexdigest()
+        pattern = rf'("{re.escape(entry)}"\)\s+echo\s+)"[a-f0-9]*"'
+        updated_studio = re.sub(pattern, rf'\1"{h}"', updated_studio)
+    if updated_studio != studio_sh_content:
+        with open(studio_sh_path, "w", encoding="utf-8") as f:
+            f.write(updated_studio)
+        print(f"Updated module hashes in {studio_sh_path}")
+    else:
+        print(f"Module hashes in {studio_sh_path} already current.")
 
 if updated_install_sh != install_sh_content:
     with open(install_sh_path, "w", encoding="utf-8") as f:
