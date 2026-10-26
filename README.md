@@ -28,8 +28,8 @@
 
 The signed package channel — APT, RPM and pacman repos served at
 `idlescreen.github.io/packages`, fed by release imports from every product
-repo. Part of [IdleScreen](https://idlescreen.github.io) (`v4.7.0`) — unified single-binary Wayland
-screensavers for Linux with 52 built-in 16-bit arcade scenes, 10-bit HDR deep color, 4K Hi-Res rendering, and system theme adaptation.
+repo. Part of [IdleScreen](https://idlescreen.github.io) (`v4.7.1`) — unified single-binary Wayland
+screensavers for Linux with 53 built-in 16-bit arcade scenes, 10-bit HDR deep color, 4K Hi-Res rendering, and system theme adaptation.
 
 ## Install
 

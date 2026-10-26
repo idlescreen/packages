@@ -8,9 +8,9 @@
 # PKGBUILD for IdleScreen on Arch Linux and derivatives.
 pkgbase=idlescreen
 pkgname=('idlescreen')
-pkgver=4.7.0
+pkgver=4.7.1
 pkgrel=1
-pkgdesc="Unified Wayland idle host and 52 built-in 16-bit arcade screensaver scenes"
+pkgdesc="Unified Wayland idle host and 53 built-in 16-bit arcade screensaver scenes"
 arch=('x86_64')
 url="https://idlescreen.github.io"
 license=('Apache-2.0')
@@ -56,7 +56,7 @@ build() {
 
 package_idlescreen() {
     pkgname=idlescreen
-    pkgdesc="IdleScreen Wayland daemon, CLI, TUI, and 52 built-in 16-bit arcade scenes"
+    pkgdesc="IdleScreen Wayland daemon, CLI, TUI, and 53 built-in 16-bit arcade scenes"
     install=idlescreen.install
     provides=('idle-daemon' 'idle-cli' 'idle-tui' 'idle-saver-ascii' 'idle-savers' 'idlescreen-extras')
     replaces=('idle-daemon' 'idle-cli' 'idle-tui' 'idle-cosmic' 'idle-saver-ascii' 'idle-savers' 'idlescreen-extras')
