@@ -49,7 +49,7 @@ _sha256() {
 _expected_hash() {
     case "$1" in
         "00-color.sh") echo "2107e83f7bca0de44a6b560a4bbfb27171aca0102d776153a9a5dcdddfae5e48" ;;
-        "10-preflight.sh") echo "a727264c3373185c4660ce9b8c8c1b5452a7e2d1a9b5edad77de899a8fa82504" ;;
+        "10-preflight.sh") echo "1223c16bda0c2dfee35bfaab11d971e5aeb04834b3d02e54d7586f881d3300d0" ;;
         "20-ffmpeg.sh") echo "89d4c292950eb098ed9f89619b7c8f4fbe9deddb3cb2ff4d612a4556d228e89d" ;;
         "30-channel.sh") echo "51fa0a6957be45fb2c56f158f5a621e34a8d27abb96a325f39b9f0d18178fbee" ;;
         "40-install.sh") echo "1966c1a8283802a08807aaeb6047693a64556710199ff3de7c7cab41b8f52bad" ;;

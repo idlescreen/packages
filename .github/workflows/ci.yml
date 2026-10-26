@@ -62,6 +62,7 @@ jobs:
         shellcheck scripts/sync_installer_checksums.sh
         shellcheck tests/test_install_smoke.sh
         shellcheck tests/test_verify_self_edge.sh
+        shellcheck tests/test_studio_preflight.sh
         shellcheck arch/idlescreen/omarchy-launch-screensaver
         shellcheck -s bash arch/idlescreen/PKGBUILD
         shellcheck arch/idlescreen/idlescreen.install
@@ -100,26 +101,25 @@ jobs:
         echo "index.html points at the fingerprint-verifying installer only"
 
     - name: install-studio.sh installs only published packages
-      # `idlescreen-studio` is not in either index; the old script imported the
-      # key and wrote /etc sources as root and then exited 1 every time.
+      # The check and the runtime must agree on which names exist. The old
+      # check validated STUDIO_PKGS while the installer actually requests
+      # ALL_PKGS — which adds idle-savers — and it only ever looked for a
+      # `Package:` entry, so the virtual package that idlescreen provides
+      # was invisible to it. The installer therefore aborted on every host
+      # with "package is not published in the IdleScreen channel:
+      # idle-savers". Run the installer's own pre-flight against the
+      # committed index so the two can never drift apart again.
       run: |
         bash -n install-studio.sh
-        # STUDIO_PKGS moved into install-studio-lib/00-color.sh when the
-        # driver was split into libraries. Read it from wherever it is
-        # actually defined, so this check keeps working across the split
-        # instead of failing on a file that no longer holds it.
-        _pkgs=$(grep -h '^STUDIO_PKGS=' install-studio.sh install-studio-lib/*.sh | head -1 | cut -d'"' -f2)
-        if [ -z "$_pkgs" ]; then
-          echo "::error::could not read STUDIO_PKGS from install-studio.sh"
-          exit 1
-        fi
-        for pkg in $_pkgs; do
-          if ! grep -q "^Package: ${pkg}$" apt/dists/stable/main/binary-amd64/Packages; then
-            echo "::error::install-studio.sh requests an unpublished package: ${pkg}"
-            exit 1
-          fi
-        done
-        echo "every requested studio package is published"
+        IDLESCREEN_REPO_BASE="file://$(pwd)" sh -c '
+          set -eu
+          . ./install-studio-lib/00-color.sh
+          . ./install-studio-lib/10-preflight.sh
+          preflight_packages
+        '
+
+    - name: Run studio pre-flight regression test
+      run: bash tests/test_studio_preflight.sh
 
     - name: Run --verify-self edge cases
       run: bash tests/test_verify_self_edge.sh
