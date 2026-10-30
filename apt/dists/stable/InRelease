@@ -4,38 +4,38 @@ Hash: SHA512
 Architectures: amd64
 Codename: stable
 Components: main
-Date: Thu, 29 Oct 2026 22:45:38 +0000
+Date: Fri, 30 Oct 2026 05:50:21 +0000
 Description: IdleScreen APT Repository (stable/main)
 Label: IdleScreen
 Origin: IdleScreen
 Suite: stable
 MD5Sum:
- e4361883bf53e70045c03a2beeda1c98              197 Release
+ 1b50089b0fca65ea96bda40d069cc97c              197 Release
  89f9acb68991ac1b9c2f357d20792dc2             3361 main/binary-amd64/Packages
- fd2b99d51345fbd05e2e3370ab2a956b             1036 main/binary-amd64/Packages.gz
+ feaf825d61c779ae4391246081a1b8fb             1036 main/binary-amd64/Packages.gz
 SHA1:
- 30c4ba8c2e47cef9351f9a0c5d62b91be385f0d0              197 Release
+ ec4d7d46a868280761943b8b7fa9b63b4768898e              197 Release
  04fd8a72553959ce86334b5682221f9e290b5067             3361 main/binary-amd64/Packages
- a66fffc5b2bab8d81ce02b171675b863107609e1             1036 main/binary-amd64/Packages.gz
+ b3002810746bd2ef53c313df9e4156d130b0d447             1036 main/binary-amd64/Packages.gz
 SHA256:
- 98242beee0afeed0ebc5f1bce31cd725905d2b5678d1ffcc7e7324a4aa8f77c8              197 Release
+ 6d17e8174ac3507d6bad76219e0d2dbed222019dbef3b853557431f62c422f2b              197 Release
  8f195cef00131bb490e1221943aaf24be3abec6bc0de073023db4a2630157362             3361 main/binary-amd64/Packages
- ff96cff48de3e27d575c15028770a5da94ac50ed7c53676fe683c625806ad145             1036 main/binary-amd64/Packages.gz
+ f413982d7b3ab25fc4018bcf749f82ff54d2cfabf5619f4ed1ac5b8aec802b1f             1036 main/binary-amd64/Packages.gz
 SHA512:
- 4a1db645e519c0e68bcbc92fd46e615ff3fd42a406e4259bb63981e91cb1ec6d5c91bd0b2bdd8360057dc1b661b12431cc6f72a389d85183efe3f6901f324d35              197 Release
+ d3590e250f4f502cbc28ed09f25832b7cf32101c2f87cfd14cd6e39c8bda6001e0c86e9b21d61f799619757bac6118d37c6ed936e19a5c6aa8c96869c733a1e6              197 Release
  4b113d26f2a4ecdf12f94b1493f902c1f300d8d7b4108887332671680ac8a5e7e17afcef87e75f087a67f1eb497c3623715034992ba707f9f4646c89ac64c602             3361 main/binary-amd64/Packages
- 6c64583d21472b694f7fca001b5bb19a9ff9ee417b3740cc4ab94c7916ceeb4102f77b96369f229de610d69a3078811b8a80277d2e781b3427294f8e5faf1eb4             1036 main/binary-amd64/Packages.gz
+ a9bf226a4bc181baf8a98995597c93bde065cbfa9645e81ec777bcb537e593f2138593f104167e72402e8c4fb4641698775f3df29c1c749c997773583fbe198e             1036 main/binary-amd64/Packages.gz
 -----BEGIN PGP SIGNATURE-----
 
-iQHJBAEBCgAzFiEEVJ5zybySKceG5Tji+9j8UseBfdIFAmrjzJIVHGplcnlkbGV1
-Y2tAZ21haWwuY29tAAoJEPvY/FLHgX3S3Z4MAIHmizjuYxWidbnjqrYFu6Mno50B
-bce/z5qvsdPqTGNVpiSTpaxXTl89EtU9cXPTvz6eLcT+it2qP8ypH80RA86/D1/n
-N1vCmj3HKcx266/HPJlpSB4dhK+WJiOqM9P8RaB5dQnMgnjg5HIxP8qWQg6/+DJ3
-THEi/0kf+W4WZ9nsFbp5uy6t8oQtRWv6EE9aIgDNorNbqDpxYmPJaBaUG6ql7M4+
-zu54MNCi32KXzRY1Sz6PeIoWU05tH8b15IAku3SZJ8Mtespvr/ZXXGsKi7+C9Pb3
-CgJq7o73nP5WP9Qj0xCF4fsvuA0CNX/eZMkz6JfgTGOJm5Oys18a1arj14YzFr4H
-uXjfc5P62ZnhN167WRDL4LD2S3P+EnrJls3HewDvO2LOqND0QqMgdSwIvTkw2ERS
-AcmimPJM2efdWTCdRJLdVsFzRcPlVqIoUcTelws5lX9uVAbaUfQjiavoIx93lCFn
-V+qonoji/dvbF+lWbLb45K1giMjcpAS2GmLYlg==
-=WeMh
+iQHJBAEBCgAzFiEEVJ5zybySKceG5Tji+9j8UseBfdIFAmrkMB0VHGplcnlkbGV1
+Y2tAZ21haWwuY29tAAoJEPvY/FLHgX3Syu8MAIQr50k06GiNfQCZLnWZrX08Xd5v
+c3JgZB4E5yirXgB7lh0ShVXzJPh2jOZzb+jjjEWCDjzsz7l08KRwBMdHGSo+DtVt
+/E+hplvODS2T/yogvItX2Nm7lq7ZG7RF8ZZWJcJHJItvfqsJfqMJDZDTpy7QgcaN
+LzETmnNoQNwSx5oNrLWLzsRZmTyMe9KhjV9SAqqGDrwpwVGcFc3RkZncB/kBawML
+dAfMAX88C3Q90/PSgER3MwcjM19WbEbeInqPvpWkAKOc7CXL90sJ6HywDw3sLJwo
++fwfWQQBwhRZtkXRjQ/Rlc89YRM5rHDlmPQtiZGwUMclhIRtZ9BGPQJj49SaHQBY
+a91nqSdSzzx6e0qogl+yrRw1tERnEkFkC6Wx0HPc3pfrz1MZZ8WOSLVo2lrTXr6v
+TLAQUICJFjgSnYYrDDnwuDFjL9yt998ysBsniHxKvn3Ow1NFh77cpbA94guD7apZ
+tvZo/tsaSWPkwvGqNUOC5GQHR5COagVVW5F76w==
+=o62x
 -----END PGP SIGNATURE-----
