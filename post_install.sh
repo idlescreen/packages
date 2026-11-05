@@ -1,12 +1,8 @@
 # shellcheck shell=sh
 # Post-install daemon and victory
-# Returns 0 if unit active and session bus name is claimed.
-_bus_name_up() {
-    busctl --user --timeout=1 status io.github.idlescreen.Idle >/dev/null 2>&1
-}
-
+# Returns 0 if unit active or daemon active.
 _daemon_ready() {
-    systemctl --user is-active --quiet idlescreen.service 2>/dev/null && _bus_name_up
+    systemctl --user is-active --quiet idlescreen.service 2>/dev/null || (command -v idlescreen >/dev/null 2>&1 && idlescreen status 2>/dev/null | grep -qiE "^idlescreen (active|armed|saver-on|idle)")
 }
 
 # Patch known-bad activation line from older packages (dbus-broker rejects User=session)
@@ -36,19 +32,6 @@ _fix_dbus_activation_file() {
             sudo sed -i 's/idle-daemon/idlescreen/g' "$_f" 2>/dev/null || true
         fi
     fi
-}
-
-_ensure_idlescreen_symlinks() {
-    _idlescreen_bin="$(command -v idlescreen 2>/dev/null || echo "/usr/bin/idlescreen")"
-    [ -x "$_idlescreen_bin" ] || return 0
-    for _alias in idle-tui idle-cli idle-daemon idlescreen-tui idlescreen-daemon; do
-        _dest="/usr/bin/$_alias"
-        if [ -w "/usr/bin" ]; then
-            ln -sf "$_idlescreen_bin" "$_dest" 2>/dev/null || true
-        elif command -v sudo >/dev/null 2>&1; then
-            sudo ln -sf "$_idlescreen_bin" "$_dest" 2>/dev/null || true
-        fi
-    done
 }
 
 # Session-shell integration: when the shell owns idle timing, IdleScreen must
@@ -128,7 +111,6 @@ awaken_daemon() {
     done
 
     _fix_dbus_activation_file
-    _ensure_idlescreen_symlinks
 
     apply_shell_integration
 
@@ -161,7 +143,7 @@ awaken_daemon() {
         [ -n "$_start_out" ] && dim "   ${_start_out}"
     fi
 
-    # Wait for Type=dbus to claim io.github.idlescreen.Idle.
+    # Wait for idlescreen.service or daemon to be active.
     _i=0
     while [ "$_i" -lt 30 ]; do
         if _daemon_ready; then
@@ -172,12 +154,12 @@ awaken_daemon() {
     done
 
     if _daemon_ready; then
-        ok "idlescreen.service is ${GREEN}${BOLD}active${RESET} (D-Bus name claimed)"
+        ok "idlescreen.service is ${GREEN}${BOLD}active${RESET}"
         return 0
     fi
 
-    # Fallback: direct spawn only if nothing owns the name (unit race).
-    if ! _bus_name_up && command -v idlescreen >/dev/null 2>&1; then
+    # Fallback: direct spawn only if service not ready (unit race).
+    if command -v idlescreen >/dev/null 2>&1; then
         warn "user unit not ready — trying one-shot idlescreen daemon spawn…"
         idlescreen daemon >/dev/null 2>&1 &
         sleep 0.8
@@ -186,8 +168,8 @@ awaken_daemon() {
         sleep 0.5
     fi
 
-    if _daemon_ready || _bus_name_up; then
-        ok "idlescreen is up (bus/service)"
+    if _daemon_ready; then
+        ok "idlescreen is up (service/daemon)"
         return 0
     fi
 
