@@ -58,10 +58,10 @@ jobs:
             echo "ERROR: tag too long (${#DISPATCH_TAG} > 64)" >&2; exit 1
           fi
 
-      - name: Install Rust
+      - name: Verify native openOODA (.oo) repository tools
         run: |
-          rustup update stable
-          rustup default stable
+          chmod +x bin/packages bin/prune bin/sign bin/update bin/install bin/sync-hashes
+          ./bin/packages --self-test
 
       - name: Install indexing and signing dependencies
         run: |
@@ -228,7 +228,7 @@ jobs:
           # Keep the latest version of each package to prevent bloat.
           # The prune binary is local to this repo and only acts on the pool
           # directories; dispatch payloads cannot supply alternate paths.
-          cargo run --release --bin prune
+          ./bin/prune
 
       - name: Require GPG private key
         env:
@@ -279,7 +279,7 @@ jobs:
             export CRATERIA_GPG_BIN="/tmp/gpg-wrapper"
           fi
           # Sign RPM payloads + rebuild APT/RPM indexes (see docs/SIGNING.md)
-          if [ -n "$GPG_PASSPHRASE" ]; then IDLESCREEN_GPG_BIN=/tmp/gpg-wrapper CRATERIA_GPG_BIN=/tmp/gpg-wrapper cargo run --release --bin sign; else cargo run --release --bin sign; fi
+          if [ -n "$GPG_PASSPHRASE" ]; then IDLESCREEN_GPG_BIN=/tmp/gpg-wrapper CRATERIA_GPG_BIN=/tmp/gpg-wrapper ./bin/sign; else ./bin/sign; fi
           rm -f /tmp/gpg-passphrase.txt /tmp/gpg-wrapper
           # Fail if any RPM lacks a signature from our key. ubuntu's rpm 4.18
           # cannot cryptographically verify Ed25519 header signatures (needs
@@ -334,7 +334,7 @@ jobs:
             done
             # The newer remote may itself have pushed a package past the
             # keep-1 limit — re-prune over the merged pool state.
-            cargo run --release --bin prune
+            ./bin/prune
             # Same identity fallback as the sign step — the IDLESCREEN/CRATERIA
             # GPG_NAME secrets may be unset; the retry must not die on it.
             export IDLESCREEN_GPG_NAME="${IDLESCREEN_GPG_NAME:-${CRATERIA_GPG_NAME:-jerydleuck@gmail.com}}"
@@ -346,9 +346,9 @@ jobs:
               chmod 600 /tmp/gpg-passphrase.txt
               printf '#!/bin/bash\nexec gpg --pinentry-mode loopback --passphrase-file /tmp/gpg-passphrase.txt "$@"\n' > /tmp/gpg-wrapper
               chmod +x /tmp/gpg-wrapper
-              IDLESCREEN_GPG_BIN=/tmp/gpg-wrapper CRATERIA_GPG_BIN=/tmp/gpg-wrapper cargo run --release --bin sign
+              IDLESCREEN_GPG_BIN=/tmp/gpg-wrapper CRATERIA_GPG_BIN=/tmp/gpg-wrapper ./bin/sign
             else
-              cargo run --release --bin sign
+              ./bin/sign
             fi
             git add -A
             git commit -m "${_msg} (merged)" || true

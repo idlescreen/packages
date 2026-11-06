@@ -1,0 +1,151 @@
+// # Repository Index & GPG Signing Orchestrator
+//
+// Logline: Signs RPM payloads, writes sanitized `.rpmmacros`, and regenerates signed APT (`Release.gpg`, `InRelease`) and RPM (`repomd.xml.asc`) metadata.
+// Setup: Requires ProcessCap, FsReadCap, FsWriteCap, and EnvCap for GPG signing, dpkg-scanpackages, apt-ftparchive, and createrepo_c.
+// Beats:
+//   1. Validate GPG signing identities (`IDLESCREEN_GPG_NAME` / `CRATERIA_GPG_NAME`) and sanitize `.rpmmacros` against newline injection.
+//   2. Dearmor the APT public key and generate signed `Packages`, `Packages.gz`, `Release`, `Release.gpg`, and `InRelease`.
+//   3. Sign RPM payloads with `rpmsign --resign`, index `rpm/` with `createrepo_c`, and detach-sign `rpm/repodata/repomd.xml.asc`.
+
+import "std/core/primitives/str.oo";
+import "std/fs/process/process.oo";
+import "version.oo";
+
+pub fn gpg_name_is_valid(name: String) -> Bool {
+    if str_contains(name, "\n") || str_contains(name, "\r") { return false; }
+    return str_trim(name) != "";
+}
+
+pub fn build_rpmmacros(gpg_name: String, gpg_bin: String, gpg_path: String) -> String {
+    let lines: List[String] = str_split(gpg_name, "\n");
+    let nm: String = str_trim(if list_len(lines) > 0 { list_get(lines, 0) } else { "" });
+    let bn: String = if gpg_bin != "" && !str_contains(gpg_bin, "\n") && !str_contains(gpg_bin, "\r") { gpg_bin } else { "gpg" };
+    let mut out: String = "%_signature gpg\n%_gpg_name " + nm + "\n%_gpgbin " + bn + "\n";
+    if gpg_path != "" && !str_contains(gpg_path, "\n") && !str_contains(gpg_path, "\r") {
+        out = out + "%_gpg_path " + gpg_path + "\n";
+    }
+    return out;
+}
+
+pub fn resolve_gpg_name(env: &EnvCap) -> String {
+    let v1: String = match env_get(env, "IDLESCREEN_GPG_NAME") { Ok(x) => x, Err(_) => "" };
+    if gpg_name_is_valid(v1) { return str_trim(v1); }
+    let v2: String = match env_get(env, "CRATERIA_GPG_NAME") { Ok(x) => x, Err(_) => "" };
+    if gpg_name_is_valid(v2) { return str_trim(v2); }
+    return "";
+}
+
+pub fn resolve_gpg_bin(env: &EnvCap) -> String {
+    let v1: String = match env_get(env, "IDLESCREEN_GPG_BIN") { Ok(x) => x, Err(_) => "" };
+    if v1 != "" && !str_contains(v1, "\n") && !str_contains(v1, "\r") { return v1; }
+    let v2: String = match env_get(env, "CRATERIA_GPG_BIN") { Ok(x) => x, Err(_) => "" };
+    if v2 != "" && !str_contains(v2, "\n") && !str_contains(v2, "\r") { return v2; }
+    return "gpg";
+}
+
+fn sh_ok(proc: &ProcessCap, cmd: String) -> Bool {
+    let res: Result[String, String] = process_exec(proc, cmd + " && echo __OO_OK__");
+    if res.is_err() { return false; }
+    let out: String = match res { Ok(v) => v, Err(_) => "" };
+    return str_contains(out, "__OO_OK__");
+}
+
+fn update_apt_index(proc: &ProcessCap, key: String, gpg_bin: String) -> Int {
+    if !sh_ok(proc, "command -v dpkg-scanpackages >/dev/null 2>&1 && command -v apt-ftparchive >/dev/null 2>&1") {
+        println("Skipping APT metadata generation (tools not on PATH)...");
+        return 0;
+    }
+    println("Generating APT metadata...");
+    let scan_cmd: String = "cd apt && dpkg-scanpackages --multiversion pool/main > dists/stable/main/binary-amd64/Packages && gzip -k -f dists/stable/main/binary-amd64/Packages";
+    if !sh_ok(proc, scan_cmd) {
+        println("ERROR: dpkg-scanpackages failed");
+        return 1;
+    }
+    let rel_cmd: String = "cd apt && apt-ftparchive -o APT::FTPArchive::Release::Origin=IdleScreen -o APT::FTPArchive::Release::Label=IdleScreen -o APT::FTPArchive::Release::Suite=stable -o APT::FTPArchive::Release::Codename=stable -o APT::FTPArchive::Release::Architectures=amd64 -o APT::FTPArchive::Release::Components=main -o 'APT::FTPArchive::Release::Description=IdleScreen APT Repository (stable/main)' release dists/stable > dists/stable/Release";
+    if !sh_ok(proc, rel_cmd) {
+        println("ERROR: apt-ftparchive release failed");
+        return 1;
+    }
+    let qbin: String = shell_quote(gpg_bin);
+    let qkey: String = shell_quote(key);
+    if !sh_ok(proc, qbin + " --list-secret-keys " + qkey + " >/dev/null 2>&1") {
+        println("GPG signing key '" + key + "' not found; refusing to publish unsigned APT Release");
+        return 1;
+    }
+    let sign_cmd: String = "rm -f apt/dists/stable/Release.gpg apt/dists/stable/InRelease && (cd apt && " + qbin + " --batch --yes --default-key " + qkey + " -abs -o dists/stable/Release.gpg dists/stable/Release && " + qbin + " --batch --yes --default-key " + qkey + " --clearsign -o dists/stable/InRelease dists/stable/Release)";
+    if !sh_ok(proc, sign_cmd) {
+        println("APT release signing failed — refusing to publish an unsigned channel");
+        return 1;
+    }
+    println("Signed Release files successfully.");
+    return 0;
+}
+
+pub fn cmd_update(proc: &ProcessCap, env: &EnvCap) -> Int {
+    println("==========================================");
+    println("Updating IdleScreen Packages Repository (stable/main) via openOODA (.oo)...");
+    println("==========================================");
+    let _mk: Bool = sh_ok(proc, "mkdir -p apt/pool/main apt/dists/stable/main/binary-amd64 rpm/pool");
+    let _sw: Bool = sh_ok(proc, "for f in *.deb; do [ -f \"$f\" ] && mv \"$f\" apt/pool/main/; done; for f in *.rpm; do [ -f \"$f\" ] && mv \"$f\" rpm/pool/; done; true");
+    println("Regenerating binary GPG keyring...");
+    if !sh_ok(proc, "gpg --batch --yes --dearmor < apt/idlescreen-key.gpg > apt/idlescreen-keyring.gpg.tmp && mv apt/idlescreen-keyring.gpg.tmp apt/idlescreen-keyring.gpg && cp -f apt/idlescreen-keyring.gpg idlescreen-keyring.gpg") {
+        println("ERROR: gpg --dearmor failed on apt/idlescreen-key.gpg");
+        return 1;
+    }
+    let raw_key: String = resolve_gpg_name(env);
+    let key: String = if raw_key != "" { raw_key } else { "jerydleuck@gmail.com" };
+    let gpg_bin: String = resolve_gpg_bin(env);
+    if update_apt_index(proc, key, gpg_bin) != 0 { return 1; }
+    let qkey: String = shell_quote(key);
+    let qbin: String = shell_quote(gpg_bin);
+    let rpm_sign: String = "unset_rpms=\"\"; for f in rpm/pool/*.rpm; do [ -f \"$f\" ] || continue; if ! rpm -Kv \"$f\" 2>/dev/null | grep -qi signature; then unset_rpms=\"$unset_rpms $f\"; fi; done; if [ -n \"$unset_rpms\" ]; then rpmsign --resign --key-id " + qkey + " $unset_rpms; fi";
+    if !sh_ok(proc, rpm_sign) {
+        println("RPM payload signing failed — refusing to publish unsigned packages");
+        return 1;
+    }
+    println("Running createrepo_c...");
+    if !sh_ok(proc, "rm -rf rpm/repodata && (cd rpm && createrepo_c .)") {
+        println("createrepo_c failed; refusing to skip RPM repository indexing");
+        return 1;
+    }
+    println("Signing RPM repomd.xml...");
+    if !sh_ok(proc, qbin + " --list-secret-keys " + qkey + " >/dev/null 2>&1 && rm -f rpm/repodata/repomd.xml.asc && (cd rpm && " + qbin + " --batch --yes --default-key " + qkey + " --detach-sign --armor repodata/repomd.xml)") {
+        println("GPG signing key '" + key + "' not found; refusing to publish unsigned RPM metadata");
+        return 1;
+    }
+    println("Signed RPM repomd.xml successfully.");
+    println("==========================================");
+    println("Update complete!");
+    println("==========================================");
+    return 0;
+}
+
+pub fn cmd_sign(proc: &ProcessCap, fs_w: &FsWriteCap, env: &EnvCap) -> Int {
+    let gpg_name: String = resolve_gpg_name(env);
+    if gpg_name == "" {
+        println("ERROR: IDLESCREEN_GPG_NAME (or CRATERIA_GPG_NAME) is unset or invalid.");
+        return 1;
+    }
+    let gpg_bin: String = resolve_gpg_bin(env);
+    let gpg_path: String = match env_get(env, "IDLESCREEN_GPG_PATH") { Ok(x) => x, Err(_) => "" };
+    if !sh_ok(proc, "command -v rpmsign >/dev/null 2>&1") {
+        println("ERROR: rpmsign not found. Install rpm-sign and retry.");
+        return 1;
+    }
+    let qbin: String = shell_quote(gpg_bin);
+    let qname: String = shell_quote(gpg_name);
+    if !sh_ok(proc, qbin + " --list-secret-keys " + qname + " >/dev/null 2>&1") {
+        println("ERROR: No GPG secret key found for: " + gpg_name);
+        return 1;
+    }
+    let home: String = match env_get(env, "HOME") { Ok(x) => x, Err(_) => "/tmp" };
+    let macros_path: String = home + "/.rpmmacros";
+    let macros_body: String = build_rpmmacros(gpg_name, gpg_bin, gpg_path);
+    let _w: Result[Bool, String] = write_file(fs_w, macros_path, macros_body);
+    println("Wrote " + macros_path + " for identity: " + gpg_name);
+    if !sh_ok(proc, "ls rpm/pool/*.rpm >/dev/null 2>&1 && rpmsign --resign rpm/pool/*.rpm") {
+        println("ERROR: rpmsign --resign failed on rpm/pool/*.rpm");
+        return 1;
+    }
+    return cmd_update(proc, env);
+}

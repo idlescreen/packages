@@ -1,0 +1,113 @@
+// # Package Version & Filename Parser
+//
+// Logline: Parses Debian (.deb) and RPM (.rpm) package filenames and compares version strings for deterministic pool pruning.
+// Setup: Pure functional string parsing and version ordering. Zero ambient authority.
+// Beats:
+//   1. Validate single-segment safe filenames under a pool base directory, rejecting path traversal or separators.
+//   2. Extract package name and version from .deb (`name_version_arch.deb`) and .rpm (`name-version-release.arch.rpm`) basenames.
+//   3. Split version strings into alphanumeric runs and compare numeric segments numerically and text segments lexicographically.
+
+import "std/core/primitives/str.oo";
+
+pub fn shell_quote(s: String) -> String {
+    return "'" + str_replace(s, "'", "'\\''") + "'";
+}
+
+pub fn is_safe_segment(name: String) -> Bool {
+    if name == "" || name == "." || name == ".." { return false; }
+    if str_contains(name, "/") || str_contains(name, "\\") { return false; }
+    if str_contains(name, "\n") || str_contains(name, "\r") { return false; }
+    return true;
+}
+
+pub fn safe_join_under(base: String, name: String) -> String {
+    if !is_safe_segment(name) { return ""; }
+    if str_ends_with(base, "/") { return base + name; }
+    return base + "/" + name;
+}
+
+pub fn parse_deb_field(filename: String, is_ver: Bool) -> String {
+    if !is_safe_segment(filename) || !str_ends_with(filename, ".deb") { return ""; }
+    let parts: List[String] = str_split(filename, "_");
+    if list_len(parts) < 2 { return ""; }
+    let nm: String = list_get(parts, 0);
+    let vr: String = list_get(parts, 1);
+    if nm == "" || vr == "" { return ""; }
+    return if is_ver { vr } else { nm };
+}
+
+pub fn parse_rpm_field(filename: String, is_ver: Bool) -> String {
+    if !is_safe_segment(filename) || !str_ends_with(filename, ".rpm") { return ""; }
+    let stem: String = str_slice(filename, 0, chars_len(filename) - 4);
+    let parts: List[String] = str_split(stem, "-");
+    let n: Int = list_len(parts);
+    if n < 3 { return ""; }
+    let vr: String = list_get(parts, n - 2);
+    if vr == "" { return ""; }
+    let mut nm: String = "";
+    let mut i: Int = 0;
+    while i < n - 2 {
+        if i > 0 { nm = nm + "-"; }
+        nm = nm + list_get(parts, i);
+        i = i + 1;
+    }
+    if nm == "" { return ""; }
+    return if is_ver { vr } else { nm };
+}
+
+pub fn parse_int_digits(s: String) -> Int {
+    if s == "" { return -1; }
+    let mut acc: Int = 0;
+    let mut i: Int = 0;
+    while i < chars_len(s) {
+        let b: Int = byte_at(s, i);
+        if b < 48 || b > 57 { return -1; }
+        acc = acc * 10 + (b - 48);
+        i = i + 1;
+    }
+    return acc;
+}
+
+fn str_cmp(a: String, b: String) -> Int {
+    let an: Int = chars_len(a);
+    let bn: Int = chars_len(b);
+    let mut i: Int = 0;
+    while i < an && i < bn {
+        let ab: Int = byte_at(a, i);
+        let bb: Int = byte_at(b, i);
+        if ab < bb { return -1; }
+        if ab > bb { return 1; }
+        i = i + 1;
+    }
+    if an < bn { return -1; }
+    if an > bn { return 1; }
+    return 0;
+}
+
+pub fn compare_versions(a: String, b: String) -> Int {
+    if a == b { return 0; }
+    let ac: String = str_replace(str_replace(str_replace(a, "-", "."), "_", "."), "+", ".");
+    let bc: String = str_replace(str_replace(str_replace(b, "-", "."), "_", "."), "+", ".");
+    let ap: List[String] = str_split(ac, ".");
+    let bp: List[String] = str_split(bc, ".");
+    let an: Int = list_len(ap);
+    let bn: Int = list_len(bp);
+    let mut i: Int = 0;
+    while i < an && i < bn {
+        let x: String = list_get(ap, i);
+        let y: String = list_get(bp, i);
+        if x != y {
+            let xn: Int = parse_int_digits(x);
+            let yn: Int = parse_int_digits(y);
+            if xn >= 0 && yn >= 0 {
+                if xn < yn { return -1; }
+                return 1;
+            }
+            return str_cmp(x, y);
+        }
+        i = i + 1;
+    }
+    if an < bn { return -1; }
+    if an > bn { return 1; }
+    return 0;
+}

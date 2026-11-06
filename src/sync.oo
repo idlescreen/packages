@@ -1,0 +1,107 @@
+// # Installer Module Checksum Synchronizer
+//
+// Logline: Synchronizes and verifies SHA-256 module pins across `packages/install.sh`, `packages/install-studio.sh`, and `idlescreen.github.io/install.sh`.
+// Setup: Requires ProcessCap to compute SHA-256 digests and verify or update pinned hashes in place without Python.
+// Beats:
+//   1. Compute SHA-256 digests for the 7 installer modules (`ui.sh`, `detect.sh`, `repo.sh`, `install_core.sh`, `install_audit.sh`, `post_install.sh`, `uninstall.sh`) and `install-studio-lib/*.sh`.
+//   2. In `--check` mode, verify that `packages/install.sh`, `packages/install-studio.sh`, and `../idlescreen.github.io/install.sh` match every computed SHA-256 pin.
+//   3. In update mode, rewrite out-of-date SHA-256 pins in place and report the updated digest manifest.
+
+import "std/core/primitives/str.oo";
+import "std/fs/process/process.oo";
+import "version.oo";
+
+fn file_sha256(proc: &ProcessCap, path: String) -> String {
+    let res: Result[String, String] = process_exec(proc, "sha256sum " + shell_quote(path) + " 2>/dev/null | awk '{print $1}'");
+    if res.is_err() { return ""; }
+    return str_trim(match res { Ok(v) => v, Err(_) => "" });
+}
+
+fn check_pin(proc: &ProcessCap, file: String, pattern: String) -> Bool {
+    let cmd: String = "grep -Eq " + shell_quote(pattern) + " " + shell_quote(file) + " && echo yes";
+    let res: Result[String, String] = process_exec(proc, cmd);
+    if res.is_err() { return false; }
+    return str_trim(match res { Ok(v) => v, Err(_) => "" }) == "yes";
+}
+
+fn update_install_pin(proc: &ProcessCap, mod_name: String, hash: String) {
+    let sed1: String = "sed -i -E 's|(\"" + mod_name + "\"\\)[[:space:]]+_expected_hash=)\"[a-f0-9]*\"|\\1\"" + hash + "\"|g' install.sh";
+    let sed2: String = "sed -i -E 's|(\"" + mod_name + "\"\\)[[:space:]]+_expected=)\"[a-f0-9]*\"|\\1\"" + hash + "\"|g' install.sh";
+    let _r1: Result[String, String] = process_exec(proc, sed1);
+    let _r2: Result[String, String] = process_exec(proc, sed2);
+}
+
+fn sync_studio_pins(proc: &ProcessCap, check_only: Bool) -> Int {
+    let mods: List[String] = str_split("00-color.sh,10-preflight.sh,20-ffmpeg.sh,30-channel.sh,40-install.sh,50-verify.sh", ",");
+    let mut bad: Int = 0;
+    let mut i: Int = 0;
+    while i < list_len(mods) {
+        let m: String = list_get(mods, i);
+        let h: String = file_sha256(proc, "install-studio-lib/" + m);
+        if h != "" {
+            if check_only {
+                let pat: String = "\"" + m + "\"\\)[[:space:]]+echo[[:space:]]+\"" + h + "\"";
+                if !check_pin(proc, "install-studio.sh", pat) {
+                    println("FAIL: packages/install-studio.sh hash mismatch for " + m + " (expected " + h + ")");
+                    bad = bad + 1;
+                }
+            } else {
+                let sed_cmd: String = "sed -i -E 's|(\"" + m + "\"\\)[[:space:]]+echo[[:space:]]+)\"[a-f0-9]*\"|\\1\"" + h + "\"|g' install-studio.sh";
+                let _r: Result[String, String] = process_exec(proc, sed_cmd);
+            }
+        }
+        i = i + 1;
+    }
+    return bad;
+}
+
+pub fn cmd_sync_hashes(proc: &ProcessCap, args: List[String]) -> Int {
+    let mut check_only: Bool = false;
+    let mut i: Int = 0;
+    while i < list_len(args) {
+        if list_get(args, i) == "--check" { check_only = true; }
+        i = i + 1;
+    }
+    let mods: List[String] = str_split("ui.sh,detect.sh,repo.sh,install_core.sh,install_audit.sh,post_install.sh,uninstall.sh", ",");
+    let mut mismatches: Int = 0;
+    let mut j: Int = 0;
+    while j < list_len(mods) {
+        let m: String = list_get(mods, j);
+        let h: String = file_sha256(proc, m);
+        if h == "" {
+            println("ERROR: Module file missing: " + m);
+            return 1;
+        }
+        if check_only {
+            let pat: String = "\"" + m + "\"\\)[[:space:]]+_expected_hash=\"" + h + "\"";
+            if !check_pin(proc, "install.sh", pat) {
+                println("FAIL: packages/install.sh hash mismatch for " + m + " (actual: " + h + ")");
+                mismatches = mismatches + 1;
+            }
+        } else {
+            update_install_pin(proc, m, h);
+        }
+        j = j + 1;
+    }
+    mismatches = mismatches + sync_studio_pins(proc, check_only);
+    let pkg_hash: String = file_sha256(proc, "install.sh");
+    let gh_io: String = "../idlescreen.github.io/install.sh";
+    let gh_hash: String = file_sha256(proc, gh_io);
+    let has_gh: Bool = gh_hash != "";
+    if check_only {
+        if has_gh && !check_pin(proc, gh_io, pkg_hash) {
+            println("FAIL: ../idlescreen.github.io/install.sh forwarder hash mismatch (actual: " + pkg_hash + ")");
+            mismatches = mismatches + 1;
+        }
+        if mismatches > 0 { return 1; }
+        println("ok: all installer checksums are synchronized.");
+        return 0;
+    }
+    if has_gh {
+        let sed_gh: String = "sed -i -E 's|EXPECTED_INSTALLER_HASH=\"\\$\\{IDLESCREEN_INSTALLER_HASH:-[a-f0-9]*\\}\"|EXPECTED_INSTALLER_HASH=\"${IDLESCREEN_INSTALLER_HASH:-" + pkg_hash + "}\"|g' " + shell_quote(gh_io);
+        let _r: Result[String, String] = process_exec(proc, sed_gh);
+    }
+    println("packages/install.sh SHA-256: " + pkg_hash);
+    println("Checksum synchronization complete.");
+    return 0;
+}

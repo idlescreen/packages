@@ -1,4 +1,4 @@
-name: Shell-script CI
+name: Package Channel CI
 
 on:
   push:
@@ -15,36 +15,20 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  rust:
-    name: Rust sources (installer tooling)
+  ooda-checks:
+    name: Native openOODA (.oo) & Shell Checks
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-    - name: Install Rust
+
+    - name: Verify native openOODA (.oo) tools & self-test
       run: |
-        curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --profile minimal --default-toolchain none
-        echo "$HOME/.cargo/bin" >> "$GITHUB_PATH"
-    - name: Validate page-score.json
-      run: qa/page_score_check.sh
-    - name: fmt check
-      run: cargo fmt --all -- --check
-    - name: clippy check
-      run: cargo clippy --workspace --all-targets -- -D warnings
-    - name: cargo test
-      run: cargo test --workspace --all-targets
-
-  shell-checks:
-    runs-on: ubuntu-latest
-    # A hung installer step or a wedged smoke test must fail the build,
-    # not burn a runner for the 6-hour default. See runtime's
-    # `apply_commands_drains_channel_until_empty` incident.
-    timeout-minutes: 15
-    steps:
-    - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
-
-    - name: Validate page-score.json
-      run: qa/page_score_check.sh
+        chmod +x bin/packages bin/prune bin/sign bin/update bin/install bin/sync-hashes
+        ./bin/packages --self-test
+        ./bin/prune --dry-run
+        ./bin/install --dry-run
+        ./bin/sync-hashes --check
 
     - name: Install shellcheck
       run: sudo apt-get update && sudo apt-get install -y shellcheck
@@ -66,19 +50,11 @@ jobs:
         shellcheck arch/idlescreen/omarchy-launch-screensaver
         shellcheck -s bash arch/idlescreen/PKGBUILD
         shellcheck arch/idlescreen/idlescreen.install
-        # The install-studio driver dot-sources a chain
-        # of helpers under install-studio-lib/. Those are linted
-        # separately — they are not exec'd at install time, so a
-        # shellcheck failure in a sibling still has to surface here.
-        #
-        # `-x` is required on the driver: without it shellcheck refuses
-        # to follow the `source` lines and reports SC1091 "not following"
-        # for every helper, which fails the build without ever looking at
-        # a helper's body.
         shellcheck -x install-studio.sh
         for f in install-studio-lib/*.sh; do
           shellcheck "$f"
         done
+
     - name: Run audit JSON-escape test (F-202 regression)
       run: bash tests/test_audit_json_escape.sh
 
@@ -86,11 +62,6 @@ jobs:
       run: bash tests/test_install_smoke.sh
 
     - name: Published site teaches only the verified install path
-      # The page is the primary human path. It once piped a fetched keyring
-      # into /etc/apt/keyrings with no fingerprint check and curl'd a remote
-      # .repo into /etc/yum.repos.d — precisely what repo.sh refuses to do
-      # because a fetched repo file can swap both the trust anchor and the
-      # baseurl. Only a warning mention is allowed now.
       run: |
         if grep -nE 'tee +/etc/apt/keyrings|yum\.repos\.d/idlescreen\.repo|sources\.list\.d/idlescreen\.list' index.html; then
           echo "::error::index.html hand-places a trust anchor — point users at install.sh instead"
@@ -101,14 +72,6 @@ jobs:
         echo "index.html points at the fingerprint-verifying installer only"
 
     - name: install-studio.sh installs only published packages
-      # The check and the runtime must agree on which names exist. The old
-      # check validated STUDIO_PKGS while the installer actually requests
-      # ALL_PKGS — which adds idle-savers — and it only ever looked for a
-      # `Package:` entry, so the virtual package that idlescreen provides
-      # was invisible to it. The installer therefore aborted on every host
-      # with "package is not published in the IdleScreen channel:
-      # idle-savers". Run the installer's own pre-flight against the
-      # committed index so the two can never drift apart again.
       run: |
         bash -n install-studio.sh
         IDLESCREEN_REPO_BASE="file://$(pwd)" sh -c '

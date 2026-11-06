@@ -1,0 +1,69 @@
+// # idlescreen-packages Verification Suite
+//
+// Logline: Functional I/O and negative-trust refusal tests for `idlescreen-packages` version parsing, pool pruning, `.rpmmacros` sanitization, and victory box formatting.
+// Setup: Pure deterministic assertions plus safe path/injection checks.
+// Beats:
+//   1. Test `.deb` and `.rpm` filename parsing (`parse_deb_name`, `parse_rpm_name`) and reject path traversal inputs (`..`, `/`, `\`).
+//   2. Test version ordering (`compare_versions`) and pool prune selection (`select_older_files`).
+//   3. Test `.rpmmacros` newline-injection refusal (`gpg_name_is_valid`, `build_rpmmacros`) and 54-column centered victory box formatting.
+
+import "src/version.oo";
+import "src/prune.oo";
+import "src/update.oo";
+import "src/install.oo";
+
+fn test_filename_parsing() -> Bool {
+    if parse_deb_field("idlescreen_5.0.1-1_amd64.deb", false) != "idlescreen" { return false; }
+    if parse_deb_field("idlescreen_5.0.1-1_amd64.deb", true) != "5.0.1-1" { return false; }
+    if parse_rpm_field("idlescreen-5.0.1-1.x86_64.rpm", false) != "idlescreen" { return false; }
+    if parse_rpm_field("idlescreen-5.0.1-1.x86_64.rpm", true) != "5.0.1" { return false; }
+    if parse_rpm_field("idle-studio-5.0.1-1.x86_64.rpm", false) != "idle-studio" { return false; }
+    // Negative-trust refusal on traversal or malformed names
+    if parse_deb_field("../evil_1.0_amd64.deb", false) != "" { return false; }
+    if parse_rpm_field("pool/evil-1.0-1.x86_64.rpm", false) != "" { return false; }
+    if safe_join_under("rpm/pool", "..") != "" { return false; }
+    if safe_join_under("rpm/pool", "a/b.rpm") != "" { return false; }
+    return true;
+}
+
+fn test_version_and_prune() -> Bool {
+    if compare_versions("1.0.0", "1.0.1") >= 0 { return false; }
+    if compare_versions("5.0.1", "4.8.2") <= 0 { return false; }
+    if compare_versions("1.10", "1.2") <= 0 { return false; }
+    if compare_versions("5.0.1", "5.0.1") != 0 { return false; }
+    let mut files: List[String] = list_new();
+    files = list_push(files, "idlescreen_4.8.2-1_amd64.deb");
+    files = list_push(files, "idlescreen_5.0.0-1_amd64.deb");
+    files = list_push(files, "idlescreen_5.0.1-1_amd64.deb");
+    let stale: List[String] = select_older_files(files, true, 1);
+    if list_len(stale) != 2 { return false; }
+    if list_get(stale, 0) != "idlescreen_4.8.2-1_amd64.deb" { return false; }
+    if list_get(stale, 1) != "idlescreen_5.0.0-1_amd64.deb" { return false; }
+    return true;
+}
+
+fn test_macros_and_honesty() -> Bool {
+    if gpg_name_is_valid("") { return false; }
+    if gpg_name_is_valid("evil\n%_gpg_name attacker") { return false; }
+    if !gpg_name_is_valid("jerydleuck@gmail.com") { return false; }
+    let m: String = build_rpmmacros("good@x\n%_gpg_name evil", "gpg\nbad", "p\nq");
+    if str_contains(m, "evil") || str_contains(m, "%_gpg_path") { return false; }
+    if victory_banner_title(true, true) != "INSTALL FINISHED" { return false; }
+    if victory_banner_title(true, false) != "PACKAGES INSTALLED" { return false; }
+    if victory_banner_title(false, true) != "INSTALL PARTIAL" { return false; }
+    let bx: List[String] = format_victory_box("INSTALL FINISHED");
+    if list_len(bx) != 5 { return false; }
+    let w0: Int = chars_len(list_get(bx, 0));
+    if chars_len(list_get(bx, 2)) != w0 { return false; }
+    return true;
+}
+
+pub fn main(alloc: &AllocCap, args: List[String]) -> Result[Int, String] {
+    let _q: Int = alloc_bytes(alloc, 16777216);
+    let _a: List[String] = args;
+    if !test_filename_parsing() { return Err("FAIL: test_filename_parsing"); }
+    if !test_version_and_prune() { return Err("FAIL: test_version_and_prune"); }
+    if !test_macros_and_honesty() { return Err("FAIL: test_macros_and_honesty"); }
+    println("PASS: all assertions (idlescreen-packages)");
+    return Ok(0);
+}

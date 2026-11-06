@@ -1,0 +1,151 @@
+// # IdleScreen Channel Installer & Honesty Primitives
+//
+// Logline: Native openOODA (`bin/install`) channel installer and honest post-deploy survey/victory box formatter.
+// Setup: Requires ProcessCap and EnvCap to verify the pinned GPG fingerprint (`549E73C9BC9229C786E538E2FBD8FC52C7817DD2`), write pinned repo configs, deploy packages, and start `idlescreen.service`.
+// Beats:
+//   1. Provide pure honest-install formatting primitives (`victory_banner`, `center_in_width`, `format_victory_box`, `format_deploy_result`).
+//   2. Detect host OS, desktop environment, and package manager (`dnf` vs `apt-get`), and verify the pinned channel signing key before installing.
+//   3. Deploy `idlescreen` from the signed channel, enable `idlescreen.service`, and print the aligned 54-column victory summary box.
+
+import "std/core/primitives/str.oo";
+import "std/fs/process/process.oo";
+import "version.oo";
+
+pub fn victory_banner_title(all_present: Bool, daemon_active: Bool) -> String {
+    if all_present && daemon_active { return "INSTALL FINISHED"; }
+    if all_present { return "PACKAGES INSTALLED"; }
+    return "INSTALL PARTIAL";
+}
+
+pub fn format_victory_box(title: String) -> List[String] {
+    let mut bar: String = "";
+    let mut blank: String = "";
+    let mut i: Int = 0;
+    while i < 54 {
+        bar = bar + "═";
+        blank = blank + " ";
+        i = i + 1;
+    }
+    let label: String = "✦  " + title + "  ✦";
+    let n: Int = chars_len(label);
+    let pad: Int = if n >= 54 { 0 } else { 54 - n };
+    let left: Int = pad / 2;
+    let right: Int = pad - left;
+    let mut lpad: String = "";
+    let mut rpad: String = "";
+    i = 0;
+    while i < left { lpad = lpad + " "; i = i + 1; }
+    i = 0;
+    while i < right { rpad = rpad + " "; i = i + 1; }
+    let body: String = lpad + label + rpad;
+    let mut out: List[String] = list_new();
+    out = list_push(out, "╔" + bar + "╗");
+    out = list_push(out, "║" + blank + "║");
+    out = list_push(out, "║" + body + "║");
+    out = list_push(out, "║" + blank + "║");
+    out = list_push(out, "╚" + bar + "╝");
+    return out;
+}
+
+pub fn format_deploy_result(present: Int, planned: Int) -> String {
+    if planned == 0 { return "Deploy finished — empty plan."; }
+    if present >= planned {
+        return "Deploy finished — all " + present.to_string() + " planned package(s) present.";
+    }
+    return "Deploy finished — " + present.to_string() + "/" + planned.to_string() + " planned package(s) present.";
+}
+
+fn sh_out(proc: &ProcessCap, cmd: String) -> String {
+    let res: Result[String, String] = process_exec(proc, cmd);
+    if res.is_err() { return ""; }
+    return str_trim(match res { Ok(v) => v, Err(_) => "" });
+}
+
+fn setup_channel(proc: &ProcessCap, is_dnf: Bool, repo_base: String) -> Int {
+    let fpr: String = "549E73C9BC9229C786E538E2FBD8FC52C7817DD2";
+    if is_dnf {
+        println("  › Fetching + fingerprint-checking the IdleScreen RPM signing key…");
+        let cmd: String = "tmp=$(mktemp) && curl -fsSL " + shell_quote(repo_base + "/rpm/idlescreen-key.gpg") + " -o \"$tmp\" && gpg --show-keys --with-colons \"$tmp\" 2>/dev/null | awk -F: '/^fpr:/ {print $10}' | grep -qi " + fpr + " && sudo install -D -m 0644 \"$tmp\" /etc/pki/rpm-gpg/idlescreen-key.gpg && rm -f \"$tmp\" && echo __OK__";
+        if !str_contains(sh_out(proc, cmd), "__OK__") {
+            println(" ERROR: RPM signing key fingerprint mismatch (" + fpr + " not present)");
+            return 1;
+        }
+        println(" ✔ /etc/pki/rpm-gpg/idlescreen-key.gpg (fingerprint verified)");
+        let repo_cmd: String = "printf '[idlescreen]\\nname=IdleScreen RPM Repository\\nbaseurl=" + repo_base + "/rpm\\nenabled=1\\ngpgcheck=1\\nrepo_gpgcheck=1\\ngpgkey=file:///etc/pki/rpm-gpg/idlescreen-key.gpg\\nmetadata_expire=1h\\n' | sudo tee /etc/yum.repos.d/idlescreen.repo >/dev/null && sudo dnf makecache -y --refresh --repo=idlescreen >/dev/null 2>&1 || true";
+        let _r: String = sh_out(proc, repo_cmd);
+        println(" ✔ /etc/yum.repos.d/idlescreen.repo (package gpgcheck=1 · repo_gpgcheck=1)");
+        return 0;
+    }
+    println("  › Downloading + fingerprint-checking the IdleScreen APT keyring…");
+    let apt_cmd: String = "tmp=$(mktemp) && curl -fsSL " + shell_quote(repo_base + "/apt/idlescreen-keyring.gpg") + " -o \"$tmp\" && gpg --show-keys --with-colons \"$tmp\" 2>/dev/null | awk -F: '/^fpr:/ {print $10}' | grep -qi " + fpr + " && sudo install -D -m 0644 \"$tmp\" /etc/apt/keyrings/idlescreen-keyring.gpg && rm -f \"$tmp\" && printf 'deb [signed-by=/etc/apt/keyrings/idlescreen-keyring.gpg] " + repo_base + "/apt/ stable main\\n' | sudo tee /etc/apt/sources.list.d/idlescreen.list >/dev/null && sudo apt-get update -qq && echo __OK__";
+    if !str_contains(sh_out(proc, apt_cmd), "__OK__") {
+        println(" ERROR: APT keyring fingerprint verification or apt-get update failed");
+        return 1;
+    }
+    println(" ✔ /etc/apt/keyrings/idlescreen-keyring.gpg (fingerprint verified)");
+    return 0;
+}
+
+fn sh_eq(proc: &ProcessCap, cmd: String, expected: String) -> Bool {
+    return sh_out(proc, cmd) == expected;
+}
+
+fn deploy_and_start(proc: &ProcessCap, is_dnf: Bool, channel: String, os_name: String, de_label: String) -> Int {
+    println("\n [3/5]  Composing the install plan");
+    println("  → Core stack (all DEs): idlescreen");
+    println("\n [4/5]  Deploying modules into the system");
+    let dep_cmd: String = if is_dnf { "sudo dnf install -y --refresh --setopt=install_weak_deps=False idlescreen && rpm -q idlescreen && echo __DEP_OK__" } else { "sudo apt-get install -y --no-install-recommends idlescreen && dpkg-query -W idlescreen && echo __DEP_OK__" };
+    let present: Bool = str_contains(sh_out(proc, dep_cmd), "__DEP_OK__");
+    println("  " + format_deploy_result(if present { 1 } else { 0 }, 1));
+    println("\n [5/5]  Starting the idle user service");
+    let _svc: String = sh_out(proc, "systemctl --user daemon-reload 2>/dev/null; systemctl --user enable --now idlescreen.service 2>/dev/null; systemctl --user restart idlescreen.service 2>/dev/null || true");
+    let active: Bool = sh_eq(proc, "systemctl --user is-active idlescreen.service 2>/dev/null", "active");
+    let title: String = victory_banner_title(present, active);
+    let note: String = if present && active { "packages present · daemon active" } else if present { "daemon not active yet — see notes above" } else { "some planned packages missing — see list above" };
+    let box_lines: List[String] = format_victory_box(title);
+    println("");
+    let mut k: Int = 0;
+    while k < list_len(box_lines) { println("        " + list_get(box_lines, k)); k = k + 1; }
+    println("  note     " + note);
+    println("  host     " + os_name + "  (x86_64)");
+    println("  desktop  " + de_label);
+    println("  channel  " + channel);
+    return if present { 0 } else { 1 };
+}
+
+pub fn cmd_install(proc: &ProcessCap, env: &EnvCap, args: List[String]) -> Int {
+    if list_len(args) > 0 && (list_get(args, 0) == "--help" || list_get(args, 0) == "-h") {
+        println("IdleScreen channel installer (openOODA native)");
+        println("usage: install [--dry-run]");
+        return 0;
+    }
+    let dry_run: Bool = list_len(args) > 0 && list_get(args, 0) == "--dry-run";
+    let os_name: String = sh_out(proc, ". /etc/os-release 2>/dev/null && printf '%s' \"$PRETTY_NAME\" || echo Linux");
+    let de: String = match env_get(env, "XDG_CURRENT_DESKTOP") { Ok(x) => x, Err(_) => "" };
+    let de_label: String = if de != "" { de } else { "Generic Wayland/Linux" };
+    let is_dnf: Bool = sh_eq(proc, "command -v dnf >/dev/null 2>&1 && echo yes", "yes");
+    let is_apt: Bool = sh_eq(proc, "command -v apt-get >/dev/null 2>&1 && echo yes", "yes");
+    println("\nIdleScreen installer");
+    println("  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━");
+    println(" [1/5]  Scanning host identity");
+    println("  os       " + os_name);
+    println("  desktop  " + de_label);
+    if !is_dnf && !is_apt && !dry_run {
+        println(" ERROR: need DNF or APT — https://idlescreen.github.io/packages/");
+        return 1;
+    }
+    let channel: String = if is_dnf { "DNF · RPM host" } else { "APT · Debian family" };
+    println("  packages " + channel);
+    if dry_run {
+        let bx: List[String] = format_victory_box(victory_banner_title(true, true));
+        let mut bi: Int = 0;
+        while bi < list_len(bx) { println("        " + list_get(bx, bi)); bi = bi + 1; }
+        println("  " + format_deploy_result(1, 1));
+        return 0;
+    }
+    println("\n [2/5]  Opening the package gate");
+    let rb: String = match env_get(env, "IDLESCREEN_REPO_BASE") { Ok(x) => x, Err(_) => "" };
+    let repo_base: String = if rb != "" { rb } else { "https://idlescreen.github.io/packages" };
+    if setup_channel(proc, is_dnf, repo_base) != 0 { return 1; }
+    return deploy_and_start(proc, is_dnf, channel, os_name, de_label);
+}

@@ -1,0 +1,117 @@
+// # Pool Pruner - Retain Latest N Versions Per Package
+//
+// Logline: Prunes older .deb and .rpm artifacts from `apt/pool/main` and `rpm/pool`, retaining the latest K versions per package name.
+// Setup: Requires ProcessCap to enumerate and unlink stale pool files under safe path guards.
+// Beats:
+//   1. Parse CLI arguments (`--dry-run` and optional `KEEP` count, defaulting to 1).
+//   2. Enumerate pool files, extract package name and version, and select older versions beyond `KEEP`.
+//   3. Remove (or dry-run log) outdated artifacts while keeping path safety strictly under the pool directory.
+
+import "std/core/primitives/str.oo";
+import "std/fs/process/process.oo";
+import "version.oo";
+
+pub fn select_older_files(files: List[String], is_deb: Bool, keep: Int) -> List[String] {
+    let mut out: List[String] = list_new();
+    let n: Int = list_len(files);
+    let mut i: Int = 0;
+    while i < n {
+        let f: String = list_get(files, i);
+        let nm: String = if is_deb { parse_deb_field(f, false) } else { parse_rpm_field(f, false) };
+        let vr: String = if is_deb { parse_deb_field(f, true) } else { parse_rpm_field(f, true) };
+        if nm != "" && vr != "" {
+            let mut newer: Int = 0;
+            let mut j: Int = 0;
+            while j < n {
+                if i != j {
+                    let f2: String = list_get(files, j);
+                    let nm2: String = if is_deb { parse_deb_field(f2, false) } else { parse_rpm_field(f2, false) };
+                    let vr2: String = if is_deb { parse_deb_field(f2, true) } else { parse_rpm_field(f2, true) };
+                    if nm2 == nm {
+                        let cmp: Int = compare_versions(vr, vr2);
+                        if cmp < 0 || (cmp == 0 && j > i) { newer = newer + 1; }
+                    }
+                }
+                j = j + 1;
+            }
+            if newer >= keep { out = list_push(out, f); }
+        }
+        i = i + 1;
+    }
+    return out;
+}
+
+fn list_dir_files(proc: &ProcessCap, dir_path: String) -> List[String] {
+    let mut out: List[String] = list_new();
+    let cmd: String = "if [ -d " + shell_quote(dir_path) + " ]; then ls -1 " + shell_quote(dir_path) + " 2>/dev/null; fi";
+    let res: Result[String, String] = process_exec(proc, cmd);
+    if res.is_err() { return out; }
+    let raw: String = str_trim(match res { Ok(v) => v, Err(_) => "" });
+    if raw == "" { return out; }
+    let lines: List[String] = str_split(raw, "\n");
+    let mut i: Int = 0;
+    while i < list_len(lines) {
+        let ln: String = str_trim(list_get(lines, i));
+        if is_safe_segment(ln) { out = list_push(out, ln); }
+        i = i + 1;
+    }
+    return out;
+}
+
+pub fn prune_directory(proc: &ProcessCap, dir_path: String, keep: Int, is_deb: Bool, dry_run: Bool) -> Int {
+    let files: List[String] = list_dir_files(proc, dir_path);
+    if list_len(files) == 0 { return 0; }
+    println("Pruning \"" + dir_path + "\" — keeping latest " + keep.to_string() + " versions of each package...");
+    let stale: List[String] = select_older_files(files, is_deb, keep);
+    let mut count: Int = 0;
+    let mut i: Int = 0;
+    while i < list_len(stale) {
+        let name: String = list_get(stale, i);
+        let full: String = safe_join_under(dir_path, name);
+        if full != "" {
+            if dry_run {
+                println("  [dry-run] would rm \"" + name + "\"");
+                count = count + 1;
+            } else {
+                println("  rm \"" + name + "\"");
+                let _rm: Result[String, String] = process_exec(proc, "rm -f " + shell_quote(full));
+                count = count + 1;
+            }
+        }
+        i = i + 1;
+    }
+    let rem: Int = list_len(files) - count;
+    if dry_run {
+        println("Would prune " + count.to_string() + " files; kept " + rem.to_string() + " in \"" + dir_path + "\"");
+    } else {
+        println("Pruned " + count.to_string() + " files; kept " + rem.to_string() + " in \"" + dir_path + "\"");
+    }
+    return 0;
+}
+
+pub fn cmd_prune(proc: &ProcessCap, args: List[String]) -> Int {
+    let mut dry_run: Bool = false;
+    let mut keep: Int = 1;
+    let mut i: Int = 0;
+    while i < list_len(args) {
+        let a: String = list_get(args, i);
+        if a == "--dry-run" {
+            dry_run = true;
+        } else if a == "--help" || a == "-h" {
+            println("usage: prune [--dry-run] [KEEP]");
+            return 0;
+        } else {
+            let k: Int = parse_int_digits(a);
+            if k < 0 {
+                println("Error: KEEP must be a positive integer (got: " + a + ")");
+                return 1;
+            }
+            keep = k;
+        }
+        i = i + 1;
+    }
+    let _r1: Int = prune_directory(proc, "apt/pool/main", keep, true, dry_run);
+    let _r2: Int = prune_directory(proc, "rpm/pool", keep, false, dry_run);
+    println("\nNext: regenerate the repository indices with: ./bin/update");
+    return 0;
+}

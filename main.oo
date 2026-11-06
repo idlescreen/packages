@@ -1,0 +1,76 @@
+// # idlescreen-packages Multi-Call Entrypoint
+//
+// Logline: Multi-call entrypoint resolving `prune`, `update`, `sign`, `install`, and `sync-hashes` from argv[0] or the first CLI verb.
+// Setup: Declared capabilities:FsRead, FsWrite, Process, Env, Alloc.
+// Beats:
+//   1. Resolve the invoked persona from `sys_argv0(proc)` or the leading CLI verb.
+//   2. Dispatch to `cmd_prune`, `cmd_update`, `cmd_sign`, `cmd_install`, or `cmd_sync_hashes`.
+//   3. Provide `--version`, `--help`, and `--self-test` verification paths and fail closed on unknown verbs.
+
+import "std/fs/process/process.oo";
+import "src/version.oo";
+import "src/prune.oo";
+import "src/update.oo";
+import "src/install.oo";
+import "src/sync.oo";
+
+pub fn resolve_pkg_persona(prog: String) -> String {
+    let mut base: String = prog;
+    while str_index_of(base, "/") >= 0 {
+        base = str_slice(base, str_index_of(base, "/") + 1, chars_len(base));
+    }
+    if base == "prune" || base == "update" || base == "sign" || base == "install" || base == "sync-hashes" {
+        return base;
+    }
+    return "packages";
+}
+
+fn strip_head(args: List[String]) -> List[String] {
+    let mut out: List[String] = list_new();
+    let mut i: Int = 1;
+    while i < list_len(args) {
+        out = list_push(out, list_get(args, i));
+        i = i + 1;
+    }
+    return out;
+}
+
+fn pkg_self_test() -> Int {
+    if parse_deb_field("idlescreen_5.0.1-1_amd64.deb", false) != "idlescreen" { return 1; }
+    if parse_rpm_field("idlescreen-5.0.1-1.x86_64.rpm", false) != "idlescreen" { return 1; }
+    if compare_versions("5.0.0", "5.0.1") >= 0 { return 1; }
+    if gpg_name_is_valid("evil\nline") { return 1; }
+    println("PASS: idlescreen-packages 5.0.1 self-test complete");
+    return 0;
+}
+
+pub fn main(
+    fs_r: &FsReadCap, fs_w: &FsWriteCap, proc: &ProcessCap,
+    env: &EnvCap, alloc: &AllocCap, args: List[String]
+) -> Result[Int, String] {
+    let _q: Int = alloc_bytes(alloc, 67108864);
+    let _r: &FsReadCap = fs_r;
+    let mut persona: String = resolve_pkg_persona(sys_argv0(proc));
+    let mut rest: List[String] = args;
+    if persona == "packages" && list_len(rest) > 0 {
+        let first: String = list_get(rest, 0);
+        if first == "--version" || first == "version" || first == "-V" {
+            println("idlescreen-packages 5.0.1 (openOODA native)");
+            return Ok(0);
+        }
+        if first == "--help" || first == "help" || first == "-h" {
+            println("idlescreen-packages 5.0.1 — usage: <prune|update|sign|install|sync-hashes> [args]");
+            return Ok(0);
+        }
+        if first == "--self-test" { return Ok(pkg_self_test()); }
+        persona = first;
+        rest = strip_head(rest);
+    }
+    if persona == "prune" { return Ok(cmd_prune(proc, rest)); }
+    if persona == "update" { return Ok(cmd_update(proc, env)); }
+    if persona == "sign" { return Ok(cmd_sign(proc, fs_w, env)); }
+    if persona == "install" { return Ok(cmd_install(proc, env, rest)); }
+    if persona == "sync-hashes" { return Ok(cmd_sync_hashes(proc, rest)); }
+    println("ERR: unknown idlescreen-packages command: " + persona);
+    return Ok(1);
+}
