@@ -32,14 +32,14 @@ pub fn resolve_gpg_name(env: &EnvCap) -> String {
     if gpg_name_is_valid(v1) { return str_trim(v1); }
     let v2: String = match env_get(env, "CRATERIA_GPG_NAME") { Ok(x) => x, Err(_) => "" };
     if gpg_name_is_valid(v2) { return str_trim(v2); }
-    return "";
+    return "jerydleuck@gmail.com";
 }
 
 pub fn resolve_gpg_bin(env: &EnvCap) -> String {
+    let v0: String = match env_get(env, "OO_GPG_BIN") { Ok(x) => x, Err(_) => "" };
+    if v0 != "" && !str_contains(v0, "\n") && !str_contains(v0, "\r") { return v0; }
     let v1: String = match env_get(env, "IDLESCREEN_GPG_BIN") { Ok(x) => x, Err(_) => "" };
     if v1 != "" && !str_contains(v1, "\n") && !str_contains(v1, "\r") { return v1; }
-    let v2: String = match env_get(env, "CRATERIA_GPG_BIN") { Ok(x) => x, Err(_) => "" };
-    if v2 != "" && !str_contains(v2, "\n") && !str_contains(v2, "\r") { return v2; }
     return "gpg";
 }
 
@@ -141,7 +141,7 @@ pub fn cmd_sign(proc: &ProcessCap, fs_w: &FsWriteCap, env: &EnvCap) -> Int {
     let home: String = match env_get(env, "HOME") { Ok(x) => x, Err(_) => "/tmp" };
     let macros_path: String = home + "/.rpmmacros";
     let macros_body: String = build_rpmmacros(gpg_name, gpg_bin, gpg_path);
-    let _w: Result[Bool, String] = write_file(fs_w, macros_path, macros_body);
+    let _wm: Bool = sh_ok(proc, "printf '%s' " + shell_quote(macros_body) + " > " + shell_quote(macros_path));
     println("Wrote " + macros_path + " for identity: " + gpg_name);
     if !sh_ok(proc, "ls rpm/pool/*.rpm >/dev/null 2>&1 && rpmsign --resign rpm/pool/*.rpm") {
         println("ERROR: rpmsign --resign failed on rpm/pool/*.rpm");

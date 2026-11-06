@@ -279,7 +279,7 @@ jobs:
             export CRATERIA_GPG_BIN="/tmp/gpg-wrapper"
           fi
           # Sign RPM payloads + rebuild APT/RPM indexes (see docs/SIGNING.md)
-          if [ -n "$GPG_PASSPHRASE" ]; then IDLESCREEN_GPG_BIN=/tmp/gpg-wrapper CRATERIA_GPG_BIN=/tmp/gpg-wrapper ./bin/packages sign; else ./bin/packages sign; fi
+          if [ -n "$GPG_PASSPHRASE" ]; then OO_GPG_BIN=/tmp/gpg-wrapper ./bin/packages sign; else ./bin/packages sign; fi
           rm -f /tmp/gpg-passphrase.txt /tmp/gpg-wrapper
           # Fail if any RPM lacks a signature from our key. ubuntu's rpm 4.18
           # cannot cryptographically verify Ed25519 header signatures (needs
@@ -346,7 +346,7 @@ jobs:
               chmod 600 /tmp/gpg-passphrase.txt
               printf '#!/bin/bash\nexec gpg --pinentry-mode loopback --passphrase-file /tmp/gpg-passphrase.txt "$@"\n' > /tmp/gpg-wrapper
               chmod +x /tmp/gpg-wrapper
-              IDLESCREEN_GPG_BIN=/tmp/gpg-wrapper CRATERIA_GPG_BIN=/tmp/gpg-wrapper ./bin/packages sign
+              OO_GPG_BIN=/tmp/gpg-wrapper ./bin/packages sign
             else
               ./bin/packages sign
             fi
