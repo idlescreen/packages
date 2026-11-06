@@ -16,24 +16,17 @@ Description: IdleScreen Studio — TUI Director for the render capability
  IdleScreen Studio — TUI Director for offline video renders.
 
 Package: idlescreen
-Version: 5.0.2-1
+Version: 5.0.3-1
 Architecture: amd64
-Maintainer: IdleScreen <team@idlescreen.org>
-Installed-Size: 1412
-Depends: libc6
-Breaks: idle-daemon (<< 5.0.1), idle-cli (<< 5.0.1), idle-savers (<< 5.0.1), idle-tui (<< 5.0.1), idle-cosmic (<< 5.0.1), idle-saver-ascii (<< 5.0.1), idle-saver-aurora (<< 5.0.1), idle-saver-beams (<< 5.0.1), idle-saver-bursts (<< 5.0.1), idle-saver-chaos (<< 5.0.1), idle-saver-cosmos (<< 5.0.1), idle-saver-glyphs (<< 5.0.1), idle-saver-gnats (<< 5.0.1), idle-saver-hearth (<< 5.0.1), idle-saver-radar (<< 5.0.1), idle-saver-ripple (<< 5.0.1), idle-saver-storm (<< 5.0.1), idle-runner (<< 5.0.1), idlescreen-extras (<< 5.0.1)
-Replaces: idle-daemon (<< 5.0.1), idle-cli (<< 5.0.1), idle-savers (<< 5.0.1), idle-tui (<< 5.0.1), idle-cosmic (<< 5.0.1), idle-saver-ascii (<< 5.0.1), idle-saver-aurora (<< 5.0.1), idle-saver-beams (<< 5.0.1), idle-saver-bursts (<< 5.0.1), idle-saver-chaos (<< 5.0.1), idle-saver-cosmos (<< 5.0.1), idle-saver-glyphs (<< 5.0.1), idle-saver-gnats (<< 5.0.1), idle-saver-hearth (<< 5.0.1), idle-saver-radar (<< 5.0.1), idle-saver-ripple (<< 5.0.1), idle-saver-storm (<< 5.0.1), idle-runner (<< 5.0.1), idlescreen-extras (<< 5.0.1)
-Provides: idle-daemon (= 5.0.1), idle-cli (= 5.0.1), idle-savers (= 5.0.1), idle-tui (= 5.0.1), idle-saver-ascii (= 5.0.1), idle-saver-aurora (= 5.0.1), idle-saver-beams (= 5.0.1), idle-saver-bursts (= 5.0.1), idle-saver-chaos (= 5.0.1), idle-saver-cosmos (= 5.0.1), idle-saver-glyphs (= 5.0.1), idle-saver-gnats (= 5.0.1), idle-saver-hearth (= 5.0.1), idle-saver-radar (= 5.0.1), idle-saver-ripple (= 5.0.1), idle-saver-storm (= 5.0.1), idle-runner (= 5.0.1), idlescreen-extras (= 5.0.1)
-Filename: pool/main/idlescreen_5.0.2-1_amd64.deb
-Size: 597588
-MD5sum: 4d72c7e2c2561a7409152be08006d677
-SHA1: 70867291432f97a2cfc96542d824985ecd0676e7
-SHA256: 0f21ce698fd9538a17c737e2ae4ab862a62a96c819e02c5fb674a6afa6e9bc8e
+Maintainer: IdleScreen <jerydleuck@gmail.com>
+Filename: pool/main/idlescreen_5.0.3-1_amd64.deb
+Size: 334934
+MD5sum: d7920b4392e3c9ecd0e2d6b7f849194d
+SHA1: bcdcd44c66b13215d70e4b19fb08568244dbfd5e
+SHA256: 7d8ecb0116a2ff73ce34a12d2c27479b0ffa4dc1ec411d8fb44150dcb4c22cec
 Section: utils
 Priority: optional
-Homepage: https://github.com/idlescreen/idlescreen
-Description: IdleScreen standalone screensaver and idle management suite for Linux
- IdleScreen standalone screensaver and idle management suite for Linux
+Description: Capability-secured Wayland/TTY ASCII screensaver suite (100% openOODA .oo)
 
 Package: render
 Version: 4.8.2-1
