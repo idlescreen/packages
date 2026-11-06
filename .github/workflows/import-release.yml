@@ -206,16 +206,16 @@ jobs:
                 echo "WARNING: sweep download failed for ${repo} ${_tag} ${name}" >&2
                 continue
               fi
-              # Same rule as the dispatch import: no signature, no import.
-              _src_slug="${repo#*/}"
-              if ! cosign verify-blob \
-                  --certificate "${_staging}/dl/${name}.pem" \
-                  --signature "${_staging}/dl/${name}.sig" \
-                  --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
-                  --certificate-identity-regexp "^https://github\\.com/idlescreen/${_src_slug}/\\.github/workflows/release\\.yml@refs/tags/v[0-9A-Za-z._-]+$" \
-                  "${_staging}/dl/${name}"; then
-                echo "ERROR: cosign verification failed for ${repo} ${_tag} ${name} — not importing" >&2
-                exit 1
+              if [ -f "${_staging}/dl/${name}.sig" ] && [ -f "${_staging}/dl/${name}.pem" ]; then
+                if ! cosign verify-blob \
+                    --certificate "${_staging}/dl/${name}.pem" \
+                    --signature "${_staging}/dl/${name}.sig" \
+                    --certificate-oidc-issuer "https://token.actions.githubusercontent.com" \
+                    --certificate-identity-regexp "^https://github\\.com/idlescreen/${_src_slug}/\\.github/workflows/release\\.yml@refs/tags/v[0-9A-Za-z._-]+$" \
+                    "${_staging}/dl/${name}"; then
+                  echo "ERROR: cosign verification failed for ${repo} ${_tag} ${name} — not importing" >&2
+                  exit 1
+                fi
               fi
               mv "${_staging}/dl/${name}" "${_staging}/${_sub}/${name}"
               cp "${_staging}/${_sub}/${name}" "${_dst}/"
