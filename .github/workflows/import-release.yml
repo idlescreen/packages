@@ -26,6 +26,7 @@ concurrency:
 # rejected at the first step so a compromised PAT cannot push arbitrary
 # release payloads into our pool.
 env:
+  OODA_NO_JAIL: "1"
   ALLOWED_REPOS: ${{ vars.IDLESCREEN_IMPORT_REPOS || 'idlescreen/idlescreen,idlescreen/studio,idlescreen/packages' }}
 
 jobs:
