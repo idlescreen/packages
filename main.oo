@@ -1,7 +1,7 @@
 // # idlescreen-packages Multi-Call Entrypoint
 //
 // Logline: Multi-call entrypoint resolving `prune`, `update`, `sign`, `install`, and `sync-hashes` from argv[0] or the first CLI verb.
-// Setup: Declared capabilities:FsRead, FsWrite, Process, Env, Alloc.
+// Setup: Declared capabilities: FsRead, FsWrite, Fs, Process, Env, Alloc.
 // Beats:
 //   1. Resolve the invoked persona from `sys_argv0(proc)` or the leading CLI verb.
 //   2. Dispatch to `cmd_prune`, `cmd_update`, `cmd_sign`, `cmd_install`, or `cmd_sync_hashes`.
@@ -45,21 +45,22 @@ fn pkg_self_test() -> Int {
 }
 
 pub fn main(
-    fs_r: &FsReadCap, fs_w: &FsWriteCap, proc: &ProcessCap,
+    fs_r: &FsReadCap, fs_w: &FsWriteCap, fs: &FsCap, proc: &ProcessCap,
     env: &EnvCap, alloc: &AllocCap, args: List[String]
 ) -> Result[Int, String] {
     let _q: Int = alloc_bytes(alloc, 67108864);
     let _r: &FsReadCap = fs_r;
+    let _f: &FsCap = fs;
     let mut persona: String = resolve_pkg_persona(sys_argv0(proc));
     let mut rest: List[String] = args;
     if persona == "packages" && list_len(rest) > 0 {
         let first: String = list_get(rest, 0);
         if first == "--version" || first == "version" || first == "-V" {
-            println("idlescreen-packages 5.0.1 (openOODA native)");
+            println("idlescreen-packages 5.0.2 (openOODA native)");
             return Ok(0);
         }
         if first == "--help" || first == "help" || first == "-h" {
-            println("idlescreen-packages 5.0.1 — usage: <prune|update|sign|install|sync-hashes> [args]");
+            println("idlescreen-packages 5.0.2 — usage: <prune|update|sign|install|sync-hashes> [args]");
             return Ok(0);
         }
         if first == "--self-test" { return Ok(pkg_self_test()); }
