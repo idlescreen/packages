@@ -100,7 +100,7 @@ case "${1:-}" in
                     "repo.sh") _expected="7a9adb65d6d9d7c7f4d1040180d2ce6752c66759289e137548479e94d850e251" ;;
                     "install_core.sh") _expected="993ce98b807fd91d11b981f6ff0b8ba394b71da3221fcc64b0eb0eee4b6287da" ;;
                     "install_audit.sh") _expected="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
-                    "post_install.sh") _expected="f4cf3c7382a3d8721fd23a3ca03cb9a359de7af0ccea068073e35bad2c716625" ;;
+                    "post_install.sh") _expected="36f589c453738813a8f7969329194d8f67a7e85bb0d62941d47608799610a0c1" ;;
                     "uninstall.sh") _expected="577948cbf6a38ddb8beda96af5f321aee8c92b981e49399bdf8cbc04183b021e" ;;
                 esac
                 if [ -n "$_dir" ]; then
@@ -232,7 +232,7 @@ if [ "$_local_checkout" -eq 0 ]; then
             "repo.sh") _expected_hash="7a9adb65d6d9d7c7f4d1040180d2ce6752c66759289e137548479e94d850e251" ;;
             "install_core.sh") _expected_hash="993ce98b807fd91d11b981f6ff0b8ba394b71da3221fcc64b0eb0eee4b6287da" ;;
             "install_audit.sh") _expected_hash="b118d1d1effd0814e4092c6754f5740bee22ec4dd40b742a216d94b597ae3f74" ;;
-            "post_install.sh") _expected_hash="f4cf3c7382a3d8721fd23a3ca03cb9a359de7af0ccea068073e35bad2c716625" ;;
+            "post_install.sh") _expected_hash="36f589c453738813a8f7969329194d8f67a7e85bb0d62941d47608799610a0c1" ;;
             "uninstall.sh") _expected_hash="577948cbf6a38ddb8beda96af5f321aee8c92b981e49399bdf8cbc04183b021e" ;;
             *) echo "install: unknown module $f" >&2; exit 1 ;;
         esac
