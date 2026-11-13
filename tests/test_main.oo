@@ -11,6 +11,7 @@ import "src/version.oo";
 import "src/prune.oo";
 import "src/update.oo";
 import "src/install.oo";
+import "oostd/core/text/utf8_grp/utf8_codepoint_length_law.oo";
 
 fn test_filename_parsing() -> Bool {
     if parse_deb_field("idlescreen_5.0.1-1_amd64.deb", false) != "idlescreen" { return false; }
@@ -53,8 +54,15 @@ fn test_macros_and_honesty() -> Bool {
     if victory_banner_title(false, true) != "INSTALL PARTIAL" { return false; }
     let bx: List[String] = format_victory_box("INSTALL FINISHED");
     if list_len(bx) != 5 { return false; }
-    let w0: Int = chars_len(list_get(bx, 0));
-    if chars_len(list_get(bx, 2)) != w0 { return false; }
+    // The box is a display-width assertion, so it is measured in codepoints.
+    // `chars_len` is a runtime primitive whose meaning changed upstream (it
+    // counted codepoints in the C runtime and counts bytes in the current
+    // one); the std's UTF-8 page counts codepoints in pure .oo, so the box
+    // is the same width under every runtime.
+    let w0: Int = utf8_codepoint_count(list_get(bx, 0));
+    if w0 != 56 { return false; }
+    if utf8_codepoint_count(list_get(bx, 2)) != w0 { return false; }
+    if utf8_codepoint_count(list_get(bx, 4)) != w0 { return false; }
     return true;
 }
 
