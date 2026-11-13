@@ -24,3 +24,5 @@ __pycache__/
 # Build outputs
 *.deb.bak
 PRUNE_TMPDIR
+.ooda-cache/
+**/.ooda-cache/

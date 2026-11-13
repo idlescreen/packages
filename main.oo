@@ -7,12 +7,16 @@
 //   2. Dispatch to `cmd_prune`, `cmd_update`, `cmd_sign`, `cmd_install`, or `cmd_sync_hashes`.
 //   3. Provide `--version`, `--help`, and `--self-test` verification paths and fail closed on unknown verbs.
 
-import "std/fs/process/process.oo";
+import "oostd/fs/process/process.oo";
 import "src/version.oo";
 import "src/prune.oo";
 import "src/update.oo";
 import "src/install.oo";
 import "src/sync.oo";
+
+fn pkg_version() -> String {
+    return "5.0.2";
+}
 
 pub fn resolve_pkg_persona(prog: String) -> String {
     let mut base: String = prog;
@@ -36,11 +40,11 @@ fn strip_head(args: List[String]) -> List[String] {
 }
 
 fn pkg_self_test() -> Int {
-    if parse_deb_field("idlescreen_5.0.1-1_amd64.deb", false) != "idlescreen" { return 1; }
-    if parse_rpm_field("idlescreen-5.0.1-1.x86_64.rpm", false) != "idlescreen" { return 1; }
-    if compare_versions("5.0.0", "5.0.1") >= 0 { return 1; }
+    if parse_deb_field("idlescreen_" + pkg_version() + "-1_amd64.deb", false) != "idlescreen" { return 1; }
+    if parse_rpm_field("idlescreen-" + pkg_version() + "-1.x86_64.rpm", false) != "idlescreen" { return 1; }
+    if compare_versions("5.0.0", pkg_version()) >= 0 { return 1; }
     if gpg_name_is_valid("evil\nline") { return 1; }
-    println("PASS: idlescreen-packages 5.0.1 self-test complete");
+    println("PASS: idlescreen-packages " + pkg_version() + " self-test complete");
     return 0;
 }
 
@@ -56,11 +60,11 @@ pub fn main(
     if persona == "packages" && list_len(rest) > 0 {
         let first: String = list_get(rest, 0);
         if first == "--version" || first == "version" || first == "-V" {
-            println("idlescreen-packages 5.0.2 (openOODA native)");
+            println("idlescreen-packages " + pkg_version() + " (openOODA native)");
             return Ok(0);
         }
         if first == "--help" || first == "help" || first == "-h" {
-            println("idlescreen-packages 5.0.2 — usage: <prune|update|sign|install|sync-hashes> [args]");
+            println("idlescreen-packages " + pkg_version() + " — usage: <prune|update|sign|install|sync-hashes> [args]");
             return Ok(0);
         }
         if first == "--self-test" { return Ok(pkg_self_test()); }

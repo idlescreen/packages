@@ -7,9 +7,8 @@
 //   2. Enumerate pool files, extract package name and version, and select older versions beyond `KEEP`.
 //   3. Remove (or dry-run log) outdated artifacts while keeping path safety strictly under the pool directory.
 
-import "std/core/primitives/str.oo";
-import "std/fs/process/process.oo";
 import "version.oo";
+import "shell_exec.oo";
 
 pub fn select_older_files(files: List[String], is_deb: Bool, keep: Int) -> List[String] {
     let mut out: List[String] = list_new();
@@ -44,7 +43,7 @@ pub fn select_older_files(files: List[String], is_deb: Bool, keep: Int) -> List[
 fn list_dir_files(proc: &ProcessCap, dir_path: String) -> List[String] {
     let mut out: List[String] = list_new();
     let cmd: String = "if [ -d " + shell_quote(dir_path) + " ]; then ls -1 " + shell_quote(dir_path) + " 2>/dev/null; fi";
-    let res: Result[String, String] = process_exec(proc, cmd);
+    let res: Result[String, String] = shell_exec(proc, cmd);
     if res.is_err() { return out; }
     let raw: String = str_trim(match res { Ok(v) => v, Err(_) => "" });
     if raw == "" { return out; }
@@ -74,7 +73,7 @@ pub fn prune_directory(proc: &ProcessCap, dir_path: String, keep: Int, is_deb: B
                 count = count + 1;
             } else {
                 println("  rm \"" + name + "\"");
-                let _rm: Result[String, String] = process_exec(proc, "rm -f " + shell_quote(full));
+                let _rm: Result[String, String] = shell_exec(proc, "rm -f " + shell_quote(full));
                 count = count + 1;
             }
         }

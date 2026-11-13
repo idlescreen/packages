@@ -7,9 +7,9 @@
 //   2. Detect host OS, desktop environment, and package manager (`dnf` vs `apt-get`), and verify the pinned channel signing key before installing.
 //   3. Deploy `idlescreen` from the signed channel, enable `idlescreen.service`, and print the aligned 54-column victory summary box.
 
-import "std/core/primitives/str.oo";
-import "std/fs/process/process.oo";
+import "oostd/core/primitives/str.oo";
 import "version.oo";
+import "shell_exec.oo";
 
 pub fn victory_banner_title(all_present: Bool, daemon_active: Bool) -> String {
     if all_present && daemon_active { return "INSTALL FINISHED"; }
@@ -56,7 +56,7 @@ pub fn format_deploy_result(present: Int, planned: Int) -> String {
 }
 
 fn sh_out(proc: &ProcessCap, cmd: String) -> String {
-    let res: Result[String, String] = process_exec(proc, cmd);
+    let res: Result[String, String] = shell_exec(proc, cmd);
     if res.is_err() { return ""; }
     return str_trim(match res { Ok(v) => v, Err(_) => "" });
 }

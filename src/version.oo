@@ -7,7 +7,7 @@
 //   2. Extract package name and version from .deb (`name_version_arch.deb`) and .rpm (`name-version-release.arch.rpm`) basenames.
 //   3. Split version strings into alphanumeric runs and compare numeric segments numerically and text segments lexicographically.
 
-import "std/core/primitives/str.oo";
+import "oostd/core/primitives/str.oo";
 
 pub fn shell_quote(s: String) -> String {
     return "'" + str_replace(s, "'", "'\\''") + "'";

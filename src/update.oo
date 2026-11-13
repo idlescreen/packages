@@ -7,9 +7,9 @@
 //   2. Dearmor the APT public key and generate signed `Packages`, `Packages.gz`, `Release`, `Release.gpg`, and `InRelease`.
 //   3. Sign RPM payloads with `rpmsign --resign`, index `rpm/` with `createrepo_c`, and detach-sign `rpm/repodata/repomd.xml.asc`.
 
-import "std/core/primitives/str.oo";
-import "std/fs/process/process.oo";
+import "oostd/core/primitives/str.oo";
 import "version.oo";
+import "shell_exec.oo";
 
 pub fn gpg_name_is_valid(name: String) -> Bool {
     if str_contains(name, "\n") || str_contains(name, "\r") { return false; }
@@ -45,7 +45,7 @@ pub fn resolve_gpg_bin(env: &EnvCap) -> String {
 
 fn sh_ok(proc: &ProcessCap, cmd: String) -> Bool {
     let wrapped: String = "export HOME=\"${HOME:-$(getent passwd $(id -u) | cut -d: -f6)}\"; " + cmd + " && echo __OO_OK__";
-    let res: Result[String, String] = process_exec(proc, wrapped);
+    let res: Result[String, String] = shell_exec(proc, wrapped);
     if res.is_err() { return false; }
     let out: String = match res { Ok(v) => v, Err(_) => "" };
     return str_contains(out, "__OO_OK__");

@@ -26,9 +26,16 @@ jobs:
       run: |
         chmod +x bin/packages bin/prune bin/sign bin/update bin/install bin/sync-hashes
         ./bin/packages --self-test
+        ./bin/packages prune --dry-run
+        ./bin/packages install --dry-run
+        ./bin/packages sync-hashes --check
+        # The multi-call persona is selected from the invocation name. It
+        # resolves from /proc/self/cmdline, which the jail read scope now
+        # covers, so the aliases must work here and are asserted, not skipped.
         ./bin/prune --dry-run
         ./bin/install --dry-run
         ./bin/sync-hashes --check
+        echo "PASS: multi-call alias dispatch"
 
     - name: Install shellcheck
       run: sudo apt-get update && sudo apt-get install -y shellcheck

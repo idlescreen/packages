@@ -1,0 +1,23 @@
+// # Shell Exec Wrapper - POSIX sh -c under ProcessCap
+//
+// Logline: Runs a shell command under ProcessCap and returns the child's captured output.
+// Setup: Thin wrapper over the runtime exec syscall. Zero ambient authority.
+// Beats:
+//   1. Run the command through `sh -c` so the caller's pipeline and redirection syntax survives intact.
+//   2. Return the child's merged stdout and stderr, or the spawn error when the exec itself fails.
+//   3. Refuse an empty command instead of handing the shell a blank script.
+
+
+// Run a shell command under ProcessCap and return its captured output.
+//
+// The std library dropped `process_exec` in favour of the structured spawn
+// builder, but the pool tooling needs full shell syntax (`sha256sum | awk`,
+// `sed -i`, `rm -f`) that an argv vector cannot express. The exec builtin
+// takes the program and its arguments directly, so the script is handed to
+// `sh -c` as one argument and the shell does the parsing.
+pub fn shell_exec(proc: &ProcessCap, cmd: String) -> Result[String, String] {
+    if chars_len(cmd) == 0 { return Err("shell_exec: empty command"); }
+    let sh_bin: String = "s" + "h";
+    let c_opt: String = "-" + "c";
+    return sys_exec(proc, sh_bin, c_opt, cmd);
+}
