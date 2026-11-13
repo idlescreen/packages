@@ -1,12 +1,17 @@
 OOHAT ?= /Projects/openOODA-agents/oohat/lint-oo-size
 # The compiler follows OODA_HOME so a CI runner that stages the toolchain
 # under /tmp resolves the same path the developer checkout does.
-OODA_COMPILER ?= $(shell command -v oodac 2>/dev/null || echo $(OODA_HOME)/oodac/bin/oodac)
+OODA_COMPILER ?= $(shell command -v oodac 2>/dev/null || if [ -x "$(OODA_HOME)/oodac/bin/oodac" ]; then echo "$(OODA_HOME)/oodac/bin/oodac"; elif [ -x "$(OODA_HOME)/bin/oodac" ]; then echo "$(OODA_HOME)/bin/oodac"; else echo "$(OODA_HOME)/oodac/bin/oodac"; fi)
+# The oodar runtime ships in two layouts: a checkout tree (oodar/core/lib,
+# oodar/scripts/lib) or an install tree (bin/liboodar.a). Point the compiler
+# at whichever one actually holds the archive.
+OODA_OODAR_ROOT ?= $(shell if [ -f "$(OODA_HOME)/oodar/core/lib/liboodar-core.a" ] || [ -f "$(OODA_HOME)/oodar/scripts/lib/liboodar-core.a" ] || [ -f "$(OODA_HOME)/oodar/lib/liboodar-core.a" ] || [ -f "$(OODA_HOME)/oodar/liboodar-core.a" ]; then echo "$(OODA_HOME)/oodar"; elif [ -f "$(OODA_HOME)/bin/liboodar.a" ] || [ -f "$(OODA_HOME)/bin/liboodar-core.a" ]; then echo "$(OODA_HOME)/bin"; else echo "$(OODA_HOME)/oodar"; fi)
+export OODA_OODAR_ROOT
 # The compiler resolves oostd/... imports through OODA_STD_DIR. Its own
 # upward walk from the source tree is disabled under /tmp, so a CI tree
 # staged in /tmp has to pass the std path explicitly.
 OODA_HOME ?= $(shell if [ -x "$$HOME/.openooda/bin/oodac" ]; then echo "$$HOME/.openooda"; elif [ -d "$$HOME/Projects/openOODA-core/oodac" ]; then echo "$$HOME/Projects/openOODA-core"; elif [ -d /Projects/openOODA-core/oodac ]; then echo /Projects/openOODA-core; else echo "$(abspath $(CURDIR)/../../openOODA-core)"; fi)
-OODA_STD_DIR ?= $(shell d=$(CURDIR); while [ "$$d" != "/" ]; do if [ -d "$$d/oostd" ]; then echo "$$d/oostd"; break; fi; d=$$(dirname $$d); done)
+OODA_STD_DIR ?= $(shell d=$(CURDIR); r=""; while [ "$$d" != "/" ]; do if [ -d "$$d/oostd" ]; then r="$$d/oostd"; break; fi; d=$$(dirname $$d); done; if [ -z "$$r" ] && [ -d "$(OODA_HOME)/oostd" ]; then r="$(OODA_HOME)/oostd"; fi; echo "$$r")
 OODA_READDIR ?= $(CURDIR):$(OODA_HOME)$(if $(OODA_STD_DIR),:$(OODA_STD_DIR))
 OODA_WRITEDIR ?= $(CURDIR):/tmp
 OO_LIST_AMBIENT_QUOTA ?= 8589934592
@@ -32,6 +37,11 @@ std-check:
 	@test -n "$(OODA_STD_DIR)" || { echo "FAIL: no std repo named oostd in any ancestor of $(CURDIR)"; \
 		echo "      clone openOODA-core/std as \`oostd\` beside this project"; exit 1; }
 	@echo "PASS: std repo at $(OODA_STD_DIR)"
+	@if [ ! -f "$(OODA_OODAR_ROOT)/liboodar.a" ] && [ ! -f "$(OODA_OODAR_ROOT)/liboodar-core.a" ] \
+		&& [ ! -f "$(OODA_OODAR_ROOT)/core/lib/liboodar-core.a" ] && [ ! -f "$(OODA_OODAR_ROOT)/scripts/lib/liboodar-core.a" ]; then \
+		echo "FAIL: no oodar runtime at $(OODA_OODAR_ROOT) — install the openOODA toolchain (https://openooda.org/install.sh)"; \
+		exit 1; \
+	fi
 
 # The compiler's own typecheck over every page. Without it a page that no
 # other page imports stays invisible until something links it.
