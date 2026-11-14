@@ -1,12 +1,12 @@
 // # Shell Exec Wrapper - POSIX sh -c under ProcessCap
 //
-// Logline: Runs a shell command under ProcessCap and returns the child's captured output.
-// Setup: Thin wrapper over the runtime exec syscall. Zero ambient authority.
+// Logline: Runs a shell command under ProcessCap; exit zero resolves Ok with the child output, any other exit resolves Err.
+// Setup: Thin wrapper over the runtime exec syscall. The script runs confined in a subshell so its exit status is always observed. Zero ambient authority.
 // Beats:
 //   1. Run the command through `sh -c` so the caller's pipeline and redirection syntax survives intact.
-//   2. Return the child's merged stdout and stderr, or the spawn error when the exec itself fails.
-//   3. Refuse an empty command instead of handing the shell a blank script.
-
+//   2. Return Ok with the child's output on exit zero; on any other exit return Err carrying the child's output when it wrote any.
+//   3. Report a command that fails silently (non-zero exit, no output) as Err naming the command and its exit status for diagnosis.
+//   4. Refuse an empty command instead of handing the shell a blank script.
 
 // Run a shell command under ProcessCap and return its captured output.
 //
@@ -19,5 +19,42 @@ pub fn shell_exec(proc: &ProcessCap, cmd: String) -> Result[String, String] {
     if chars_len(cmd) == 0 { return Err("shell_exec: empty command"); }
     let sh_bin: String = "s" + "h";
     let c_opt: String = "-" + "c";
-    return sys_exec(proc, sh_bin, c_opt, cmd);
+    // Confine the script in a subshell so `exit` inside it cannot skip the
+    // status marker, then re-exit with the same status so the runtime keeps
+    // its Ok-on-zero / Err-otherwise split.
+    let wrapped: String = "( " + cmd + " ); st=$?; printf '\\n__OO_EXIT__%d\\n' \"$st\"; exit $st";
+    let r: Result[String, String] = sys_exec(proc, sh_bin, c_opt, wrapped);
+    let failed: Bool = r.is_err();
+    let raw: String = match r { Ok(v) => v, Err(e) => e };
+    // Strip the trailing status marker, leaving the child output untouched:
+    // one newline, the marker, the decimal status, one newline.
+    let mut end: Int = chars_len(raw);
+    if end > 0 {
+        if byte_at(raw, end - 1) == 10 { end = end - 1; }
+    }
+    let mut ds: Int = end;
+    let mut scanning: Bool = true;
+    while ds > 0 && scanning {
+        let b: Int = byte_at(raw, ds - 1);
+        if b >= 48 && b <= 57 { ds = ds - 1; } else { scanning = false; }
+    }
+    let marker: String = "\n__OO_EXIT__";
+    let m: Int = chars_len(marker);
+    let mut has_marker: Bool = false;
+    if end > ds && ds >= m {
+        if str_slice(raw, ds - m, ds) == marker {
+            has_marker = true;
+        }
+    }
+    if !has_marker {
+        if failed { return Err(raw); }
+        return Ok(raw);
+    }
+    let body: String = str_slice(raw, 0, ds - m);
+    let st_txt: String = str_slice(raw, ds, end);
+    if failed && body == "" {
+        return Err("shell_exec: `" + cmd + "` failed with status " + st_txt + " (no output)");
+    }
+    if failed { return Err(body); }
+    return Ok(body);
 }
