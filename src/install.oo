@@ -8,7 +8,7 @@
 //   3. Deploy `idlescreen` from the signed channel, enable `idlescreen.service`, and print the aligned 54-column victory summary box.
 
 import "oostd/core/primitives/str.oo";
-import "oostd/core/text/utf8_grp/utf8_codepoint_length_law.oo";
+import "oostd/core/text/utf8_grp/utf8_iterator.oo";
 import "version.oo";
 import "shell_exec.oo";
 
@@ -33,9 +33,10 @@ pub fn format_victory_box(title: String) -> List[String] {
     // meaning changed upstream (it counted codepoints in the C runtime and
     // counts bytes in the current one), which silently mis-centred the box.
     // The std's UTF-8 page measures codepoints in pure .oo, so the box is
-    // now the same width under every runtime.
-    let cps: Int = utf8_codepoint_count(label);
-    let n: Int = if cps < 0 { bytes_len(label) } else { cps };
+    // now the same width under every runtime. The label is measured with
+    // the same codepoint split the drawing code walks, so measured and
+    // rendered widths agree even when the label is not valid UTF-8.
+    let n: Int = list_len(utf8_chars(label));
     let pad: Int = if n >= 54 { 0 } else { 54 - n };
     let left: Int = pad / 2;
     let right: Int = pad - left;
