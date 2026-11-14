@@ -56,10 +56,19 @@ fn sh_ok(proc: &ProcessCap, cmd: String) -> Bool {
 
 pub fn cmd_update(proc: &ProcessCap, env: &EnvCap) -> Int {
     println("==========================================");
-    println("Updating IdleScreen Packages Repository (stable/main) via openOODA (.oo)...");
+    println("Updating IdleScreen Packages Repository (rpm) via openOODA (.oo)...");
     println("==========================================");
-    let _mk: Bool = sh_ok(proc, "mkdir -p rpm/pool");
-    let _sw: Bool = sh_ok(proc, "for f in *.rpm; do [ -f \"$f\" ] && mv \"$f\" rpm/pool/; done; true");
+    if !sh_ok(proc, "mkdir -p rpm/pool") {
+        println("ERROR: could not create rpm/pool");
+        return 1;
+    }
+    // Staging is load-bearing: an RPM that does not land in rpm/pool is
+    // never signed, never indexed, and never published. A failed move has
+    // to stop the run instead of being swallowed by the loop's exit status.
+    if !sh_ok(proc, "for f in *.rpm; do [ -f \"$f\" ] || continue; mv \"$f\" rpm/pool/ || exit 1; done") {
+        println("ERROR: could not stage the RPM payloads into rpm/pool");
+        return 1;
+    }
     println("Regenerating binary GPG keyring...");
     if !sh_ok(proc, "gpg --batch --yes --dearmor < apt/idlescreen-key.gpg > apt/idlescreen-keyring.gpg.tmp && mv apt/idlescreen-keyring.gpg.tmp apt/idlescreen-keyring.gpg && cp -f apt/idlescreen-keyring.gpg idlescreen-keyring.gpg") {
         println("ERROR: gpg --dearmor failed on apt/idlescreen-key.gpg");
