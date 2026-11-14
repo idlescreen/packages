@@ -115,7 +115,7 @@ copy of the key they already hold.
   `https://idlescreen.github.io/packages/rpm/idlescreen-key.gpg`. The
   installer downloads it to `/etc/pki/rpm-gpg/idlescreen-key.gpg` and
   imports it with `rpm --import` (see `repo.sh`).
-- DEB (APT / Debian / Ubuntu): signed by the same key, downloaded to
+- DEB (APT / Debian / Ubuntu) — legacy, frozen: no new DEB is built. Signed by the same key, downloaded to
   `/etc/apt/keyrings/idlescreen-keyring.gpg`. APT refuses unsigned
   packages from the IdleScreen repo by default.
 - Arch (Pacman): `install.sh` detects Arch from `/etc/os-release`, fetches

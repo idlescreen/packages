@@ -1,11 +1,13 @@
 // # Repository Index & GPG Signing Orchestrator
 //
-// Logline: Signs RPM payloads, writes sanitized `.rpmmacros`, and regenerates signed APT (`Release.gpg`, `InRelease`) and RPM (`repomd.xml.asc`) metadata.
-// Setup: Requires ProcessCap, FsReadCap, FsWriteCap, and EnvCap for GPG signing, dpkg-scanpackages, apt-ftparchive, and createrepo_c.
+// Logline: Signs RPM payloads, writes sanitized `.rpmmacros`, and regenerates signed RPM (`repomd.xml.asc`) metadata.
+// Setup: Requires ProcessCap, FsReadCap, FsWriteCap, and EnvCap for GPG signing and createrepo_c.
 // Beats:
 //   1. Validate GPG signing identities (`IDLESCREEN_GPG_NAME` / `CRATERIA_GPG_NAME`) and sanitize `.rpmmacros` against newline injection.
-//   2. Dearmor the APT public key and generate signed `Packages`, `Packages.gz`, `Release`, `Release.gpg`, and `InRelease`.
-//   3. Sign RPM payloads with `rpmsign --resign`, index `rpm/` with `createrepo_c`, and detach-sign `rpm/repodata/repomd.xml.asc`.
+//   2. Sign RPM payloads with `rpmsign --resign`, index `rpm/` with `createrepo_c`, and detach-sign `rpm/repodata/repomd.xml.asc`.
+//
+// RPM is the only packaging format this repository publishes. Debian packages
+// are not built; the APT channel below is not regenerated.
 
 import "oostd/core/primitives/str.oo";
 import "version.oo";
@@ -51,43 +53,13 @@ fn sh_ok(proc: &ProcessCap, cmd: String) -> Bool {
     return str_contains(out, "__OO_OK__");
 }
 
-fn update_apt_index(proc: &ProcessCap, key: String, gpg_bin: String) -> Int {
-    if !sh_ok(proc, "command -v dpkg-scanpackages >/dev/null 2>&1 && command -v apt-ftparchive >/dev/null 2>&1") {
-        println("Skipping APT metadata generation (tools not on PATH)...");
-        return 0;
-    }
-    println("Generating APT metadata...");
-    let scan_cmd: String = "cd apt && dpkg-scanpackages --multiversion pool/main > dists/stable/main/binary-amd64/Packages && gzip -k -f dists/stable/main/binary-amd64/Packages";
-    if !sh_ok(proc, scan_cmd) {
-        println("ERROR: dpkg-scanpackages failed");
-        return 1;
-    }
-    let rel_cmd: String = "cd apt && apt-ftparchive -o APT::FTPArchive::Release::Origin=IdleScreen -o APT::FTPArchive::Release::Label=IdleScreen -o APT::FTPArchive::Release::Suite=stable -o APT::FTPArchive::Release::Codename=stable -o APT::FTPArchive::Release::Architectures=amd64 -o APT::FTPArchive::Release::Components=main -o 'APT::FTPArchive::Release::Description=IdleScreen APT Repository (stable/main)' release dists/stable > dists/stable/Release";
-    if !sh_ok(proc, rel_cmd) {
-        println("ERROR: apt-ftparchive release failed");
-        return 1;
-    }
-    let qbin: String = shell_quote(gpg_bin);
-    let qkey: String = shell_quote(key);
-    if !sh_ok(proc, qbin + " --list-secret-keys " + qkey + " >/dev/null 2>&1") {
-        println("GPG signing key '" + key + "' not found; refusing to publish unsigned APT Release");
-        return 1;
-    }
-    let sign_cmd: String = "rm -f apt/dists/stable/Release.gpg apt/dists/stable/InRelease && (cd apt && " + qbin + " --batch --yes --default-key " + qkey + " -abs -o dists/stable/Release.gpg dists/stable/Release && " + qbin + " --batch --yes --default-key " + qkey + " --clearsign -o dists/stable/InRelease dists/stable/Release)";
-    if !sh_ok(proc, sign_cmd) {
-        println("APT release signing failed — refusing to publish an unsigned channel");
-        return 1;
-    }
-    println("Signed Release files successfully.");
-    return 0;
-}
 
 pub fn cmd_update(proc: &ProcessCap, env: &EnvCap) -> Int {
     println("==========================================");
     println("Updating IdleScreen Packages Repository (stable/main) via openOODA (.oo)...");
     println("==========================================");
-    let _mk: Bool = sh_ok(proc, "mkdir -p apt/pool/main apt/dists/stable/main/binary-amd64 rpm/pool");
-    let _sw: Bool = sh_ok(proc, "for f in *.deb; do [ -f \"$f\" ] && mv \"$f\" apt/pool/main/; done; for f in *.rpm; do [ -f \"$f\" ] && mv \"$f\" rpm/pool/; done; true");
+    let _mk: Bool = sh_ok(proc, "mkdir -p rpm/pool");
+    let _sw: Bool = sh_ok(proc, "for f in *.rpm; do [ -f \"$f\" ] && mv \"$f\" rpm/pool/; done; true");
     println("Regenerating binary GPG keyring...");
     if !sh_ok(proc, "gpg --batch --yes --dearmor < apt/idlescreen-key.gpg > apt/idlescreen-keyring.gpg.tmp && mv apt/idlescreen-keyring.gpg.tmp apt/idlescreen-keyring.gpg && cp -f apt/idlescreen-keyring.gpg idlescreen-keyring.gpg") {
         println("ERROR: gpg --dearmor failed on apt/idlescreen-key.gpg");
@@ -96,7 +68,6 @@ pub fn cmd_update(proc: &ProcessCap, env: &EnvCap) -> Int {
     let raw_key: String = resolve_gpg_name(env);
     let key: String = if raw_key != "" { raw_key } else { "jerydleuck@gmail.com" };
     let gpg_bin: String = resolve_gpg_bin(env);
-    if update_apt_index(proc, key, gpg_bin) != 0 { return 1; }
     let qkey: String = shell_quote(key);
     let qbin: String = shell_quote(gpg_bin);
     let rpm_sign: String = "unset_rpms=\"\"; for f in rpm/pool/*.rpm; do [ -f \"$f\" ] || continue; if ! rpm -Kv \"$f\" 2>/dev/null | grep -qi signature; then unset_rpms=\"$unset_rpms $f\"; fi; done; if [ -n \"$unset_rpms\" ]; then rpmsign --resign --key-id " + qkey + " $unset_rpms; fi";

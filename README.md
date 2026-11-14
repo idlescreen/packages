@@ -53,14 +53,14 @@ Then, by channel:
 |---|---|
 | **Web installer** | `curl -fsSL https://idlescreen.github.io/install.sh | sh` |
 | **DNF / RPM** | `./install.sh` (writes `/etc/yum.repos.d/idlescreen.repo`) |
-| **APT / DEB** | `./install.sh` (writes `/etc/apt/sources.list.d/idlescreen.list`) |
+| **APT / DEB** (legacy) | `./install.sh` (writes `/etc/apt/sources.list.d/idlescreen.list`) — frozen: no new DEB is built |
 | **pacman / Arch** | `./install.sh` (writes `/etc/xdg/idlescreen/idlescreen.db`) |
 
 Once a channel is configured, the product package is a one-liner:
 
 ```sh
 dnf install idlescreen        # SuperFedora, Fedora, Nobara, RHEL family
-apt-get install idlescreen    # Debian, Ubuntu, Mint, Pop!_OS, elementary
+apt-get install idlescreen    # Debian, Ubuntu, Mint, Pop!_OS, elementary (legacy DEB channel)
 pacman -S idlescreen          # Arch, EndeavourOS, Garuda, CachyOS
 ```
 
